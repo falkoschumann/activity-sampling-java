@@ -11,7 +11,9 @@ and this project adheres to
 ### Added
 
 - Archive timestamp and description of activity.
+- Show recent activities.
 - Select one of the recent activities as the current one.
+- Ask at a fixed intervall like 15, 20 30 or 60 minutes.
 
 ## [1.0.0] - 2022-11-16
 

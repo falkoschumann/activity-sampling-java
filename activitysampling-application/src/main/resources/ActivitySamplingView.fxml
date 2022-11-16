@@ -8,6 +8,7 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
@@ -26,6 +27,27 @@
                         <MenuItem mnemonicParsing="false" onAction="#handleQuit" text="Quit" />
                       </items>
                     </Menu>
+                        <Menu mnemonicParsing="false" text="Notifications">
+                           <items>
+                              <Menu mnemonicParsing="false" text="Start">
+                                 <items>
+                                    <MenuItem mnemonicParsing="false" onAction="#handleStart5min" text="5 min" />
+                                    <MenuItem mnemonicParsing="false" onAction="#handleStart10min" text="10 min" />
+                                    <MenuItem mnemonicParsing="false" onAction="#handleStart15min" text="15 min" />
+                                    <MenuItem mnemonicParsing="false" onAction="#handleStart20min" text="20 min" />
+                                    <MenuItem mnemonicParsing="false" onAction="#handleStart30min" text="30 min" />
+                                    <MenuItem mnemonicParsing="false" onAction="#handleStart60min" text="60 min" />
+                                    <MenuItem mnemonicParsing="false" onAction="#handleStart1min" text="1 min" />
+                                 </items>
+                              </Menu>
+                              <MenuItem mnemonicParsing="false" onAction="#handleStop" text="Stop" />
+                           </items>
+                        </Menu>
+                        <Menu mnemonicParsing="false" text="View">
+                           <items>
+                              <MenuItem mnemonicParsing="false" onAction="#handleRefresh" text="Refresh" />
+                           </items>
+                        </Menu>
                   </menus>
                 </MenuBar>
                   <BorderPane VBox.vgrow="ALWAYS">
@@ -38,6 +60,8 @@
                               <Label text="Activity:" />
                               <TextField fx:id="activity" onAction="#handleLog" promptText="What are you working on?" />
                               <Button fx:id="logButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleLog" text="Log" />
+                              <Label fx:id="countdownLabel" alignment="CENTER" maxWidth="1.7976931348623157E308" text="00:00:00" />
+                              <ProgressBar fx:id="countdown" maxWidth="1.7976931348623157E308" prefWidth="200.0" progress="0.0" />
                            </children>
                            <BorderPane.margin>
                               <Insets bottom="8.0" />

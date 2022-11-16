@@ -26,12 +26,12 @@ class ActivitySamplingViewModelTests {
                                 LocalDateTime.of(2022, 11, 16, 16, 16), "Lorem ipsum"))))));
 
     fixture = new ActivitySamplingViewModel(activitiesService);
+    fixture.onCountdownElapsed = mock(Runnable.class);
+    fixture.run();
   }
 
   @Test
   void run_ViewIsInitialized() {
-    fixture.run();
-
     assertAll(
         () -> assertEquals("", fixture.activityTextProperty().get(), "Activity text"),
         () -> assertTrue(fixture.logButtonDisableProperty().get(), "Log button disable"),
@@ -87,5 +87,85 @@ class ActivitySamplingViewModelTests {
     assertAll(
         () -> assertEquals("Lorem ipsum", fixture.activityTextProperty().get(), "Activity text"),
         () -> assertFalse(fixture.logButtonDisableProperty().get(), "Log button disable"));
+  }
+
+  @Test
+  void startCountdown_InitializeCountdown() {
+    fixture.startCountdown(Duration.ofMinutes(20));
+
+    assertAll(
+        () ->
+            assertEquals(
+                "00:20:00", fixture.countdownLabelTextProperty().get(), "Countdown label text"),
+        () -> assertEquals(0.0, fixture.countdownProgressProperty().get(), "Countdown progress"),
+        () -> verify(fixture.onCountdownElapsed, times(0)).run());
+  }
+
+  @Test
+  void progressCountdown_FirstTick() {
+    fixture.startCountdown(Duration.ofMinutes(1));
+
+    tickCountdown(1);
+
+    assertAll(
+        () ->
+            assertEquals(
+                "00:00:59", fixture.countdownLabelTextProperty().get(), "Countdown label text"),
+        () ->
+            assertEquals(
+                1.0 / 60.0, fixture.countdownProgressProperty().get(), "Countdown progress"),
+        () -> verify(fixture.onCountdownElapsed, times(0)).run());
+  }
+
+  @Test
+  void progressCountdown_SecondTick() {
+    fixture.startCountdown(Duration.ofMinutes(1));
+
+    tickCountdown(2);
+
+    assertAll(
+        () ->
+            assertEquals(
+                "00:00:58", fixture.countdownLabelTextProperty().get(), "Countdown label text"),
+        () ->
+            assertEquals(
+                2.0 / 60.0, fixture.countdownProgressProperty().get(), "Countdown progress"),
+        () -> verify(fixture.onCountdownElapsed, times(0)).run());
+  }
+
+  @Test
+  void progressCountdown_LastTick() {
+    fixture.startCountdown(Duration.ofMinutes(1));
+
+    tickCountdown(59);
+
+    assertAll(
+        () ->
+            assertEquals(
+                "00:00:01", fixture.countdownLabelTextProperty().get(), "Countdown label text"),
+        () ->
+            assertEquals(
+                0.983, fixture.countdownProgressProperty().get(), 0.001, "Countdown progress"),
+        () -> verify(fixture.onCountdownElapsed, times(0)).run());
+  }
+
+  @Test
+  void progressCountdown_CountdownElapsed() {
+    fixture.startCountdown(Duration.ofMinutes(1));
+
+    tickCountdown(60);
+
+    assertAll(
+        () ->
+            assertEquals(
+                "00:01:00", fixture.countdownLabelTextProperty().get(), "Countdown label text"),
+        () -> assertEquals(0.0, fixture.countdownProgressProperty().get(), "Countdown progress"),
+        () -> verify(fixture.onCountdownElapsed, times(1)).run());
+  }
+
+  private void tickCountdown(int count) {
+    for (var i = 0; i < count; i++) {
+      fixture.progressCountdown();
+    }
   }
 }
