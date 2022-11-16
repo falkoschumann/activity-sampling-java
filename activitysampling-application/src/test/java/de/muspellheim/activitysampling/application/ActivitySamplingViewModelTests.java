@@ -38,8 +38,10 @@ class ActivitySamplingViewModelTests {
         () ->
             assertEquals(
                 List.of(
-                    new ActivityItem("Mittwoch, 16. November 2022", true),
-                    new ActivityItem("16:16 - Lorem ipsum", false)),
+                    new ActivityItem("Mittwoch, 16. November 2022"),
+                    new ActivityItem(
+                        "16:16 - Lorem ipsum",
+                        new Activity(LocalDateTime.of(2022, 11, 16, 16, 16), "Lorem ipsum"))),
                 fixture.getRecentActivities(),
                 "Recent activities"));
   }
@@ -75,5 +77,15 @@ class ActivitySamplingViewModelTests {
     inOrder.verify(activitiesService).logActivity("foobar");
     inOrder.verify(activitiesService).selectRecentActivities();
     assertEquals(2, fixture.getRecentActivities().size(), "Recent activities size");
+  }
+
+  @Test
+  void setActivity_UpdatesForm() {
+    var activity = new Activity(LocalDateTime.of(2022, 11, 16, 16, 16), "Lorem ipsum");
+    fixture.setActivity(activity);
+
+    assertAll(
+        () -> assertEquals("Lorem ipsum", fixture.activityTextProperty().get(), "Activity text"),
+        () -> assertFalse(fixture.logButtonDisableProperty().get(), "Log button disable"));
   }
 }

@@ -47,17 +47,21 @@ public class ActivitySamplingViewModel {
     load();
   }
 
+  public void setActivity(Activity activity) {
+    activityText.set(activity.description());
+  }
+
   private void load() {
     var items = new ArrayList<ActivityItem>();
     var dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL);
     var timeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
     for (var day : activitiesService.selectRecentActivities().workingDays()) {
-      items.add(new ActivityItem(day.date().format(dateFormatter), true));
+      items.add(new ActivityItem(day.date().format(dateFormatter)));
       for (var activity : day.activities()) {
         items.add(
             new ActivityItem(
                 activity.timestamp().format(timeFormatter) + " - " + activity.description(),
-                false));
+                activity));
       }
     }
     recentActivities.setAll(items);

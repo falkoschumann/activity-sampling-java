@@ -11,6 +11,7 @@ and this project adheres to
 ### Added
 
 - Archive timestamp and description of activity.
+- Select one of the recent activities as the current one.
 
 ## [1.0.0] - 2022-11-16
 

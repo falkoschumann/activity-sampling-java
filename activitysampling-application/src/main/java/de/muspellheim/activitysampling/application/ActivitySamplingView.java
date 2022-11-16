@@ -33,7 +33,7 @@ public class ActivitySamplingView {
     activity.textProperty().bindBidirectional(viewModel.activityTextProperty());
     logButton.disableProperty().bind(viewModel.logButtonDisableProperty());
     recentActivities.setItems(viewModel.getRecentActivities());
-    recentActivities.setCellFactory(view -> new ActivityListCell());
+    recentActivities.setCellFactory(view -> new ActivityListCell(viewModel::setActivity));
   }
 
   public void run() {
