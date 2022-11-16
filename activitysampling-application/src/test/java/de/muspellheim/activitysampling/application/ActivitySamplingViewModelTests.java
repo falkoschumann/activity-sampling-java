@@ -12,6 +12,11 @@ class ActivitySamplingViewModelTests {
   private ActivitiesService activitiesService;
   private ActivitySamplingViewModel fixture;
 
+  @BeforeAll
+  static void initAll() {
+    Locale.setDefault(Locale.GERMANY);
+  }
+
   @BeforeEach
   void init() {
     activitiesService = mock(ActivitiesService.class);
