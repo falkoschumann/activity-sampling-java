@@ -32,6 +32,13 @@ testing {
 }
 
 test {
+  systemProperty "user.country", "DE"
+  systemProperty "user.language", "de"
+  systemProperty "user.timezone", "Europe/Berlin"
+  testLogging {
+    events "passed", "skipped", "failed"
+    exceptionFormat = 'full'
+  }
   finalizedBy jacocoTestReport
 }
 
