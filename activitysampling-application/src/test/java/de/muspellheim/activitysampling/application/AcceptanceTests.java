@@ -16,6 +16,7 @@ class AcceptanceTests {
   @BeforeAll
   static void initAll() {
     Locale.setDefault(Locale.GERMANY);
+    TimeZone.setDefault(TimeZone.getTimeZone("Europe/Berlin"));
   }
 
   @BeforeEach
