@@ -8,50 +8,50 @@ import javafx.beans.binding.*;
 import javafx.beans.property.*;
 import javafx.collections.*;
 
-public class ActivitySamplingViewModel {
+class ActivitySamplingViewModel {
   private final StringProperty activityText = new SimpleStringProperty("");
   private final ReadOnlyBooleanWrapper logButtonDisable = new ReadOnlyBooleanWrapper(true);
   private final ObservableList<ActivityItem> recentActivities = FXCollections.observableArrayList();
 
   private final ActivitiesService activitiesService;
 
-  public ActivitySamplingViewModel() {
+  ActivitySamplingViewModel() {
     this(new ActivitiesServiceImpl(new CsvEventStore()));
   }
 
-  public ActivitySamplingViewModel(ActivitiesService activitiesService) {
+  ActivitySamplingViewModel(ActivitiesService activitiesService) {
     this.activitiesService = activitiesService;
 
     logButtonDisable.bind(
         Bindings.createBooleanBinding(() -> activityText.get().isBlank(), activityText));
   }
 
-  public StringProperty activityTextProperty() {
+  StringProperty activityTextProperty() {
     return activityText;
   }
 
-  public ReadOnlyBooleanProperty logButtonDisableProperty() {
+  ReadOnlyBooleanProperty logButtonDisableProperty() {
     return logButtonDisable.getReadOnlyProperty();
   }
 
-  public ObservableList<ActivityItem> getRecentActivities() {
+  ObservableList<ActivityItem> getRecentActivities() {
     return recentActivities;
   }
 
-  public void run() {
+  void run() {
     load();
   }
 
-  public void logActivity() {
+  void logActivity() {
     activitiesService.logActivity(activityText.get());
     load();
   }
 
-  public void setActivity(Activity activity) {
+  void setActivity(Activity activity) {
     activityText.set(activity.description());
   }
 
-  private void load() {
+  void load() {
     var items = new ArrayList<ActivityItem>();
     var dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL);
     var timeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);

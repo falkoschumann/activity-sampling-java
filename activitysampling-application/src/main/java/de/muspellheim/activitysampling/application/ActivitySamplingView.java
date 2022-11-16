@@ -13,7 +13,7 @@ public class ActivitySamplingView {
 
   private final ActivitySamplingViewModel viewModel = new ActivitySamplingViewModel();
 
-  public static ActivitySamplingView create(Stage stage) {
+  public static ActivitySamplingView newInstance(Stage stage) {
     String file = "/ActivitySamplingView.fxml";
     try {
       var url = ActivitySamplingView.class.getResource(file);

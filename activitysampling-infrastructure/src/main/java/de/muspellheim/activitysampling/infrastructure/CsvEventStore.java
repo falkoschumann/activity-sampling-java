@@ -24,7 +24,7 @@ public class CsvEventStore implements EventStore {
 
   @Override
   public void record(Iterable<Event> events) {
-    try (var printer = createPrinter()) {
+    try (var printer = newPrinter()) {
       for (var event : events) {
         if (event instanceof ActivityLoggedEvent e) {
           printer.printRecord(e.timestamp().truncatedTo(ChronoUnit.SECONDS), e.description());
@@ -35,8 +35,8 @@ public class CsvEventStore implements EventStore {
     }
   }
 
-  private CSVPrinter createPrinter() throws IOException {
-    var format = createFormat();
+  private CSVPrinter newPrinter() throws IOException {
+    var format = newFormat();
     return new CSVPrinter(
         Files.newBufferedWriter(
             file, StandardOpenOption.APPEND, StandardOpenOption.APPEND, StandardOpenOption.CREATE),
@@ -46,7 +46,7 @@ public class CsvEventStore implements EventStore {
   @Override
   public Stream<Event> replay() {
     try {
-      var parser = createParser();
+      var parser = newParser();
       return parser.stream()
           .onClose(
               () -> {
@@ -67,12 +67,12 @@ public class CsvEventStore implements EventStore {
     }
   }
 
-  private CSVParser createParser() throws IOException {
-    var format = createFormat();
+  private CSVParser newParser() throws IOException {
+    var format = newFormat();
     return new CSVParser(Files.newBufferedReader(file), format);
   }
 
-  private CSVFormat createFormat() {
+  private CSVFormat newFormat() {
     var builder =
         CSVFormat.Builder.create(CSVFormat.RFC4180).setHeader(COLUMN_TIMESTAMP, COLUMN_DESCRIPTION);
     if (Files.exists(file)) {

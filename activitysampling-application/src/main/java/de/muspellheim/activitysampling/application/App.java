@@ -6,7 +6,7 @@ import javafx.stage.*;
 public class App extends Application {
   @Override
   public void start(Stage primaryStage) {
-    var view = ActivitySamplingView.create(primaryStage);
+    var view = ActivitySamplingView.newInstance(primaryStage);
     view.run();
   }
 }
