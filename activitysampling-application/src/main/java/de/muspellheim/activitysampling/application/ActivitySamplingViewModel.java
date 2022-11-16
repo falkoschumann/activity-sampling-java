@@ -37,7 +37,7 @@ class ActivitySamplingViewModel {
         Bindings.createStringBinding(
             () -> {
               var time = LocalTime.ofSecondOfDay(countdown.get().toSeconds());
-              return DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM).format(time);
+              return DateTimeFormatter.ofPattern("HH:mm:ss").format(time);
             },
             interval,
             countdown));
