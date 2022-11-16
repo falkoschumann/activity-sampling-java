@@ -18,6 +18,7 @@ public class ActivitySamplingView {
 
   private final ActivitySamplingViewModel viewModel = new ActivitySamplingViewModel();
 
+  private final Notifier notifier = new Notifier();
   private final Timer timer = new Timer("System clock", true);
   private CountdownTask countdownTask;
 
@@ -37,13 +38,15 @@ public class ActivitySamplingView {
 
   @FXML
   private void initialize() {
+    viewModel.onCountdownElapsed = notifier::showNotification;
+    stage.setOnCloseRequest(e -> notifier.dispose());
     menuBar.setUseSystemMenuBar(true);
     activity.textProperty().bindBidirectional(viewModel.activityTextProperty());
     logButton.disableProperty().bind(viewModel.logButtonDisableProperty());
     countdownLabel.textProperty().bind(viewModel.countdownLabelTextProperty());
     countdown.progressProperty().bind(viewModel.countdownProgressProperty());
-    recentActivities.setItems(viewModel.getRecentActivities());
     recentActivities.setCellFactory(view -> new ActivityListCell(viewModel::setActivity));
+    recentActivities.setItems(viewModel.getRecentActivities());
   }
 
   public void run() {

@@ -8,16 +8,15 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.0.0] - 2022-11-16
+
 ### Added
 
 - Archive timestamp and description of activity.
 - Show recent activities.
 - Select one of the recent activities as the current one.
 - Ask at a fixed intervall like 15, 20 30 or 60 minutes.
-
-## [1.0.0] - 2022-11-16
-
-TODO
+- Notify when interval expired.
 
 [Unreleased]: https://github.com/falkoschumann/activity-sampling-java/compare/v1.0.0...HEAD
 [1.0.0]: https://github.com/falkoschumann/activity-sampling-java/releases/tag/v1.0.0
