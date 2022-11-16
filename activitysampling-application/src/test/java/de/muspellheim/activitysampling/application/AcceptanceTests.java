@@ -13,6 +13,11 @@ import org.junit.jupiter.api.*;
 class AcceptanceTests {
   private static final Path STORE_FILE = Paths.get("build/event-store.csv");
 
+  @BeforeAll
+  static void initAll() {
+    Locale.setDefault(Locale.GERMANY);
+  }
+
   @BeforeEach
   void init() throws IOException {
     Files.deleteIfExists(STORE_FILE);
