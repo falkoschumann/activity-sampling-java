@@ -1,0 +1,9 @@
+plugins {
+  id 'de.muspellheim.java-library-conventions'
+  id 'de.muspellheim.java-module-conventions'
+}
+
+dependencies {
+  api project(':activitysampling-domain')
+  implementation 'org.apache.commons:commons-csv:1.9.0'
+}

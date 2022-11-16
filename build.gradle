@@ -1,0 +1,36 @@
+plugins {
+  id 'base'
+  id 'jacoco-report-aggregation'
+  id 'test-report-aggregation'
+}
+
+version = '1.0.0'
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  testReportAggregation project(':activitysampling-application')
+  testReportAggregation project(':activitysampling-domain')
+  testReportAggregation project(':activitysampling-infrastructure')
+  jacocoAggregation project(':activitysampling-application')
+  jacocoAggregation project(':activitysampling-domain')
+  jacocoAggregation project(':activitysampling-infrastructure')
+}
+
+reporting {
+  reports {
+    testAggregateTestReport(AggregateTestReport) {
+      testType = TestSuiteType.UNIT_TEST
+    }
+    testCodeCoverageReport(JacocoCoverageReport) {
+      testType = TestSuiteType.UNIT_TEST
+    }
+  }
+}
+
+tasks.named('check') {
+  dependsOn tasks.named('testAggregateTestReport', TestReport)
+  dependsOn tasks.named('testCodeCoverageReport', JacocoReport)
+}
