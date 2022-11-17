@@ -10,7 +10,7 @@ import org.junit.jupiter.api.*;
 
 class ActivitySamplingViewModelTests {
   private ActivitiesService activitiesService;
-  private ActivitySamplingViewModel fixture;
+  private ActivitySamplingViewModel sut;
 
   @BeforeEach
   void init() {
@@ -25,16 +25,16 @@ class ActivitySamplingViewModelTests {
                             new Activity(
                                 LocalDateTime.of(2022, 11, 16, 16, 16), "Lorem ipsum"))))));
 
-    fixture = new ActivitySamplingViewModel(activitiesService);
-    fixture.onCountdownElapsed = mock(Runnable.class);
-    fixture.run();
+    sut = new ActivitySamplingViewModel(activitiesService);
+    sut.onCountdownElapsed = mock(Runnable.class);
+    sut.run();
   }
 
   @Test
   void run_ViewIsInitialized() {
     assertAll(
-        () -> assertEquals("", fixture.activityTextProperty().get(), "Activity text"),
-        () -> assertTrue(fixture.logButtonDisableProperty().get(), "Log button disable"),
+        () -> assertEquals("", sut.activityTextProperty().get(), "Activity text"),
+        () -> assertTrue(sut.logButtonDisableProperty().get(), "Log button disable"),
         () ->
             assertEquals(
                 List.of(
@@ -42,130 +42,125 @@ class ActivitySamplingViewModelTests {
                     new ActivityItem(
                         "16:16 - Lorem ipsum",
                         new Activity(LocalDateTime.of(2022, 11, 16, 16, 16), "Lorem ipsum"))),
-                fixture.getRecentActivities(),
+                sut.getRecentActivities(),
                 "Recent activities"));
   }
 
   @Test
   void changeActivityText_IsNotEmpty_LogButtonIsEnabled() {
-    fixture.activityTextProperty().set("foobar");
+    sut.activityTextProperty().set("foobar");
 
-    assertFalse(fixture.logButtonDisableProperty().get());
+    assertFalse(sut.logButtonDisableProperty().get());
   }
 
   @Test
   void changeActivityText_IsEmpty_LogButtonIsDisabled() {
-    fixture.activityTextProperty().set("");
+    sut.activityTextProperty().set("");
 
-    assertTrue(fixture.logButtonDisableProperty().get());
+    assertTrue(sut.logButtonDisableProperty().get());
   }
 
   @Test
   void changeActivityText_IsBlank_LogButtonIsDisabled() {
-    fixture.activityTextProperty().set("  ");
+    sut.activityTextProperty().set("  ");
 
-    assertTrue(fixture.logButtonDisableProperty().get());
+    assertTrue(sut.logButtonDisableProperty().get());
   }
 
   @Test
-  void logActivity_LogAndRefresh() {
-    fixture.activityTextProperty().set("foobar");
+  void logActivity_LogsAndRefreshes() {
+    sut.activityTextProperty().set("foobar");
 
-    fixture.logActivity();
+    sut.logActivity();
 
     var inOrder = inOrder(activitiesService);
     inOrder.verify(activitiesService).logActivity("foobar");
     inOrder.verify(activitiesService).selectRecentActivities();
-    assertEquals(2, fixture.getRecentActivities().size(), "Recent activities size");
+    assertEquals(2, sut.getRecentActivities().size(), "Recent activities size");
   }
 
   @Test
   void setActivity_UpdatesForm() {
     var activity = new Activity(LocalDateTime.of(2022, 11, 16, 16, 16), "Lorem ipsum");
-    fixture.setActivity(activity);
+    sut.setActivity(activity);
 
     assertAll(
-        () -> assertEquals("Lorem ipsum", fixture.activityTextProperty().get(), "Activity text"),
-        () -> assertFalse(fixture.logButtonDisableProperty().get(), "Log button disable"));
+        () -> assertEquals("Lorem ipsum", sut.activityTextProperty().get(), "Activity text"),
+        () -> assertFalse(sut.logButtonDisableProperty().get(), "Log button disable"));
   }
 
   @Test
-  void startCountdown_InitializeCountdown() {
-    fixture.startCountdown(Duration.ofMinutes(20));
+  void startCountdown_InitializesCountdown() {
+    sut.startCountdown(Duration.ofMinutes(20));
 
     assertAll(
         () ->
             assertEquals(
-                "00:20:00", fixture.countdownLabelTextProperty().get(), "Countdown label text"),
-        () -> assertEquals(0.0, fixture.countdownProgressProperty().get(), "Countdown progress"),
-        () -> verify(fixture.onCountdownElapsed, times(0)).run());
+                "00:20:00", sut.countdownLabelTextProperty().get(), "Countdown label text"),
+        () -> assertEquals(0.0, sut.countdownProgressProperty().get(), "Countdown progress"),
+        () -> verify(sut.onCountdownElapsed, times(0)).run());
   }
 
   @Test
-  void progressCountdown_FirstTick() {
-    fixture.startCountdown(Duration.ofMinutes(1));
+  void progressCountdown_FirstTick_UpdatesCountdown() {
+    sut.startCountdown(Duration.ofMinutes(1));
 
     tickCountdown(1);
 
     assertAll(
         () ->
             assertEquals(
-                "00:00:59", fixture.countdownLabelTextProperty().get(), "Countdown label text"),
-        () ->
-            assertEquals(
-                1.0 / 60.0, fixture.countdownProgressProperty().get(), "Countdown progress"),
-        () -> verify(fixture.onCountdownElapsed, times(0)).run());
+                "00:00:59", sut.countdownLabelTextProperty().get(), "Countdown label text"),
+        () -> assertEquals(1.0 / 60.0, sut.countdownProgressProperty().get(), "Countdown progress"),
+        () -> verify(sut.onCountdownElapsed, times(0)).run());
   }
 
   @Test
-  void progressCountdown_SecondTick() {
-    fixture.startCountdown(Duration.ofMinutes(1));
+  void progressCountdown_SecondTick_UpdatesCountdown() {
+    sut.startCountdown(Duration.ofMinutes(1));
 
     tickCountdown(2);
 
     assertAll(
         () ->
             assertEquals(
-                "00:00:58", fixture.countdownLabelTextProperty().get(), "Countdown label text"),
-        () ->
-            assertEquals(
-                2.0 / 60.0, fixture.countdownProgressProperty().get(), "Countdown progress"),
-        () -> verify(fixture.onCountdownElapsed, times(0)).run());
+                "00:00:58", sut.countdownLabelTextProperty().get(), "Countdown label text"),
+        () -> assertEquals(2.0 / 60.0, sut.countdownProgressProperty().get(), "Countdown progress"),
+        () -> verify(sut.onCountdownElapsed, times(0)).run());
   }
 
   @Test
-  void progressCountdown_LastTick() {
-    fixture.startCountdown(Duration.ofMinutes(1));
+  void progressCountdown_LastTick_UpdatesCountdown() {
+    sut.startCountdown(Duration.ofMinutes(1));
 
     tickCountdown(59);
 
     assertAll(
         () ->
             assertEquals(
-                "00:00:01", fixture.countdownLabelTextProperty().get(), "Countdown label text"),
+                "00:00:01", sut.countdownLabelTextProperty().get(), "Countdown label text"),
         () ->
-            assertEquals(
-                0.983, fixture.countdownProgressProperty().get(), 0.001, "Countdown progress"),
-        () -> verify(fixture.onCountdownElapsed, times(0)).run());
+            assertEquals(0.983, sut.countdownProgressProperty().get(), 0.001, "Countdown progress"),
+        () -> verify(sut.onCountdownElapsed, times(0)).run());
   }
 
   @Test
-  void progressCountdown_CountdownElapsed() {
-    fixture.startCountdown(Duration.ofMinutes(1));
+  void progressCountdown_CountdownElapsed_UpdatesCountdownAndNotifies() {
+    sut.startCountdown(Duration.ofMinutes(1));
 
     tickCountdown(60);
 
     assertAll(
         () ->
             assertEquals(
-                "00:01:00", fixture.countdownLabelTextProperty().get(), "Countdown label text"),
-        () -> assertEquals(0.0, fixture.countdownProgressProperty().get(), "Countdown progress"),
-        () -> verify(fixture.onCountdownElapsed, times(1)).run());
+                "00:01:00", sut.countdownLabelTextProperty().get(), "Countdown label text"),
+        () -> assertEquals(0.0, sut.countdownProgressProperty().get(), "Countdown progress"),
+        () -> verify(sut.onCountdownElapsed, times(1)).run());
   }
 
   private void tickCountdown(int count) {
     for (var i = 0; i < count; i++) {
-      fixture.progressCountdown();
+      sut.progressCountdown();
     }
   }
 }

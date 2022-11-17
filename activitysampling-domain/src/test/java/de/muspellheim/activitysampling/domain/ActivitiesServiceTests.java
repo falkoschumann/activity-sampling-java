@@ -10,18 +10,18 @@ import org.junit.jupiter.api.*;
 
 class ActivitiesServiceTests {
   private EventStore eventStore;
-  private ActivitiesService fixture;
+  private ActivitiesService sut;
 
   @BeforeEach
   void init() {
     eventStore = mock(EventStore.class);
     var clock = Clock.fixed(Instant.parse("2022-11-16T11:26:00Z"), ZoneId.systemDefault());
-    fixture = new ActivitiesServiceImpl(eventStore, clock);
+    sut = new ActivitiesServiceImpl(eventStore, clock);
   }
 
   @Test
-  void logActivity_RecordActivityLogged() {
-    fixture.logActivity("Lorem ipsum");
+  void logActivity_RecordsActivityLogged() {
+    sut.logActivity("Lorem ipsum");
 
     verify(eventStore)
         .record(new ActivityLoggedEvent(Instant.parse("2022-11-16T11:26:00Z"), "Lorem ipsum"));
@@ -36,7 +36,7 @@ class ActivitiesServiceTests {
                 new ActivityLoggedEvent(Instant.parse("2022-11-16T11:06:00Z"), "A2"),
                 new ActivityLoggedEvent(Instant.parse("2022-11-16T11:26:00Z"), "A3")));
 
-    var activities = fixture.selectRecentActivities();
+    var activities = sut.selectRecentActivities();
 
     assertEquals(
         new RecentActivities(
@@ -61,7 +61,7 @@ class ActivitiesServiceTests {
                 new ActivityLoggedEvent(Instant.parse("2022-10-17T11:06:00Z"), "A2"),
                 new ActivityLoggedEvent(Instant.parse("2022-11-16T11:26:00Z"), "A3")));
 
-    var activities = fixture.selectRecentActivities();
+    var activities = sut.selectRecentActivities();
 
     assertEquals(
         new RecentActivities(

@@ -23,15 +23,15 @@ class AcceptanceTests {
     var eventStore = new CsvEventStore(STORE_FILE);
     var clock = new TickingClock(Instant.parse("2022-11-16T17:05:00Z"));
     var activitiesService = new ActivitiesServiceImpl(eventStore, clock);
-    var fixture = new ActivitySamplingViewModel(activitiesService);
-    fixture.run();
+    var sut = new ActivitySamplingViewModel(activitiesService);
+    sut.run();
 
     //
     // Step 1 - Log first activity
     //
 
-    fixture.activityTextProperty().set("Lorem ipsum");
-    fixture.logActivity();
+    sut.activityTextProperty().set("Lorem ipsum");
+    sut.logActivity();
 
     assertEquals(
         List.of(
@@ -39,7 +39,7 @@ class AcceptanceTests {
             new ActivityItem(
                 "18:05 - Lorem ipsum",
                 new Activity(LocalDateTime.of(2022, 11, 16, 18, 5), "Lorem ipsum"))),
-        fixture.getRecentActivities(),
+        sut.getRecentActivities(),
         "Step 1 - Recent activities");
 
     //
@@ -47,8 +47,8 @@ class AcceptanceTests {
     //
 
     clock.tick(Duration.ofMinutes(20));
-    fixture.activityTextProperty().set("Foobar");
-    fixture.logActivity();
+    sut.activityTextProperty().set("Foobar");
+    sut.logActivity();
 
     assertEquals(
         List.of(
@@ -58,7 +58,7 @@ class AcceptanceTests {
             new ActivityItem(
                 "18:05 - Lorem ipsum",
                 new Activity(LocalDateTime.of(2022, 11, 16, 18, 5), "Lorem ipsum"))),
-        fixture.getRecentActivities(),
+        sut.getRecentActivities(),
         "Step 2 - Recent activities");
 
     //
@@ -66,8 +66,8 @@ class AcceptanceTests {
     //
 
     clock.tick(Duration.ofMinutes(20));
-    fixture.setActivity(new Activity(LocalDateTime.of(2022, 11, 16, 18, 5), "Lorem ipsum"));
+    sut.setActivity(new Activity(LocalDateTime.of(2022, 11, 16, 18, 5), "Lorem ipsum"));
 
-    assertEquals("Lorem ipsum", fixture.activityTextProperty().get(), "Step 3 - Activity text");
+    assertEquals("Lorem ipsum", sut.activityTextProperty().get(), "Step 3 - Activity text");
   }
 }
