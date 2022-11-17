@@ -15,7 +15,7 @@ jlink {
   ]
   jpackage {
     imageOptions += [
-      '--description', 'Activity Sampling asks you about your current activity and logs it.',
+      '--description', 'Periodically ask the user about their current activity and log it for analysis.',
       '--vendor', 'Muspellheim',
     ]
     installerOptions = [
