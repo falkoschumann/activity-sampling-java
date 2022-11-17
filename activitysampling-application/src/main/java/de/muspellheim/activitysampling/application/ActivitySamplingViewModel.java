@@ -21,6 +21,10 @@ class ActivitySamplingViewModel {
   private final ReadOnlyStringWrapper countdownLabelText = new ReadOnlyStringWrapper("00:00:00");
   private final ReadOnlyDoubleWrapper countdownProgress = new ReadOnlyDoubleWrapper(0.0);
   private final ObservableList<ActivityItem> recentActivities = FXCollections.observableArrayList();
+  private final ReadOnlyStringWrapper hoursTodayLabelText = new ReadOnlyStringWrapper("00:00");
+  private final ReadOnlyStringWrapper hoursYesterdayLabelText = new ReadOnlyStringWrapper("00:00");
+  private final ReadOnlyStringWrapper hoursThisWeekLabelText = new ReadOnlyStringWrapper("00:00");
+  private final ReadOnlyStringWrapper hoursThisMonthLabelText = new ReadOnlyStringWrapper("00:00");
 
   private final ActivitiesService activitiesService;
 
@@ -71,15 +75,33 @@ class ActivitySamplingViewModel {
     return recentActivities;
   }
 
+  ReadOnlyStringProperty hoursTodayLabelTextProperty() {
+    return hoursTodayLabelText.getReadOnlyProperty();
+  }
+
+  ReadOnlyStringProperty hoursYesterdayLabelTextProperty() {
+    return hoursYesterdayLabelText.getReadOnlyProperty();
+  }
+
+  ReadOnlyStringProperty hoursThisWeekLabelTextProperty() {
+    return hoursThisWeekLabelText.getReadOnlyProperty();
+  }
+
+  ReadOnlyStringProperty hoursThisMonthLabelTextProperty() {
+    return hoursThisMonthLabelText.getReadOnlyProperty();
+  }
+
   void run() {
     load();
   }
 
   void load() {
+    var recentActivities = activitiesService.selectRecentActivities();
+
     var items = new ArrayList<ActivityItem>();
     var dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL);
     var timeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
-    for (var day : activitiesService.selectRecentActivities().workingDays()) {
+    for (var day : recentActivities.workingDays()) {
       items.add(new ActivityItem(day.date().format(dateFormatter)));
       for (var activity : day.activities()) {
         items.add(
@@ -88,7 +110,23 @@ class ActivitySamplingViewModel {
                 activity));
       }
     }
-    recentActivities.setAll(items);
+
+    var timeFormat = "%1$02d:%2$02d";
+    var timeSummary = recentActivities.timeSummary();
+    hoursTodayLabelText.set(
+        timeFormat.formatted(
+            timeSummary.hoursToday().toHours(), timeSummary.hoursToday().toMinutesPart()));
+    hoursYesterdayLabelText.set(
+        timeFormat.formatted(
+            timeSummary.hoursYesterday().toHours(), timeSummary.hoursYesterday().toMinutesPart()));
+    hoursThisWeekLabelText.set(
+        timeFormat.formatted(
+            timeSummary.hoursThisWeek().toHours(), timeSummary.hoursThisWeek().toMinutesPart()));
+    hoursThisMonthLabelText.set(
+        timeFormat.formatted(
+            timeSummary.hoursThisMonth().toHours(), timeSummary.hoursThisMonth().toMinutesPart()));
+
+    this.recentActivities.setAll(items);
   }
 
   void logActivity() {

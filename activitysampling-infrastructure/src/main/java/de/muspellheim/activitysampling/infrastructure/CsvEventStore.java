@@ -10,6 +10,7 @@ import org.apache.commons.csv.*;
 
 public class CsvEventStore implements EventStore {
   public static final String COLUMN_TIMESTAMP = "Timestamp";
+  public static final String COLUMN_DURATION = "Duration";
   public static final String COLUMN_DESCRIPTION = "Description";
 
   private final Path file;
@@ -27,7 +28,8 @@ public class CsvEventStore implements EventStore {
     try (var printer = newPrinter()) {
       for (var event : events) {
         if (event instanceof ActivityLoggedEvent e) {
-          printer.printRecord(e.timestamp().truncatedTo(ChronoUnit.SECONDS), e.description());
+          printer.printRecord(
+              e.timestamp().truncatedTo(ChronoUnit.SECONDS), e.duration(), e.description());
         }
       }
     } catch (IOException e) {
@@ -59,7 +61,9 @@ public class CsvEventStore implements EventStore {
           .map(
               record ->
                   new ActivityLoggedEvent(
-                      Instant.parse(record.get(COLUMN_TIMESTAMP)), record.get(COLUMN_DESCRIPTION)));
+                      Instant.parse(record.get(COLUMN_TIMESTAMP)),
+                      Duration.parse(record.get(COLUMN_DURATION)),
+                      record.get(COLUMN_DESCRIPTION)));
     } catch (NoSuchFileException e) {
       return Stream.of();
     } catch (IOException e) {
@@ -74,7 +78,8 @@ public class CsvEventStore implements EventStore {
 
   private CSVFormat newFormat() {
     var builder =
-        CSVFormat.Builder.create(CSVFormat.RFC4180).setHeader(COLUMN_TIMESTAMP, COLUMN_DESCRIPTION);
+        CSVFormat.Builder.create(CSVFormat.RFC4180)
+            .setHeader(COLUMN_TIMESTAMP, COLUMN_DURATION, COLUMN_DESCRIPTION);
     if (Files.exists(file)) {
       builder.setSkipHeaderRecord(true);
     }

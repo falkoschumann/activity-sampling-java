@@ -33,14 +33,27 @@ class AcceptanceTests {
     sut.activityTextProperty().set("Lorem ipsum");
     sut.logActivity();
 
-    assertEquals(
-        List.of(
-            new ActivityItem("Mittwoch, 16. November 2022"),
-            new ActivityItem(
-                "18:05 - Lorem ipsum",
-                new Activity(LocalDateTime.of(2022, 11, 16, 18, 5), "Lorem ipsum"))),
-        sut.getRecentActivities(),
-        "Step 1 - Recent activities");
+    assertAll(
+        () ->
+            assertEquals(
+                List.of(
+                    new ActivityItem("Mittwoch, 16. November 2022"),
+                    new ActivityItem(
+                        "18:05 - Lorem ipsum",
+                        new Activity(LocalDateTime.of(2022, 11, 16, 18, 5), "Lorem ipsum"))),
+                sut.getRecentActivities(),
+                "Step 1 - Recent activities"),
+        () ->
+            assertEquals("00:20", sut.hoursTodayLabelTextProperty().get(), "Step 1 - Hours today"),
+        () ->
+            assertEquals(
+                "00:00", sut.hoursYesterdayLabelTextProperty().get(), "Step 1 - Hours yesterday"),
+        () ->
+            assertEquals(
+                "00:20", sut.hoursThisWeekLabelTextProperty().get(), "Step 1 - Hours this week"),
+        () ->
+            assertEquals(
+                "00:20", sut.hoursThisMonthLabelTextProperty().get(), "Step 1 - Hours this month"));
 
     //
     // Step 2 - Log second activity
@@ -50,16 +63,30 @@ class AcceptanceTests {
     sut.activityTextProperty().set("Foobar");
     sut.logActivity();
 
-    assertEquals(
-        List.of(
-            new ActivityItem("Mittwoch, 16. November 2022"),
-            new ActivityItem(
-                "18:25 - Foobar", new Activity(LocalDateTime.of(2022, 11, 16, 18, 25), "Foobar")),
-            new ActivityItem(
-                "18:05 - Lorem ipsum",
-                new Activity(LocalDateTime.of(2022, 11, 16, 18, 5), "Lorem ipsum"))),
-        sut.getRecentActivities(),
-        "Step 2 - Recent activities");
+    assertAll(
+        () ->
+            assertEquals(
+                List.of(
+                    new ActivityItem("Mittwoch, 16. November 2022"),
+                    new ActivityItem(
+                        "18:25 - Foobar",
+                        new Activity(LocalDateTime.of(2022, 11, 16, 18, 25), "Foobar")),
+                    new ActivityItem(
+                        "18:05 - Lorem ipsum",
+                        new Activity(LocalDateTime.of(2022, 11, 16, 18, 5), "Lorem ipsum"))),
+                sut.getRecentActivities(),
+                "Step 2 - Recent activities"),
+        () ->
+            assertEquals("00:40", sut.hoursTodayLabelTextProperty().get(), "Step 2 - Hours today"),
+        () ->
+            assertEquals(
+                "00:00", sut.hoursYesterdayLabelTextProperty().get(), "Step 2 - Hours yesterday"),
+        () ->
+            assertEquals(
+                "00:40", sut.hoursThisWeekLabelTextProperty().get(), "Step 2 - Hours this week"),
+        () ->
+            assertEquals(
+                "00:40", sut.hoursThisMonthLabelTextProperty().get(), "Step 2 - Hours this month"));
 
     //
     // Step 2 - Select first activity

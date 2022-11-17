@@ -22,8 +22,12 @@ class ActivitySamplingViewModelTests {
                     new WorkingDay(
                         LocalDate.of(2022, 11, 16),
                         List.of(
-                            new Activity(
-                                LocalDateTime.of(2022, 11, 16, 16, 16), "Lorem ipsum"))))));
+                            new Activity(LocalDateTime.of(2022, 11, 16, 16, 16), "Lorem ipsum")))),
+                new TimeSummary(
+                    Duration.ofMinutes(5),
+                    Duration.ofMinutes(10),
+                    Duration.ofMinutes(15),
+                    Duration.ofMinutes(20))));
 
     sut = new ActivitySamplingViewModel(activitiesService);
     sut.onCountdownElapsed = mock(Runnable.class);
@@ -43,7 +47,11 @@ class ActivitySamplingViewModelTests {
                         "16:16 - Lorem ipsum",
                         new Activity(LocalDateTime.of(2022, 11, 16, 16, 16), "Lorem ipsum"))),
                 sut.getRecentActivities(),
-                "Recent activities"));
+                "Recent activities"),
+        () -> assertEquals("00:05", sut.hoursTodayLabelTextProperty().get()),
+        () -> assertEquals("00:10", sut.hoursYesterdayLabelTextProperty().get()),
+        () -> assertEquals("00:15", sut.hoursThisWeekLabelTextProperty().get()),
+        () -> assertEquals("00:20", sut.hoursThisMonthLabelTextProperty().get()));
   }
 
   @Test

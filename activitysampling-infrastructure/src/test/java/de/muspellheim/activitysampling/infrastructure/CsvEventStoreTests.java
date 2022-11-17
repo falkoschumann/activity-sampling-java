@@ -30,13 +30,22 @@ class CsvEventStoreTests {
   void recordAndReplay_ReplaysRecordedEvents() {
     sut.record(
         List.of(
-            new ActivityLoggedEvent(Instant.parse("2022-11-16T14:04:00Z"), "A1"),
-            new ActivityLoggedEvent(Instant.parse("2022-11-16T14:24:00Z"), "A2")));
+            new ActivityLoggedEvent(
+                Instant.parse("2022-11-16T14:04:00Z"), Duration.ofMinutes(5), "A1"),
+            new ActivityLoggedEvent(
+                Instant.parse("2022-11-16T14:24:00Z"), Duration.ofMinutes(5), "A2")));
+    sut.record(
+        new ActivityLoggedEvent(
+            Instant.parse("2022-11-16T14:44:00Z"), Duration.ofMinutes(5), "A3"));
 
     assertEquals(
         List.of(
-            new ActivityLoggedEvent(Instant.parse("2022-11-16T14:04:00Z"), "A1"),
-            new ActivityLoggedEvent(Instant.parse("2022-11-16T14:24:00Z"), "A2")),
+            new ActivityLoggedEvent(
+                Instant.parse("2022-11-16T14:04:00Z"), Duration.ofMinutes(5), "A1"),
+            new ActivityLoggedEvent(
+                Instant.parse("2022-11-16T14:24:00Z"), Duration.ofMinutes(5), "A2"),
+            new ActivityLoggedEvent(
+                Instant.parse("2022-11-16T14:44:00Z"), Duration.ofMinutes(5), "A3")),
         sut.replay().toList());
   }
 }

@@ -7,16 +7,16 @@ class TickingClock extends Clock {
   private Instant instant;
   private final ZoneId zone;
 
-  public TickingClock(Instant start) {
+  TickingClock(Instant start) {
     this(start, ZoneId.systemDefault());
   }
 
-  public TickingClock(Instant start, ZoneId zone) {
+  TickingClock(Instant start, ZoneId zone) {
     this.instant = start;
     this.zone = zone;
   }
 
-  public void tick(Duration interval) {
+  void tick(Duration interval) {
     instant = instant.plus(interval);
   }
 
