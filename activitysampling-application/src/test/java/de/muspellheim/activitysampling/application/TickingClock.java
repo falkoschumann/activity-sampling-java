@@ -4,20 +4,28 @@ import java.time.*;
 import java.util.*;
 
 class TickingClock extends Clock {
-  private Instant instant;
+  private Instant timestamp;
   private final ZoneId zone;
 
-  TickingClock(Instant start) {
-    this(start, ZoneId.systemDefault());
+  TickingClock() {
+    this(Instant.now());
   }
 
-  TickingClock(Instant start, ZoneId zone) {
-    this.instant = start;
+  TickingClock(Instant timestamp) {
+    this(timestamp, ZoneId.systemDefault());
+  }
+
+  TickingClock(Instant timestamp, ZoneId zone) {
+    this.timestamp = timestamp;
     this.zone = zone;
   }
 
+  void setTimestamp(Instant timestamp) {
+    this.timestamp = timestamp;
+  }
+
   void tick(Duration interval) {
-    instant = instant.plus(interval);
+    timestamp = timestamp.plus(interval);
   }
 
   @Override
@@ -27,12 +35,12 @@ class TickingClock extends Clock {
 
   @Override
   public Clock withZone(ZoneId zone) {
-    return new TickingClock(instant, zone);
+    return new TickingClock(timestamp, zone);
   }
 
   @Override
   public Instant instant() {
-    return instant;
+    return timestamp;
   }
 
   @Override
@@ -41,16 +49,16 @@ class TickingClock extends Clock {
     if (o == null || getClass() != o.getClass()) return false;
     if (!super.equals(o)) return false;
     TickingClock that = (TickingClock) o;
-    return instant.equals(that.instant) && zone.equals(that.zone);
+    return timestamp.equals(that.timestamp) && zone.equals(that.zone);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(super.hashCode(), instant, zone);
+    return Objects.hash(super.hashCode(), timestamp, zone);
   }
 
   @Override
   public String toString() {
-    return "TickingClock{" + "instant=" + instant + ", zone=" + zone + '}';
+    return "TickingClock{" + "instant=" + timestamp + ", zone=" + zone + '}';
   }
 }
