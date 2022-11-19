@@ -77,26 +77,26 @@
                            <children>
                               <VBox alignment="CENTER" prefWidth="120.0">
                                  <children>
-                                    <Label style="-fx-font-size: 0.8em;" text="Hours Today" />
-                                    <Label fx:id="hoursTodayLabel" text="00:00" />
+                                    <Label styleClass="caption" text="Hours Today" />
+                                    <Label fx:id="hoursTodayLabel" styleClass="subtitle" text="00:00" />
                                  </children>
                               </VBox>
                               <VBox alignment="CENTER" layoutX="10.0" layoutY="10.0" prefWidth="120.0">
                                  <children>
-                                    <Label style="-fx-font-size: 0.8em;" text="Hours Yesterday" />
-                                    <Label fx:id="hoursYesterdayLabel" text="00:00" />
+                                    <Label styleClass="caption" text="Hours Yesterday" />
+                                    <Label fx:id="hoursYesterdayLabel" styleClass="subtitle" text="00:00" />
                                  </children>
                               </VBox>
                               <VBox alignment="CENTER" layoutX="92.0" layoutY="10.0" prefWidth="120.0">
                                  <children>
-                                    <Label style="-fx-font-size: 0.8em;" text="Hours this Week" />
-                                    <Label fx:id="hoursThisWeekLabel" text="00:00" />
+                                    <Label styleClass="caption" text="Hours this Week" />
+                                    <Label fx:id="hoursThisWeekLabel" styleClass="subtitle" text="00:00" />
                                  </children>
                               </VBox>
                               <VBox alignment="CENTER" layoutX="174.0" layoutY="10.0" prefWidth="120.0">
                                  <children>
-                                    <Label style="-fx-font-size: 0.8em;" text="Hours this Month" />
-                                    <Label fx:id="hoursThisMonthLabel" text="00:00" />
+                                    <Label styleClass="caption" text="Hours this Month" />
+                                    <Label fx:id="hoursThisMonthLabel" styleClass="subtitle" text="00:00" />
                                  </children>
                               </VBox>
                            </children>

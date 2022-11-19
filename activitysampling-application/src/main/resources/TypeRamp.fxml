@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="8.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Label styleClass="header" text="Header" />
+      <Label styleClass="subheader" text="Subheader" />
+      <Label styleClass="title" text="Title" />
+      <Label styleClass="subtitle" text="Subtitle" />
+      <Label styleClass="base" text="Base" />
+      <Label styleClass="body" text="Body" />
+      <Label styleClass="caption" text="Caption" />
+      <Label text="Default" />
+   </children>
+   <padding>
+      <Insets bottom="12.0" left="12.0" right="12.0" top="12.0" />
+   </padding>
+</VBox>

@@ -17,13 +17,13 @@ class ActivityListCell extends ListCell<ActivityItem> {
     if (empty || item == null) {
       setText(null);
       setGraphic(null);
-      setStyle(null);
+      getStyleClass().removeAll("base");
       setOnMouseClicked(null);
     } else {
       setText(item.text());
+      getStyleClass().removeAll("base");
       if (item.activity() != null) {
         // Activity
-        setStyle(null);
         setOnMouseClicked(
             e -> {
               if (e.getClickCount() != 2) {
@@ -34,7 +34,7 @@ class ActivityListCell extends ListCell<ActivityItem> {
             });
       } else {
         // Group header
-        setStyle("-fx-font-weight: bold");
+        getStyleClass().add("base");
         setOnMouseClicked(null);
       }
     }
