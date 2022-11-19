@@ -1,7 +1,6 @@
 package de.muspellheim.activitysampling.application;
 
 import de.muspellheim.activitysampling.domain.*;
-import de.muspellheim.activitysampling.infrastructure.*;
 import java.time.*;
 import java.time.format.*;
 import java.util.*;
@@ -27,10 +26,6 @@ class ActivitySamplingViewModel {
   private final ReadOnlyStringWrapper hoursThisMonthLabelText = new ReadOnlyStringWrapper("00:00");
 
   private final ActivitiesService activitiesService;
-
-  ActivitySamplingViewModel() {
-    this(new ActivitiesServiceImpl(new CsvEventStore()));
-  }
 
   ActivitySamplingViewModel(ActivitiesService activitiesService) {
     this.activitiesService = activitiesService;

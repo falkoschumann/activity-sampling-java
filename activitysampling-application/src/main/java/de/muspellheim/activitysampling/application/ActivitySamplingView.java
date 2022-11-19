@@ -20,7 +20,7 @@ public class ActivitySamplingView {
   @FXML private Label hoursThisWeekLabel;
   @FXML private Label hoursThisMonthLabel;
 
-  private final ActivitySamplingViewModel viewModel = new ActivitySamplingViewModel();
+  private final ActivitySamplingViewModel viewModel = ViewModels.newActivitySampling();
 
   private final Notifier notifier = new Notifier();
   private final Timer timer = new Timer("System clock", true);

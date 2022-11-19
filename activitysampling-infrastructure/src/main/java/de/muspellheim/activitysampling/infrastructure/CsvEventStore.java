@@ -15,10 +15,6 @@ public class CsvEventStore implements EventStore {
 
   private final Path file;
 
-  public CsvEventStore() {
-    file = Paths.get(System.getProperty("user.home"), "activity-log.csv");
-  }
-
   public CsvEventStore(Path file) {
     this.file = file;
   }

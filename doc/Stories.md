@@ -13,7 +13,7 @@ Periodically ask the user about their current activity and log it for analysis.
 
 ## Ask the User
 
-- Ask at a fixed intervall like 15, 20 30 or 60 minutes.
+- Ask at a fixed interval like 15, 20 30 or 60 minutes.
 - Notify when interval expired.
 
 ## Analyze Activities

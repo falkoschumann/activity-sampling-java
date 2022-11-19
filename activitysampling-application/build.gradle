@@ -15,6 +15,7 @@ dependencies {
 application {
   mainModule = 'de.muspellheim.activitysampling.application'
   mainClass = 'de.muspellheim.activitysampling.application.App'
+  applicationDefaultJvmArgs = ['-DactivitySampling.logFile=test.csv']
 }
 
 javafx {
