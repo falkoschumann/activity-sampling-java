@@ -14,6 +14,10 @@ and this project adheres to
 
 - Show time summary for today, yesterday, this week and this month.
 
+### Changed
+
+- Add column Duration to log file.
+
 ## [1.0.0] - 2022-11-16
 
 ### Added
@@ -25,5 +29,7 @@ and this project adheres to
 - Notify when interval expired.
 
 [Unreleased]: https://github.com/falkoschumann/activity-sampling-java/compare/v1.1.0...HEAD
+
 [1.1.0]: https://github.com/falkoschumann/activity-sampling-java/compare/v1.0.0...v1.1.0
+
 [1.0.0]: https://github.com/falkoschumann/activity-sampling-java/releases/tag/v1.0.0

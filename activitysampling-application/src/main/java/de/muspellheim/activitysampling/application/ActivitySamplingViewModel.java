@@ -4,12 +4,14 @@ import de.muspellheim.activitysampling.domain.*;
 import java.time.*;
 import java.time.format.*;
 import java.util.*;
+import java.util.function.*;
 import javafx.beans.binding.*;
 import javafx.beans.property.*;
 import javafx.collections.*;
 
 class ActivitySamplingViewModel {
   Runnable onCountdownElapsed;
+  Consumer<String> onError;
 
   private final StringProperty activityText = new SimpleStringProperty("");
   private final ReadOnlyBooleanWrapper logButtonDisable = new ReadOnlyBooleanWrapper(true);
@@ -91,7 +93,14 @@ class ActivitySamplingViewModel {
   }
 
   void load() {
-    var recentActivities = activitiesService.selectRecentActivities();
+    RecentActivities recentActivities;
+    try {
+      recentActivities = activitiesService.selectRecentActivities();
+    } catch (Exception e) {
+      var message = joinExceptionMessages("Failed to load activities.", e);
+      onError.accept(message);
+      return;
+    }
 
     var items = new ArrayList<ActivityItem>();
     var dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL);
@@ -125,7 +134,14 @@ class ActivitySamplingViewModel {
   }
 
   void logActivity() {
-    activitiesService.logActivity(activityText.get());
+    try {
+      activitiesService.logActivity(activityText.get());
+    } catch (Exception e) {
+      var message = joinExceptionMessages("Failed to log activity.", e);
+      onError.accept(message);
+      return;
+    }
+
     load();
   }
 
@@ -144,5 +160,13 @@ class ActivitySamplingViewModel {
       Optional.ofNullable(onCountdownElapsed).ifPresent(Runnable::run);
       countdown.set(interval.get());
     }
+  }
+
+  private static String joinExceptionMessages(String errorMessage, Throwable cause) {
+    if (cause == null) {
+      return errorMessage;
+    }
+
+    return joinExceptionMessages(errorMessage + " " + cause.getMessage(), cause.getCause());
   }
 }

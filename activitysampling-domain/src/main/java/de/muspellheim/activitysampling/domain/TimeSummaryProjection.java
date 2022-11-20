@@ -12,7 +12,7 @@ class TimeSummaryProjection {
   private Duration hoursThisWeek = Duration.ZERO;
   private Duration hoursThisMonth = Duration.ZERO;
 
-  public TimeSummaryProjection(LocalDate today) {
+  TimeSummaryProjection(LocalDate today) {
     this.today = today;
     startOfMonth = today.withDayOfMonth(1);
   }

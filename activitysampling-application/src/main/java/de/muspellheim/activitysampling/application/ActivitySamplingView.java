@@ -20,6 +20,8 @@ public class ActivitySamplingView {
   @FXML private Label hoursThisWeekLabel;
   @FXML private Label hoursThisMonthLabel;
 
+  // TODO disable log button when current interval recorded
+  // TODO check tray icon size on Windows 10 and Windows 11
   private final ActivitySamplingViewModel viewModel = ViewModels.newActivitySampling();
 
   private final Notifier notifier = new Notifier();
@@ -32,17 +34,17 @@ public class ActivitySamplingView {
       var url = ActivitySamplingView.class.getResource(file);
       var loader = new FXMLLoader(url);
       loader.setRoot(stage);
-      loader.setControllerFactory(type -> new ActivitySamplingView());
       loader.load();
       return loader.getController();
     } catch (Exception e) {
-      throw new RuntimeException("Could not load view: " + file, e);
+      throw new IllegalStateException("Could not load view: " + file, e);
     }
   }
 
   @FXML
   private void initialize() {
     viewModel.onCountdownElapsed = notifier::showNotification;
+    viewModel.onError = this::handleError;
     stage.setOnCloseRequest(e -> notifier.dispose());
     menuBar.setUseSystemMenuBar(true);
     activity.textProperty().bindBidirectional(viewModel.activityTextProperty());
@@ -127,6 +129,14 @@ public class ActivitySamplingView {
   @FXML
   private void handleLog() {
     viewModel.logActivity();
+  }
+
+  private void handleError(String message) {
+    var alert = new Alert(Alert.AlertType.ERROR);
+    alert.setTitle("Error");
+    alert.setHeaderText("An unexpected error occurred.");
+    alert.setContentText(message);
+    alert.show();
   }
 
   private class CountdownTask extends TimerTask {

@@ -8,7 +8,7 @@ class WorkingDaysProjection {
   private final Instant startTimestamp;
   private final Map<LocalDate, List<Activity>> workingDays = new LinkedHashMap<>();
 
-  public WorkingDaysProjection(LocalDate today) {
+  WorkingDaysProjection(LocalDate today) {
     var startDate = LocalDateTime.of(today, LocalTime.MIDNIGHT);
     startDate = startDate.minusDays(30).truncatedTo(ChronoUnit.DAYS);
     startTimestamp = startDate.toInstant(ZoneOffset.UTC);

@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import de.muspellheim.activitysampling.domain.*;
 import java.time.*;
 import java.util.*;
+import java.util.function.*;
 import org.junit.jupiter.api.*;
 
 class ActivitySamplingViewModelTests {
@@ -13,6 +14,7 @@ class ActivitySamplingViewModelTests {
   private ActivitySamplingViewModel sut;
 
   @BeforeEach
+  @SuppressWarnings("unchecked")
   void init() {
     activitiesService = mock(ActivitiesService.class);
     when(activitiesService.selectRecentActivities())
@@ -31,6 +33,7 @@ class ActivitySamplingViewModelTests {
 
     sut = new ActivitySamplingViewModel(activitiesService);
     sut.onCountdownElapsed = mock(Runnable.class);
+    sut.onError = mock(Consumer.class);
     sut.run();
   }
 
@@ -52,6 +55,17 @@ class ActivitySamplingViewModelTests {
         () -> assertEquals("00:10", sut.hoursYesterdayLabelTextProperty().get()),
         () -> assertEquals("00:15", sut.hoursThisWeekLabelTextProperty().get()),
         () -> assertEquals("00:20", sut.hoursThisMonthLabelTextProperty().get()));
+  }
+
+  @Test
+  void load_Failed_NotifyError() {
+    doThrow(new IllegalStateException("Something went wrong."))
+        .when(activitiesService)
+        .selectRecentActivities();
+
+    sut.load();
+
+    verify(sut.onError).accept("Failed to load activities. Something went wrong.");
   }
 
   @Test
@@ -85,6 +99,18 @@ class ActivitySamplingViewModelTests {
     inOrder.verify(activitiesService).logActivity("foobar");
     inOrder.verify(activitiesService).selectRecentActivities();
     assertEquals(2, sut.getRecentActivities().size(), "Recent activities size");
+  }
+
+  @Test
+  void logActivity_Failed_NotifyError() {
+    doThrow(new IllegalStateException("Something went wrong."))
+        .when(activitiesService)
+        .logActivity(any());
+    sut.activityTextProperty().set("foobar");
+
+    sut.logActivity();
+
+    verify(sut.onError).accept("Failed to log activity. Something went wrong.");
   }
 
   @Test

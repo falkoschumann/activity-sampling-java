@@ -7,7 +7,6 @@ import java.nio.file.*;
 class ViewModels {
   private ViewModels() {
     // do not instantiate static class
-    throw new UnsupportedOperationException();
   }
 
   static ActivitySamplingViewModel newActivitySampling() {

@@ -29,7 +29,7 @@ public class CsvEventStore implements EventStore {
         }
       }
     } catch (IOException e) {
-      throw new IllegalStateException("Failed to record event into store.", e);
+      throw new IllegalStateException("Failed to record event in file " + file, e);
     }
   }
 
@@ -50,8 +50,7 @@ public class CsvEventStore implements EventStore {
               () -> {
                 try {
                   ((Closeable) parser).close();
-                } catch (IOException e) {
-                  throw new RuntimeException("Failed to replay events from store.", e);
+                } catch (IOException ignore) {
                 }
               })
           .map(
@@ -63,7 +62,7 @@ public class CsvEventStore implements EventStore {
     } catch (NoSuchFileException e) {
       return Stream.of();
     } catch (IOException e) {
-      throw new RuntimeException("Failed to replay events from store.", e);
+      throw new IllegalStateException("Failed to replay events from file " + file, e);
     }
   }
 

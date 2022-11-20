@@ -17,8 +17,8 @@ class Notifier {
             trayIcon.setImageAutoSize(true);
             try {
               tray.add(trayIcon);
-            } catch (AWTException e) {
-              throw new RuntimeException(e);
+            } catch (AWTException ignore) {
+              trayIcon = null;
             }
           });
     } else {
