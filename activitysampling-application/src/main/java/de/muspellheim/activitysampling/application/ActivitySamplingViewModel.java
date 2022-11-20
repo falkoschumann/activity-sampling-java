@@ -14,58 +14,63 @@ class ActivitySamplingViewModel {
   Consumer<String> onError;
 
   private final StringProperty activityText = new SimpleStringProperty("");
-  private final ReadOnlyBooleanWrapper logButtonDisable = new ReadOnlyBooleanWrapper(true);
   private final ReadOnlyObjectWrapper<Duration> interval =
       new ReadOnlyObjectWrapper<>(Duration.ZERO);
+  private final ReadOnlyBooleanWrapper intervalLogged = new ReadOnlyBooleanWrapper(false);
+  private final ReadOnlyBooleanWrapper countdownActive = new ReadOnlyBooleanWrapper(false);
   private final ReadOnlyObjectWrapper<Duration> countdown =
       new ReadOnlyObjectWrapper<>(Duration.ZERO);
-  private final ReadOnlyStringWrapper countdownLabelText = new ReadOnlyStringWrapper("00:00:00");
-  private final ReadOnlyDoubleWrapper countdownProgress = new ReadOnlyDoubleWrapper(0.0);
   private final ObservableList<ActivityItem> recentActivities = FXCollections.observableArrayList();
   private final ReadOnlyStringWrapper hoursTodayLabelText = new ReadOnlyStringWrapper("00:00");
   private final ReadOnlyStringWrapper hoursYesterdayLabelText = new ReadOnlyStringWrapper("00:00");
   private final ReadOnlyStringWrapper hoursThisWeekLabelText = new ReadOnlyStringWrapper("00:00");
   private final ReadOnlyStringWrapper hoursThisMonthLabelText = new ReadOnlyStringWrapper("00:00");
 
+  private final BooleanExpression activityDisable = countdownActive.and(intervalLogged);
+  private final BooleanExpression logButtonDisable =
+      Bindings.createBooleanBinding(() -> activityText.get().isBlank(), activityText)
+          .or(countdownActive.and(intervalLogged));
+  private final StringExpression countdownLabelText =
+      Bindings.createStringBinding(
+          () -> {
+            var time = LocalTime.ofSecondOfDay(countdown.get().toSeconds());
+            return DateTimeFormatter.ofPattern("HH:mm:ss").format(time);
+          },
+          interval,
+          countdown);
+  private final DoubleExpression countdownProgress =
+      Bindings.createDoubleBinding(
+          () -> {
+            var elapsedSeconds = (double) interval.get().minus(countdown.get()).getSeconds();
+            return elapsedSeconds / interval.get().toSeconds();
+          },
+          interval,
+          countdown);
+
   private final ActivitiesService activitiesService;
 
   ActivitySamplingViewModel(ActivitiesService activitiesService) {
     this.activitiesService = activitiesService;
-
-    logButtonDisable.bind(
-        Bindings.createBooleanBinding(() -> activityText.get().isBlank(), activityText));
-    countdownLabelText.bind(
-        Bindings.createStringBinding(
-            () -> {
-              var time = LocalTime.ofSecondOfDay(countdown.get().toSeconds());
-              return DateTimeFormatter.ofPattern("HH:mm:ss").format(time);
-            },
-            interval,
-            countdown));
-    countdownProgress.bind(
-        Bindings.createDoubleBinding(
-            () -> {
-              var elapsedSeconds = (double) interval.get().minus(countdown.get()).getSeconds();
-              return elapsedSeconds / interval.get().toSeconds();
-            },
-            interval,
-            countdown));
   }
 
   StringProperty activityTextProperty() {
     return activityText;
   }
 
-  ReadOnlyBooleanProperty logButtonDisableProperty() {
-    return logButtonDisable.getReadOnlyProperty();
+  BooleanExpression activityDisableProperty() {
+    return activityDisable;
   }
 
-  ReadOnlyStringProperty countdownLabelTextProperty() {
-    return countdownLabelText.getReadOnlyProperty();
+  BooleanExpression logButtonDisableProperty() {
+    return logButtonDisable;
   }
 
-  ReadOnlyDoubleProperty countdownProgressProperty() {
-    return countdownProgress.getReadOnlyProperty();
+  StringExpression countdownLabelTextProperty() {
+    return countdownLabelText;
+  }
+
+  DoubleExpression countdownProgressProperty() {
+    return countdownProgress;
   }
 
   ObservableList<ActivityItem> getRecentActivities() {
@@ -136,6 +141,7 @@ class ActivitySamplingViewModel {
   void logActivity() {
     try {
       activitiesService.logActivity(activityText.get());
+      intervalLogged.set(true);
     } catch (Exception e) {
       var message = joinExceptionMessages("Failed to log activity.", e);
       onError.accept(message);
@@ -152,14 +158,21 @@ class ActivitySamplingViewModel {
   void startCountdown(Duration interval) {
     this.interval.set(interval);
     countdown.set(interval);
+    countdownActive.set(true);
+    intervalLogged.set(true);
   }
 
   void progressCountdown() {
     countdown.set(countdown.get().minusSeconds(1));
     if (countdown.get().isZero()) {
-      Optional.ofNullable(onCountdownElapsed).ifPresent(Runnable::run);
+      intervalLogged.set(false);
+      onCountdownElapsed.run();
       countdown.set(interval.get());
     }
+  }
+
+  void stopCountdown() {
+    countdownActive.set(false);
   }
 
   private static String joinExceptionMessages(String errorMessage, Throwable cause) {

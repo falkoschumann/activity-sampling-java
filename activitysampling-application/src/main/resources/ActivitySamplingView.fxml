@@ -58,7 +58,7 @@
                      <top>
                         <VBox spacing="8.0" BorderPane.alignment="CENTER">
                            <children>
-                              <Label text="Activity:" />
+                              <Label fx:id="activityLabel" text="Activity:" />
                               <TextField fx:id="activity" onAction="#handleLog" promptText="What are you working on?" />
                               <Button fx:id="logButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleLog" text="Log" />
                               <Label fx:id="countdownLabel" alignment="CENTER" maxWidth="1.7976931348623157E308" text="00:00:00" />

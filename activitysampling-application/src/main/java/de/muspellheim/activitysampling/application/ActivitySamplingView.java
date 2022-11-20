@@ -10,6 +10,7 @@ import javafx.stage.*;
 public class ActivitySamplingView {
   @FXML private Stage stage;
   @FXML private MenuBar menuBar;
+  @FXML private Label activityLabel;
   @FXML private TextField activity;
   @FXML private Button logButton;
   @FXML private Label countdownLabel;
@@ -20,7 +21,6 @@ public class ActivitySamplingView {
   @FXML private Label hoursThisWeekLabel;
   @FXML private Label hoursThisMonthLabel;
 
-  // TODO disable log button when current interval recorded
   // TODO check tray icon size on Windows 10 and Windows 11
   private final ActivitySamplingViewModel viewModel = ViewModels.newActivitySampling();
 
@@ -47,7 +47,9 @@ public class ActivitySamplingView {
     viewModel.onError = this::handleError;
     stage.setOnCloseRequest(e -> notifier.dispose());
     menuBar.setUseSystemMenuBar(true);
+    activityLabel.disableProperty().bind(viewModel.activityDisableProperty());
     activity.textProperty().bindBidirectional(viewModel.activityTextProperty());
+    activity.disableProperty().bind(viewModel.activityDisableProperty());
     logButton.disableProperty().bind(viewModel.logButtonDisableProperty());
     countdownLabel.textProperty().bind(viewModel.countdownLabelTextProperty());
     countdown.progressProperty().bind(viewModel.countdownProgressProperty());
@@ -115,6 +117,7 @@ public class ActivitySamplingView {
   @FXML
   private void handleStop() {
     stopCountdown();
+    viewModel.stopCountdown();
   }
 
   private void stopCountdown() {
