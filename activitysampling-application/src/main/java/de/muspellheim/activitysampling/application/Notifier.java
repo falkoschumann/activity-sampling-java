@@ -21,23 +21,12 @@ class Notifier {
               trayIcon = null;
             }
           });
-    } else {
-      System.err.println("System tray not supported.");
     }
-  }
-
-  private static boolean isRetina() {
-    return !GraphicsEnvironment.getLocalGraphicsEnvironment()
-        .getDefaultScreenDevice()
-        .getDefaultConfiguration()
-        .getDefaultTransform()
-        .isIdentity();
   }
 
   private static String getImageUrl() {
     var trayIconSize = SystemTray.getSystemTray().getTrayIconSize();
     var isRetina = isRetina();
-    System.out.println("Tray icon size: " + trayIconSize + ", is retina: " + isRetina);
     String imageUrl;
     if (trayIconSize.height == 16) {
       // Windows 10
@@ -50,6 +39,14 @@ class Notifier {
       imageUrl = "/icons/punch-clock-16.png";
     }
     return imageUrl;
+  }
+
+  private static boolean isRetina() {
+    return !GraphicsEnvironment.getLocalGraphicsEnvironment()
+        .getDefaultScreenDevice()
+        .getDefaultConfiguration()
+        .getDefaultTransform()
+        .isIdentity();
   }
 
   void showNotification() {

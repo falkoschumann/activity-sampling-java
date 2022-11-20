@@ -14,7 +14,7 @@ class SystemUnderTest {
     var eventStore = new CsvEventStore(activityLogFile);
     clock = new TickingClock();
     var activitiesService = new ActivitiesServiceImpl(eventStore, clock);
-    viewModel = new ActivitySamplingViewModel(activitiesService);
+    viewModel = new ActivitySamplingViewModel(activitiesService, () -> {}, m -> {});
     viewModel.run();
   }
 
@@ -34,8 +34,21 @@ class SystemUnderTest {
     clock.setTimestamp(timestamp);
   }
 
+  void startCountdown(int minutes) {
+    viewModel.startCountdown(Duration.ofMinutes(minutes));
+  }
+
   void tick(Duration duration) {
     clock.tick(duration);
+    viewModel.progressCountdown(duration);
+  }
+
+  String countdown() {
+    return viewModel.countdownLabelTextProperty().get();
+  }
+
+  double countdownProgress() {
+    return viewModel.countdownProgressProperty().get();
   }
 
   void activityText(String text) {

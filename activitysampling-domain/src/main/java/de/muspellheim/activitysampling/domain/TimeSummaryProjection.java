@@ -1,7 +1,6 @@
 package de.muspellheim.activitysampling.domain;
 
 import java.time.*;
-import java.time.temporal.*;
 
 class TimeSummaryProjection {
   private final LocalDate today;
@@ -34,7 +33,8 @@ class TimeSummaryProjection {
     } else if (date.equals(today.minusDays(1))) {
       hoursYesterday = hoursYesterday.plus(event.duration());
     }
-    if (date.get(ChronoField.ALIGNED_WEEK_OF_YEAR) == today.get(ChronoField.ALIGNED_WEEK_OF_YEAR)) {
+    if ((today.getDayOfYear() - date.getDayOfYear()) < 7
+        && date.getDayOfWeek().getValue() <= today.getDayOfWeek().getValue()) {
       hoursThisWeek = hoursThisWeek.plus(event.duration());
     }
     hoursThisMonth = hoursThisMonth.plus(event.duration());

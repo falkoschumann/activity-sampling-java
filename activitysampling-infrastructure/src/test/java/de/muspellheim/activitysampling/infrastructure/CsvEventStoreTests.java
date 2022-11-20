@@ -20,23 +20,24 @@ class CsvEventStoreTests {
   }
 
   @Test
-  void replay_StoreDoesNotExist_ReturnsEmpty() {
+  void replay_FileDoesNotExist_ReturnsEmptyList() {
     var result = sut.replay().toList();
 
     assertEquals(List.of(), result);
   }
 
   @Test
-  void recordAndReplay_ReplaysRecordedEvents() {
+  void replay_FileExists_ReplaysBlockRecordedEvents() {
     sut.record(
         List.of(
             new ActivityLoggedEvent(
                 Instant.parse("2022-11-16T14:04:00Z"), Duration.ofMinutes(5), "A1"),
             new ActivityLoggedEvent(
-                Instant.parse("2022-11-16T14:24:00Z"), Duration.ofMinutes(5), "A2")));
-    sut.record(
-        new ActivityLoggedEvent(
-            Instant.parse("2022-11-16T14:44:00Z"), Duration.ofMinutes(5), "A3"));
+                Instant.parse("2022-11-16T14:24:00Z"), Duration.ofMinutes(5), "A2"),
+            new ActivityLoggedEvent(
+                Instant.parse("2022-11-16T14:44:00Z"), Duration.ofMinutes(5), "A3")));
+
+    List<Event> events = sut.replay().toList();
 
     assertEquals(
         List.of(
@@ -46,6 +47,31 @@ class CsvEventStoreTests {
                 Instant.parse("2022-11-16T14:24:00Z"), Duration.ofMinutes(5), "A2"),
             new ActivityLoggedEvent(
                 Instant.parse("2022-11-16T14:44:00Z"), Duration.ofMinutes(5), "A3")),
-        sut.replay().toList());
+        events);
+  }
+
+  @Test
+  void replay_FileExists_ReplaysSingleRecordedEvents() {
+    sut.record(
+        new ActivityLoggedEvent(
+            Instant.parse("2022-11-16T14:04:00Z"), Duration.ofMinutes(5), "A1"));
+    sut.record(
+        new ActivityLoggedEvent(
+            Instant.parse("2022-11-16T14:24:00Z"), Duration.ofMinutes(5), "A2"));
+    sut.record(
+        new ActivityLoggedEvent(
+            Instant.parse("2022-11-16T14:44:00Z"), Duration.ofMinutes(5), "A3"));
+
+    List<Event> events = sut.replay().toList();
+
+    assertEquals(
+        List.of(
+            new ActivityLoggedEvent(
+                Instant.parse("2022-11-16T14:04:00Z"), Duration.ofMinutes(5), "A1"),
+            new ActivityLoggedEvent(
+                Instant.parse("2022-11-16T14:24:00Z"), Duration.ofMinutes(5), "A2"),
+            new ActivityLoggedEvent(
+                Instant.parse("2022-11-16T14:44:00Z"), Duration.ofMinutes(5), "A3")),
+        events);
   }
 }

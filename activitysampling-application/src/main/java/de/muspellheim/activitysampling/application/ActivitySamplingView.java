@@ -2,6 +2,7 @@ package de.muspellheim.activitysampling.application;
 
 import java.time.*;
 import java.util.*;
+import java.util.concurrent.*;
 import javafx.application.*;
 import javafx.fxml.*;
 import javafx.scene.control.*;
@@ -21,10 +22,11 @@ public class ActivitySamplingView {
   @FXML private Label hoursThisWeekLabel;
   @FXML private Label hoursThisMonthLabel;
 
-  // TODO check tray icon size on Windows 10 and Windows 11
-  private final ActivitySamplingViewModel viewModel = ViewModels.newActivitySampling();
-
   private final Notifier notifier = new Notifier();
+
+  private final ActivitySamplingViewModel viewModel =
+      ViewModels.newActivitySampling(notifier::showNotification, this::handleError);
+
   private final Timer timer = new Timer("System clock", true);
   private CountdownTask countdownTask;
 
@@ -43,13 +45,11 @@ public class ActivitySamplingView {
 
   @FXML
   private void initialize() {
-    viewModel.onCountdownElapsed = notifier::showNotification;
-    viewModel.onError = this::handleError;
     stage.setOnCloseRequest(e -> notifier.dispose());
     menuBar.setUseSystemMenuBar(true);
-    activityLabel.disableProperty().bind(viewModel.activityDisableProperty());
+    activityLabel.disableProperty().bind(viewModel.formDisableProperty());
     activity.textProperty().bindBidirectional(viewModel.activityTextProperty());
-    activity.disableProperty().bind(viewModel.activityDisableProperty());
+    activity.disableProperty().bind(viewModel.formDisableProperty());
     logButton.disableProperty().bind(viewModel.logButtonDisableProperty());
     countdownLabel.textProperty().bind(viewModel.countdownLabelTextProperty());
     countdown.progressProperty().bind(viewModel.countdownProgressProperty());
@@ -111,7 +111,7 @@ public class ActivitySamplingView {
     stopCountdown();
     viewModel.startCountdown(interval);
     countdownTask = new CountdownTask();
-    timer.scheduleAtFixedRate(countdownTask, 0, 1000);
+    timer.scheduleAtFixedRate(countdownTask, 0, TimeUnit.SECONDS.toMillis(1));
   }
 
   @FXML
@@ -145,7 +145,7 @@ public class ActivitySamplingView {
   private class CountdownTask extends TimerTask {
     @Override
     public void run() {
-      Platform.runLater(viewModel::progressCountdown);
+      Platform.runLater(() -> viewModel.progressCountdown(Duration.ofSeconds(1)));
     }
   }
 }

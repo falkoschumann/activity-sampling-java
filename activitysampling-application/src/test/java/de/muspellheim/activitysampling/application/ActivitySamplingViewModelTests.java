@@ -8,15 +8,22 @@ import java.time.*;
 import java.util.*;
 import java.util.function.*;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.*;
+import org.mockito.*;
+import org.mockito.junit.jupiter.*;
 
+@ExtendWith(MockitoExtension.class)
 class ActivitySamplingViewModelTests {
-  private ActivitiesService activitiesService;
-  private ActivitySamplingViewModel sut;
+  @Mock private ActivitiesService activitiesService;
+
+  @Mock private Runnable onCountdownElapsed;
+
+  @Mock private Consumer<String> onError;
+
+  @InjectMocks private ActivitySamplingViewModel sut;
 
   @BeforeEach
-  @SuppressWarnings("unchecked")
   void init() {
-    activitiesService = mock(ActivitiesService.class);
     when(activitiesService.selectRecentActivities())
         .thenReturn(
             new RecentActivities(
@@ -30,19 +37,20 @@ class ActivitySamplingViewModelTests {
                     Duration.ofMinutes(10),
                     Duration.ofMinutes(15),
                     Duration.ofMinutes(20))));
-
-    sut = new ActivitySamplingViewModel(activitiesService);
-    sut.onCountdownElapsed = mock(Runnable.class);
-    sut.onError = mock(Consumer.class);
     sut.run();
   }
 
   @Test
   void run_ViewIsInitialized() {
     assertAll(
+        "View is initialized",
         () -> assertEquals("", sut.activityTextProperty().get(), "Activity text"),
-        () -> assertFalse(sut.activityDisableProperty().get(), "Activity disable"),
+        () -> assertFalse(sut.formDisableProperty().get(), "Form disable"),
         () -> assertTrue(sut.logButtonDisableProperty().get(), "Log button disable"),
+        () ->
+            assertEquals(
+                "00:00:00", sut.countdownLabelTextProperty().get(), "Countdown label text"),
+        () -> assertEquals(0.0, sut.countdownProgressProperty().get(), "Countdown progress"),
         () ->
             assertEquals(
                 List.of(
@@ -66,68 +74,62 @@ class ActivitySamplingViewModelTests {
 
     sut.load();
 
-    verify(sut.onError).accept("Failed to load activities. Something went wrong.");
+    verify(onError).accept("Failed to load activities. Something went wrong.");
   }
 
   @Test
   void changeActivityText_IsNotEmpty_LogButtonIsEnabled() {
     sut.activityTextProperty().set("foobar");
 
-    assertAll(
-        () -> assertFalse(sut.activityDisableProperty().get(), "Activity disable"),
-        () -> assertFalse(sut.logButtonDisableProperty().get()));
+    assertFalse(sut.logButtonDisableProperty().get());
   }
 
   @Test
   void changeActivityText_IsEmpty_LogButtonIsDisabled() {
     sut.activityTextProperty().set("");
 
-    assertAll(
-        () -> assertFalse(sut.activityDisableProperty().get(), "Activity disable"),
-        () -> assertTrue(sut.logButtonDisableProperty().get()));
+    assertTrue(sut.logButtonDisableProperty().get());
   }
 
   @Test
   void changeActivityText_IsBlank_LogButtonIsDisabled() {
     sut.activityTextProperty().set("  ");
 
-    assertAll(
-        () -> assertFalse(sut.activityDisableProperty().get(), "Activity disable"),
-        () -> assertTrue(sut.logButtonDisableProperty().get()));
+    assertTrue(sut.logButtonDisableProperty().get());
   }
 
   @Test
-  void logActivity_LogsAndRefreshes() {
+  void logActivity_CountdownIsNotActive_LeavesFormEnabled() {
     sut.activityTextProperty().set("foobar");
     sut.logActivity();
 
     assertAll(
+        "Leaves form enabled",
         () -> {
           var inOrder = inOrder(activitiesService);
           inOrder.verify(activitiesService).logActivity("foobar");
           inOrder.verify(activitiesService).selectRecentActivities();
         },
-        () -> assertEquals(2, sut.getRecentActivities().size(), "Recent activities size"),
-        () -> assertFalse(sut.activityDisableProperty().get(), "Activity disable"),
+        () -> assertFalse(sut.formDisableProperty().get(), "Form disable"),
         () -> assertFalse(sut.logButtonDisableProperty().get(), "Log button disable"));
   }
 
   @Test
-  void logActivity_CountdownActive_DisableForm() {
+  void logActivity_CountdownActive_DisablesForm() {
     sut.startCountdown(Duration.ofMinutes(1));
-    tickCountdown(61);
+    sut.progressCountdown(Duration.ofSeconds(61));
 
     sut.activityTextProperty().set("foobar");
     sut.logActivity();
 
     assertAll(
+        "Disables form",
         () -> {
           var inOrder = inOrder(activitiesService);
           inOrder.verify(activitiesService).logActivity("foobar");
           inOrder.verify(activitiesService).selectRecentActivities();
         },
-        () -> assertEquals(2, sut.getRecentActivities().size(), "Recent activities size"),
-        () -> assertTrue(sut.activityDisableProperty().get(), "Activity disable"),
+        () -> assertTrue(sut.formDisableProperty().get(), "Form disable"),
         () -> assertTrue(sut.logButtonDisableProperty().get(), "Log button disable"));
   }
 
@@ -140,7 +142,7 @@ class ActivitySamplingViewModelTests {
 
     sut.logActivity();
 
-    verify(sut.onError).accept("Failed to log activity. Something went wrong.");
+    verify(onError).accept("Failed to log activity. Something went wrong.");
   }
 
   @Test
@@ -149,23 +151,25 @@ class ActivitySamplingViewModelTests {
     sut.setActivity(activity);
 
     assertAll(
+        "Updates form",
         () -> assertEquals("Lorem ipsum", sut.activityTextProperty().get(), "Activity text"),
         () -> assertFalse(sut.logButtonDisableProperty().get(), "Log button disable"));
   }
 
   @Test
-  void startCountdown_InitializesCountdown() {
+  void startCountdown_DisablesFormAndInitializesCountdown() {
     sut.activityTextProperty().set("foobar");
     sut.startCountdown(Duration.ofMinutes(20));
 
     assertAll(
-        () -> assertTrue(sut.activityDisableProperty().get(), "Activity disable"),
+        "Disables form and initializes countdown",
+        () -> assertTrue(sut.formDisableProperty().get(), "Form disable"),
         () -> assertTrue(sut.logButtonDisableProperty().get(), "Log button disable"),
         () ->
             assertEquals(
                 "00:20:00", sut.countdownLabelTextProperty().get(), "Countdown label text"),
         () -> assertEquals(0.0, sut.countdownProgressProperty().get(), "Countdown progress"),
-        () -> verify(sut.onCountdownElapsed, never()).run());
+        () -> verify(onCountdownElapsed, never()).run());
   }
 
   @Test
@@ -173,16 +177,17 @@ class ActivitySamplingViewModelTests {
     sut.activityTextProperty().set("foobar");
     sut.startCountdown(Duration.ofMinutes(1));
 
-    tickCountdown(1);
+    sut.progressCountdown(Duration.ofSeconds(1));
 
     assertAll(
-        () -> assertTrue(sut.activityDisableProperty().get(), "Activity disable"),
+        "Updates countdown",
+        () -> assertTrue(sut.formDisableProperty().get(), "Form disable"),
         () -> assertTrue(sut.logButtonDisableProperty().get(), "Log button disable"),
         () ->
             assertEquals(
                 "00:00:59", sut.countdownLabelTextProperty().get(), "Countdown label text"),
         () -> assertEquals(1.0 / 60.0, sut.countdownProgressProperty().get(), "Countdown progress"),
-        () -> verify(sut.onCountdownElapsed, never()).run());
+        () -> verify(onCountdownElapsed, never()).run());
   }
 
   @Test
@@ -190,16 +195,17 @@ class ActivitySamplingViewModelTests {
     sut.activityTextProperty().set("foobar");
     sut.startCountdown(Duration.ofMinutes(1));
 
-    tickCountdown(2);
+    sut.progressCountdown(Duration.ofSeconds(2));
 
     assertAll(
-        () -> assertTrue(sut.activityDisableProperty().get(), "Activity disable"),
+        "Updates countdown",
+        () -> assertTrue(sut.formDisableProperty().get(), "Form disable"),
         () -> assertTrue(sut.logButtonDisableProperty().get(), "Log button disable"),
         () ->
             assertEquals(
                 "00:00:58", sut.countdownLabelTextProperty().get(), "Countdown label text"),
         () -> assertEquals(2.0 / 60.0, sut.countdownProgressProperty().get(), "Countdown progress"),
-        () -> verify(sut.onCountdownElapsed, never()).run());
+        () -> verify(onCountdownElapsed, never()).run());
   }
 
   @Test
@@ -207,17 +213,18 @@ class ActivitySamplingViewModelTests {
     sut.activityTextProperty().set("foobar");
     sut.startCountdown(Duration.ofMinutes(1));
 
-    tickCountdown(59);
+    sut.progressCountdown(Duration.ofSeconds(59));
 
     assertAll(
-        () -> assertTrue(sut.activityDisableProperty().get(), "Activity disable"),
+        "Updates countdown",
+        () -> assertTrue(sut.formDisableProperty().get(), "Form disable"),
         () -> assertTrue(sut.logButtonDisableProperty().get(), "Log button disable"),
         () ->
             assertEquals(
                 "00:00:01", sut.countdownLabelTextProperty().get(), "Countdown label text"),
         () ->
             assertEquals(0.983, sut.countdownProgressProperty().get(), 0.001, "Countdown progress"),
-        () -> verify(sut.onCountdownElapsed, never()).run());
+        () -> verify(onCountdownElapsed, never()).run());
   }
 
   @Test
@@ -225,39 +232,35 @@ class ActivitySamplingViewModelTests {
     sut.activityTextProperty().set("foobar");
     sut.startCountdown(Duration.ofMinutes(1));
 
-    tickCountdown(60);
+    sut.progressCountdown(Duration.ofSeconds(60));
 
     assertAll(
-        () -> assertFalse(sut.activityDisableProperty().get(), "Activity disable"),
+        "Updates countdown and notifies",
+        () -> assertFalse(sut.formDisableProperty().get(), "Form disable"),
         () -> assertFalse(sut.logButtonDisableProperty().get(), "Log button disable"),
         () ->
             assertEquals(
                 "00:01:00", sut.countdownLabelTextProperty().get(), "Countdown label text"),
         () -> assertEquals(0.0, sut.countdownProgressProperty().get(), "Countdown progress"),
-        () -> verify(sut.onCountdownElapsed, times(1)).run());
+        () -> verify(onCountdownElapsed, times(1)).run());
   }
 
   @Test
   void stopCountdown_EnablesForm() {
     sut.activityTextProperty().set("foobar");
     sut.startCountdown(Duration.ofMinutes(1));
-    tickCountdown(15);
+    sut.progressCountdown(Duration.ofSeconds(15));
 
     sut.stopCountdown();
 
     assertAll(
-        () -> assertFalse(sut.activityDisableProperty().get(), "Activity disable"),
+        "Enables form",
+        () -> assertFalse(sut.formDisableProperty().get(), "Form disable"),
         () -> assertFalse(sut.logButtonDisableProperty().get(), "Log button disable"),
         () ->
             assertEquals(
                 "00:00:45", sut.countdownLabelTextProperty().get(), "Countdown label text"),
         () -> assertEquals(0.25, sut.countdownProgressProperty().get(), "Countdown progress"),
-        () -> verify(sut.onCountdownElapsed, never()).run());
-  }
-
-  private void tickCountdown(int count) {
-    for (var i = 0; i < count; i++) {
-      sut.progressCountdown();
-    }
+        () -> verify(onCountdownElapsed, never()).run());
   }
 }
