@@ -20,8 +20,10 @@ Periodically ask the user about their current activity and log it for analysis.
 
 - Show recent activities.
 - Show time summary for today, yesterday, this week and this month.
-- Report timesheet by week, month, quarter and year.
-- Report time by customer, project and task.
+- Create timesheet with total hours per activity and day.
+- Create detailed timesheet with start and end time.
+- Show hours by week, month, quarter and year.
+- Show hours by customer, project and task.
 - Show capacity of user.
 - Consider holidays.
 - Constraint: Export report as CSV file.
