@@ -44,6 +44,7 @@ class ActivitySamplingViewModelTests {
   void run_ViewIsInitialized() {
     assertAll(
         "View is initialized",
+        () -> assertTrue(sut.stopMenuItemDisableProperty().get(), "Stop menu item disable"),
         () -> assertEquals("", sut.activityTextProperty().get(), "Activity text"),
         () -> assertFalse(sut.formDisableProperty().get(), "Form disable"),
         () -> assertTrue(sut.logButtonDisableProperty().get(), "Log button disable"),
@@ -163,6 +164,7 @@ class ActivitySamplingViewModelTests {
 
     assertAll(
         "Disables form and initializes countdown",
+        () -> assertFalse(sut.stopMenuItemDisableProperty().get(), "Stop menu item disable"),
         () -> assertTrue(sut.formDisableProperty().get(), "Form disable"),
         () -> assertTrue(sut.logButtonDisableProperty().get(), "Log button disable"),
         () ->
@@ -181,6 +183,7 @@ class ActivitySamplingViewModelTests {
 
     assertAll(
         "Updates countdown",
+        () -> assertFalse(sut.stopMenuItemDisableProperty().get(), "Stop menu item disable"),
         () -> assertTrue(sut.formDisableProperty().get(), "Form disable"),
         () -> assertTrue(sut.logButtonDisableProperty().get(), "Log button disable"),
         () ->
@@ -199,6 +202,7 @@ class ActivitySamplingViewModelTests {
 
     assertAll(
         "Updates countdown",
+        () -> assertFalse(sut.stopMenuItemDisableProperty().get(), "Stop menu item disable"),
         () -> assertTrue(sut.formDisableProperty().get(), "Form disable"),
         () -> assertTrue(sut.logButtonDisableProperty().get(), "Log button disable"),
         () ->
@@ -217,6 +221,7 @@ class ActivitySamplingViewModelTests {
 
     assertAll(
         "Updates countdown",
+        () -> assertFalse(sut.stopMenuItemDisableProperty().get(), "Stop menu item disable"),
         () -> assertTrue(sut.formDisableProperty().get(), "Form disable"),
         () -> assertTrue(sut.logButtonDisableProperty().get(), "Log button disable"),
         () ->
@@ -236,6 +241,7 @@ class ActivitySamplingViewModelTests {
 
     assertAll(
         "Updates countdown and notifies",
+        () -> assertFalse(sut.stopMenuItemDisableProperty().get(), "Stop menu item disable"),
         () -> assertFalse(sut.formDisableProperty().get(), "Form disable"),
         () -> assertFalse(sut.logButtonDisableProperty().get(), "Log button disable"),
         () ->
@@ -255,6 +261,7 @@ class ActivitySamplingViewModelTests {
 
     assertAll(
         "Enables form",
+        () -> assertTrue(sut.stopMenuItemDisableProperty().get(), "Stop menu item disable"),
         () -> assertFalse(sut.formDisableProperty().get(), "Form disable"),
         () -> assertFalse(sut.logButtonDisableProperty().get(), "Log button disable"),
         () ->

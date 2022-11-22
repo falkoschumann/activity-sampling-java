@@ -21,6 +21,7 @@ class ActivitySamplingViewModel {
   private final ReadOnlyObjectWrapper<Duration> countdown;
 
   // Properties
+  private final BooleanExpression stopMenuItemDisable;
   private final StringProperty activityText;
   private final BooleanExpression formDisable;
   private final BooleanExpression logButtonDisable;
@@ -43,6 +44,8 @@ class ActivitySamplingViewModel {
     countdownActive = new ReadOnlyBooleanWrapper(false);
     countdown = new ReadOnlyObjectWrapper<>(Duration.ZERO);
 
+    stopMenuItemDisable =
+        Bindings.createBooleanBinding(() -> countdownActive.not().get(), countdownActive);
     activityText = new SimpleStringProperty("");
     formDisable = countdownActive.and(intervalLogged);
     logButtonDisable =
@@ -73,6 +76,10 @@ class ActivitySamplingViewModel {
     hoursYesterdayLabelText = new ReadOnlyStringWrapper("00:00");
     hoursThisWeekLabelText = new ReadOnlyStringWrapper("00:00");
     hoursThisMonthLabelText = new ReadOnlyStringWrapper("00:00");
+  }
+
+  BooleanExpression stopMenuItemDisableProperty() {
+    return stopMenuItemDisable;
   }
 
   StringProperty activityTextProperty() {

@@ -41,7 +41,7 @@
                                     <MenuItem mnemonicParsing="false" onAction="#handleStart1min" text="1 min" />
                                  </items>
                               </Menu>
-                              <MenuItem mnemonicParsing="false" onAction="#handleStop" text="Stop" />
+                              <MenuItem fx:id="stopMenuItem" mnemonicParsing="false" onAction="#handleStop" text="Stop" />
                            </items>
                         </Menu>
                         <Menu mnemonicParsing="false" text="View">

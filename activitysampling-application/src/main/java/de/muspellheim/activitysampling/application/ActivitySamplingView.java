@@ -11,6 +11,7 @@ import javafx.stage.*;
 public class ActivitySamplingView {
   @FXML private Stage stage;
   @FXML private MenuBar menuBar;
+  @FXML private MenuItem stopMenuItem;
   @FXML private Label activityLabel;
   @FXML private TextField activity;
   @FXML private Button logButton;
@@ -47,6 +48,7 @@ public class ActivitySamplingView {
   private void initialize() {
     stage.setOnCloseRequest(e -> notifier.dispose());
     menuBar.setUseSystemMenuBar(true);
+    stopMenuItem.disableProperty().bind(viewModel.stopMenuItemDisableProperty());
     activityLabel.disableProperty().bind(viewModel.formDisableProperty());
     activity.textProperty().bindBidirectional(viewModel.activityTextProperty());
     activity.disableProperty().bind(viewModel.formDisableProperty());
