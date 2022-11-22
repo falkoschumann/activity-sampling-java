@@ -1,4 +1,4 @@
-package de.muspellheim.activitysampling.application;
+package de.muspellheim.activitysampling.application.activitysampling;
 
 import java.awt.*;
 

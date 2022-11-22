@@ -1,5 +1,8 @@
-package de.muspellheim.activitysampling.application;
+package de.muspellheim.activitysampling.application.activitysampling;
 
+import de.muspellheim.activitysampling.application.*;
+import de.muspellheim.activitysampling.application.shared.*;
+import de.muspellheim.activitysampling.application.timesheet.*;
 import java.time.*;
 import java.util.*;
 import java.util.concurrent.*;
@@ -26,7 +29,7 @@ public class ActivitySamplingView {
   private final Notifier notifier = new Notifier();
 
   private final ActivitySamplingViewModel viewModel =
-      ViewModels.newActivitySampling(notifier::showNotification, this::handleError);
+      ViewModels.newActivitySampling(notifier::showNotification, ErrorView::handleError);
 
   private final Timer timer = new Timer("System clock", true);
   private CountdownTask countdownTask;
@@ -140,14 +143,6 @@ public class ActivitySamplingView {
   @FXML
   private void handleLog() {
     viewModel.logActivity();
-  }
-
-  private void handleError(String message) {
-    var alert = new Alert(Alert.AlertType.ERROR);
-    alert.setTitle("Error");
-    alert.setHeaderText("An unexpected error occurred.");
-    alert.setContentText(message);
-    alert.show();
   }
 
   private class CountdownTask extends TimerTask {

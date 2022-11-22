@@ -38,15 +38,15 @@ public class ActivitiesServiceImpl implements ActivitiesService {
 
   @Override
   public Timesheet createTimesheet(LocalDate from, LocalDate to) {
-    var timesheetProjection = new TimesheetProjection(from, to);
+    var timesheetByDayProjection = new TimesheetByDayProjection(from, to);
     var totalProjection = new TotalProjection(from, to);
     eventStore
         .replay()
         .forEach(
             event -> {
-              timesheetProjection.apply(event);
+              timesheetByDayProjection.apply(event);
               totalProjection.apply(event);
             });
-    return new Timesheet(timesheetProjection.get(), totalProjection.get());
+    return new Timesheet(timesheetByDayProjection.get(), totalProjection.get());
   }
 }

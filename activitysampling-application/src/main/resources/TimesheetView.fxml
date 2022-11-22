@@ -1,22 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.Scene?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.stage.Stage?>
-
-
-<fx:root fx:id="stage" title="Timesheet" type="Stage" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.muspellheim.activitysampling.application.TimesheetView">
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.*?>
+<?import javafx.stage.*?>
+<fx:root fx:id="stage" title="Timesheet" type="Stage" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.muspellheim.activitysampling.application.timesheet.TimesheetView">
    <scene>
       <Scene stylesheets="@style.css">
          <root>
-            <TableView fx:id="timesheetTable">
-              <columns>
-                <TableColumn fx:id="dateColumn" prefWidth="100.0" text="Date" />
-                  <TableColumn fx:id="activityColumn" prefWidth="300.0" text="Activity" />
-                <TableColumn fx:id="durationColumn" prefWidth="100.0" text="Duration" />
-              </columns>
-            </TableView>
+            <BorderPane prefWidth="600.0">
+               <center>
+                  <TableView fx:id="timesheetTable">
+                    <columns>
+                      <TableColumn fx:id="dateColumn" prefWidth="110.0" text="Date" />
+                        <TableColumn fx:id="activityColumn" prefWidth="360.0" text="Activity" />
+                      <TableColumn fx:id="durationColumn" prefWidth="100.0" text="Duration" />
+                    </columns>
+                  </TableView>
+               </center>
+               <top>
+                  <HBox alignment="CENTER_LEFT" spacing="4.0" BorderPane.alignment="CENTER">
+                     <children>
+                        <Label text="From:" />
+                        <DatePicker fx:id="from" />
+                        <Label text="To:">
+                           <HBox.margin>
+                              <Insets left="12.0" />
+                           </HBox.margin>
+                        </Label>
+                        <DatePicker fx:id="to" />
+                        <Button mnemonicParsing="false" onAction="#handleUpdate" text="Update">
+                           <HBox.margin>
+                              <Insets left="12.0" />
+                           </HBox.margin></Button>
+                     </children>
+                     <BorderPane.margin>
+                        <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+                     </BorderPane.margin>
+                  </HBox>
+               </top>
+               <bottom>
+                  <HBox alignment="CENTER_LEFT" spacing="4.0" BorderPane.alignment="CENTER">
+                     <children>
+                        <Label styleClass="base" text="Total:" />
+                        <TextField fx:id="total" alignment="CENTER" editable="false" prefWidth="80.0" styleClass="base" />
+                     </children>
+                     <BorderPane.margin>
+                        <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+                     </BorderPane.margin>
+                  </HBox>
+               </bottom>
+            </BorderPane>
          </root>
       </Scene>
    </scene>

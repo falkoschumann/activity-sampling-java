@@ -1,4 +1,4 @@
-package de.muspellheim.activitysampling.application;
+package de.muspellheim.activitysampling.application.activitysampling;
 
 import de.muspellheim.activitysampling.domain.*;
 import java.util.function.*;

@@ -1,5 +1,6 @@
 package de.muspellheim.activitysampling.application;
 
+import de.muspellheim.activitysampling.application.activitysampling.*;
 import de.muspellheim.activitysampling.domain.*;
 import de.muspellheim.activitysampling.infrastructure.*;
 import java.nio.file.*;

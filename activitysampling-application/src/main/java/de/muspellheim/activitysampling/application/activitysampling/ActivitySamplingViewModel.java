@@ -1,5 +1,6 @@
-package de.muspellheim.activitysampling.application;
+package de.muspellheim.activitysampling.application.activitysampling;
 
+import de.muspellheim.activitysampling.application.shared.*;
 import de.muspellheim.activitysampling.domain.*;
 import java.time.*;
 import java.time.format.*;
@@ -9,7 +10,7 @@ import javafx.beans.binding.*;
 import javafx.beans.property.*;
 import javafx.collections.*;
 
-class ActivitySamplingViewModel {
+public class ActivitySamplingViewModel {
   private final ActivitiesService activitiesService;
   private final Runnable onCountdownElapsed;
   private final Consumer<String> onError;
@@ -33,7 +34,7 @@ class ActivitySamplingViewModel {
   private final ReadOnlyStringWrapper hoursThisWeekLabelText;
   private final ReadOnlyStringWrapper hoursThisMonthLabelText;
 
-  ActivitySamplingViewModel(
+  public ActivitySamplingViewModel(
       ActivitiesService activitiesService, Runnable onCountdownElapsed, Consumer<String> onError) {
     this.activitiesService = activitiesService;
     this.onCountdownElapsed = onCountdownElapsed;
@@ -78,60 +79,60 @@ class ActivitySamplingViewModel {
     hoursThisMonthLabelText = new ReadOnlyStringWrapper("00:00");
   }
 
-  BooleanExpression stopMenuItemDisableProperty() {
+  public BooleanExpression stopMenuItemDisableProperty() {
     return stopMenuItemDisable;
   }
 
-  StringProperty activityTextProperty() {
+  public StringProperty activityTextProperty() {
     return activityText;
   }
 
-  BooleanExpression formDisableProperty() {
+  public BooleanExpression formDisableProperty() {
     return formDisable;
   }
 
-  BooleanExpression logButtonDisableProperty() {
+  public BooleanExpression logButtonDisableProperty() {
     return logButtonDisable;
   }
 
-  StringExpression countdownLabelTextProperty() {
+  public StringExpression countdownLabelTextProperty() {
     return countdownLabelText;
   }
 
-  DoubleExpression countdownProgressProperty() {
+  public DoubleExpression countdownProgressProperty() {
     return countdownProgress;
   }
 
-  ObservableList<ActivityItem> getRecentActivities() {
+  public ObservableList<ActivityItem> getRecentActivities() {
     return recentActivities;
   }
 
-  ReadOnlyStringProperty hoursTodayLabelTextProperty() {
+  public ReadOnlyStringProperty hoursTodayLabelTextProperty() {
     return hoursTodayLabelText.getReadOnlyProperty();
   }
 
-  ReadOnlyStringProperty hoursYesterdayLabelTextProperty() {
+  public ReadOnlyStringProperty hoursYesterdayLabelTextProperty() {
     return hoursYesterdayLabelText.getReadOnlyProperty();
   }
 
-  ReadOnlyStringProperty hoursThisWeekLabelTextProperty() {
+  public ReadOnlyStringProperty hoursThisWeekLabelTextProperty() {
     return hoursThisWeekLabelText.getReadOnlyProperty();
   }
 
-  ReadOnlyStringProperty hoursThisMonthLabelTextProperty() {
+  public ReadOnlyStringProperty hoursThisMonthLabelTextProperty() {
     return hoursThisMonthLabelText.getReadOnlyProperty();
   }
 
-  void run() {
+  public void run() {
     load();
   }
 
-  void load() {
+  public void load() {
     RecentActivities recentActivities;
     try {
       recentActivities = activitiesService.selectRecentActivities();
     } catch (Exception e) {
-      var message = joinExceptionMessages("Failed to load activities.", e);
+      var message = Exceptions.joinExceptionMessages("Failed to load activities.", e);
       onError.accept(message);
       return;
     }
@@ -166,12 +167,12 @@ class ActivitySamplingViewModel {
     this.recentActivities.setAll(items);
   }
 
-  void logActivity() {
+  public void logActivity() {
     try {
       activitiesService.logActivity(activityText.get());
       intervalLogged.set(true);
     } catch (Exception e) {
-      var message = joinExceptionMessages("Failed to log activity.", e);
+      var message = Exceptions.joinExceptionMessages("Failed to log activity.", e);
       onError.accept(message);
       return;
     }
@@ -179,18 +180,18 @@ class ActivitySamplingViewModel {
     load();
   }
 
-  void setActivity(Activity activity) {
+  public void setActivity(Activity activity) {
     activityText.set(activity.description());
   }
 
-  void startCountdown(Duration interval) {
+  public void startCountdown(Duration interval) {
     this.interval.set(interval);
     countdown.set(interval);
     countdownActive.set(true);
     intervalLogged.set(true);
   }
 
-  void progressCountdown(Duration duration) {
+  public void progressCountdown(Duration duration) {
     countdown.set(countdown.get().minus(duration));
     if (countdown.get().isZero()) {
       intervalLogged.set(false);
@@ -199,15 +200,7 @@ class ActivitySamplingViewModel {
     }
   }
 
-  void stopCountdown() {
+  public void stopCountdown() {
     countdownActive.set(false);
-  }
-
-  private static String joinExceptionMessages(String errorMessage, Throwable cause) {
-    if (cause == null) {
-      return errorMessage;
-    }
-
-    return joinExceptionMessages(errorMessage + " " + cause.getMessage(), cause.getCause());
   }
 }

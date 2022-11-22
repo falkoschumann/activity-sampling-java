@@ -1,21 +1,26 @@
-package de.muspellheim.activitysampling.application;
+package de.muspellheim.activitysampling.application.timesheet;
 
-import java.time.*;
+import de.muspellheim.activitysampling.application.*;
+import de.muspellheim.activitysampling.application.shared.*;
 import javafx.beans.property.*;
 import javafx.fxml.*;
+import javafx.geometry.*;
 import javafx.scene.control.*;
 import javafx.stage.*;
 
 public class TimesheetView {
   @FXML private Stage stage;
+  @FXML private DatePicker from;
+  @FXML private DatePicker to;
   @FXML private TableView<TimesheetItem> timesheetTable;
   @FXML private TableColumn<TimesheetItem, String> dateColumn;
   @FXML private TableColumn<TimesheetItem, String> activityColumn;
   @FXML private TableColumn<TimesheetItem, String> durationColumn;
+  @FXML private TextField total;
 
-  private final TimesheetViewModel viewModel = ViewModels.newTimesheet();
+  private final TimesheetViewModel viewModel = ViewModels.newTimesheet(ErrorView::handleError);
 
-  static TimesheetView newInstance(Stage owner) {
+  public static TimesheetView newInstance(Stage owner) {
     String file = "/TimesheetView.fxml";
     try {
       var url = TimesheetView.class.getResource(file);
@@ -32,16 +37,27 @@ public class TimesheetView {
 
   @FXML
   private void initialize() {
+    from.valueProperty().bindBidirectional(viewModel.fromProperty());
+    to.valueProperty().bindBidirectional(viewModel.toProperty());
     timesheetTable.setItems(viewModel.getTimesheetItems());
+    dateColumn.setCellFactory(column -> new TimesheetTableCell<>(Pos.BASELINE_CENTER));
     dateColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().date()));
+    activityColumn.setCellFactory(column -> new TimesheetTableCell<>());
     activityColumn.setCellValueFactory(
         param -> new SimpleObjectProperty<>(param.getValue().activity()));
+    durationColumn.setCellFactory(column -> new TimesheetTableCell<>(Pos.BASELINE_CENTER));
     durationColumn.setCellValueFactory(
         param -> new SimpleObjectProperty<>(param.getValue().duration()));
+    total.textProperty().bind(viewModel.totalProperty());
   }
 
   public void run() {
     stage.show();
-    viewModel.createTimesheet(LocalDate.of(2022, 11, 1), LocalDate.now());
+    viewModel.update();
+  }
+
+  @FXML
+  private void handleUpdate() {
+    viewModel.update();
   }
 }
