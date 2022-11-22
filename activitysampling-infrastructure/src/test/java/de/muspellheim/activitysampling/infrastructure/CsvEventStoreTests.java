@@ -1,6 +1,7 @@
 package de.muspellheim.activitysampling.infrastructure;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
 
 import de.muspellheim.activitysampling.domain.*;
 import java.io.*;
@@ -23,7 +24,7 @@ class CsvEventStoreTests {
   void replay_FileDoesNotExist_ReturnsEmptyList() {
     var result = sut.replay().toList();
 
-    assertEquals(List.of(), result);
+    assertThat(result, empty());
   }
 
   @Test
@@ -39,15 +40,15 @@ class CsvEventStoreTests {
 
     List<Event> events = sut.replay().toList();
 
-    assertEquals(
-        List.of(
+    assertThat(
+        events,
+        contains(
             new ActivityLoggedEvent(
                 Instant.parse("2022-11-16T14:04:00Z"), Duration.ofMinutes(5), "A1"),
             new ActivityLoggedEvent(
                 Instant.parse("2022-11-16T14:24:00Z"), Duration.ofMinutes(5), "A2"),
             new ActivityLoggedEvent(
-                Instant.parse("2022-11-16T14:44:00Z"), Duration.ofMinutes(5), "A3")),
-        events);
+                Instant.parse("2022-11-16T14:44:00Z"), Duration.ofMinutes(5), "A3")));
   }
 
   @Test
@@ -64,14 +65,14 @@ class CsvEventStoreTests {
 
     List<Event> events = sut.replay().toList();
 
-    assertEquals(
-        List.of(
+    assertThat(
+        events,
+        contains(
             new ActivityLoggedEvent(
                 Instant.parse("2022-11-16T14:04:00Z"), Duration.ofMinutes(5), "A1"),
             new ActivityLoggedEvent(
                 Instant.parse("2022-11-16T14:24:00Z"), Duration.ofMinutes(5), "A2"),
             new ActivityLoggedEvent(
-                Instant.parse("2022-11-16T14:44:00Z"), Duration.ofMinutes(5), "A3")),
-        events);
+                Instant.parse("2022-11-16T14:44:00Z"), Duration.ofMinutes(5), "A3")));
   }
 }
