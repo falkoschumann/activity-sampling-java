@@ -72,28 +72,23 @@ class ActivitiesServiceTests {
                 new WorkingDay(
                     LocalDate.of(2022, 9, 30),
                     List.of(
-                        new Activity(LocalDateTime.of(2022, 9, 30, 10, 0), "A10"),
-                        new Activity(LocalDateTime.of(2022, 9, 30, 9, 0), "A9"))),
+                        new Activity(LocalTime.of(10, 0), "A10"),
+                        new Activity(LocalTime.of(9, 0), "A9"))),
                 new WorkingDay(
                     LocalDate.of(2022, 9, 29),
                     List.of(
-                        new Activity(LocalDateTime.of(2022, 9, 29, 12, 0), "A8"),
-                        new Activity(LocalDateTime.of(2022, 9, 29, 11, 0), "A7"))),
+                        new Activity(LocalTime.of(12, 0), "A8"),
+                        new Activity(LocalTime.of(11, 0), "A7"))),
                 new WorkingDay(
-                    LocalDate.of(2022, 9, 28),
-                    List.of(new Activity(LocalDateTime.of(2022, 9, 28, 13, 0), "A6"))),
+                    LocalDate.of(2022, 9, 28), List.of(new Activity(LocalTime.of(13, 0), "A6"))),
                 new WorkingDay(
-                    LocalDate.of(2022, 9, 26),
-                    List.of(new Activity(LocalDateTime.of(2022, 9, 26, 14, 0), "A5"))),
+                    LocalDate.of(2022, 9, 26), List.of(new Activity(LocalTime.of(14, 0), "A5"))),
                 new WorkingDay(
-                    LocalDate.of(2022, 9, 5),
-                    List.of(new Activity(LocalDateTime.of(2022, 9, 5, 15, 0), "A4"))),
+                    LocalDate.of(2022, 9, 5), List.of(new Activity(LocalTime.of(15, 0), "A4"))),
                 new WorkingDay(
-                    LocalDate.of(2022, 9, 1),
-                    List.of(new Activity(LocalDateTime.of(2022, 9, 1, 16, 0), "A3"))),
+                    LocalDate.of(2022, 9, 1), List.of(new Activity(LocalTime.of(16, 0), "A3"))),
                 new WorkingDay(
-                    LocalDate.of(2022, 8, 31),
-                    List.of(new Activity(LocalDateTime.of(2022, 8, 31, 17, 0), "A2")))),
+                    LocalDate.of(2022, 8, 31), List.of(new Activity(LocalTime.of(17, 0), "A2")))),
             new TimeSummary(
                 Duration.ofMinutes(40),
                 Duration.ofMinutes(40),
@@ -141,25 +136,21 @@ class ActivitiesServiceTests {
                 new WorkingDay(
                     LocalDate.of(2022, 12, 31),
                     List.of(
-                        new Activity(LocalDateTime.of(2022, 12, 31, 9, 0), "A9"),
-                        new Activity(LocalDateTime.of(2022, 12, 31, 8, 0), "A8"))),
+                        new Activity(LocalTime.of(9, 0), "A9"),
+                        new Activity(LocalTime.of(8, 0), "A8"))),
                 new WorkingDay(
                     LocalDate.of(2022, 12, 30),
                     List.of(
-                        new Activity(LocalDateTime.of(2022, 12, 30, 11, 0), "A7"),
-                        new Activity(LocalDateTime.of(2022, 12, 30, 10, 0), "A6"))),
+                        new Activity(LocalTime.of(11, 0), "A7"),
+                        new Activity(LocalTime.of(10, 0), "A6"))),
                 new WorkingDay(
-                    LocalDate.of(2022, 12, 28),
-                    List.of(new Activity(LocalDateTime.of(2022, 12, 28, 12, 0), "A5"))),
+                    LocalDate.of(2022, 12, 28), List.of(new Activity(LocalTime.of(12, 0), "A5"))),
                 new WorkingDay(
-                    LocalDate.of(2022, 12, 26),
-                    List.of(new Activity(LocalDateTime.of(2022, 12, 26, 13, 0), "A4"))),
+                    LocalDate.of(2022, 12, 26), List.of(new Activity(LocalTime.of(13, 0), "A4"))),
                 new WorkingDay(
-                    LocalDate.of(2022, 12, 5),
-                    List.of(new Activity(LocalDateTime.of(2022, 12, 5, 14, 0), "A3"))),
+                    LocalDate.of(2022, 12, 5), List.of(new Activity(LocalTime.of(14, 0), "A3"))),
                 new WorkingDay(
-                    LocalDate.of(2022, 12, 1),
-                    List.of(new Activity(LocalDateTime.of(2022, 12, 1, 15, 0), "A2")))),
+                    LocalDate.of(2022, 12, 1), List.of(new Activity(LocalTime.of(15, 0), "A2")))),
             new TimeSummary(
                 Duration.ofMinutes(40),
                 Duration.ofMinutes(40),

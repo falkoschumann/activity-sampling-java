@@ -6,6 +6,7 @@ import java.util.*;
 
 class WorkingDaysProjection {
   private final Instant startTimestamp;
+
   private final Map<LocalDate, List<Activity>> workingDays = new LinkedHashMap<>();
 
   WorkingDaysProjection(LocalDate today) {
@@ -25,11 +26,9 @@ class WorkingDaysProjection {
       return;
     }
 
-    var activity =
-        new Activity(
-            LocalDateTime.ofInstant(event.timestamp(), ZoneId.systemDefault()),
-            event.description());
-    LocalDate date = activity.timestamp().toLocalDate();
+    LocalDateTime timestamp = LocalDateTime.ofInstant(event.timestamp(), ZoneId.systemDefault());
+    var activity = new Activity(timestamp.toLocalTime(), event.description());
+    LocalDate date = timestamp.toLocalDate();
     var activities = workingDays.getOrDefault(date, new ArrayList<>());
     activities.add(activity);
     workingDays.put(date, activities);
@@ -43,7 +42,7 @@ class WorkingDaysProjection {
                     d.getKey(),
                     List.copyOf(
                         d.getValue().stream()
-                            .sorted((a1, a2) -> a2.timestamp().compareTo(a1.timestamp()))
+                            .sorted((a1, a2) -> a2.time().compareTo(a1.time()))
                             .toList())))
         .sorted((w1, w2) -> w2.date().compareTo(w1.date()))
         .toList();

@@ -30,8 +30,7 @@ class ActivitySamplingViewModelTests {
                 List.of(
                     new WorkingDay(
                         LocalDate.of(2022, 11, 16),
-                        List.of(
-                            new Activity(LocalDateTime.of(2022, 11, 16, 16, 16), "Lorem ipsum")))),
+                        List.of(new Activity(LocalTime.of(16, 16), "Lorem ipsum")))),
                 new TimeSummary(
                     Duration.ofMinutes(5),
                     Duration.ofMinutes(10),
@@ -57,8 +56,7 @@ class ActivitySamplingViewModelTests {
                 List.of(
                     new ActivityItem("Mittwoch, 16. November 2022"),
                     new ActivityItem(
-                        "16:16 - Lorem ipsum",
-                        new Activity(LocalDateTime.of(2022, 11, 16, 16, 16), "Lorem ipsum"))),
+                        "16:16 - Lorem ipsum", new Activity(LocalTime.of(16, 16), "Lorem ipsum"))),
                 sut.getRecentActivities(),
                 "Recent activities"),
         () -> assertEquals("00:05", sut.hoursTodayLabelTextProperty().get()),
@@ -148,7 +146,7 @@ class ActivitySamplingViewModelTests {
 
   @Test
   void setActivity_UpdatesForm() {
-    var activity = new Activity(LocalDateTime.of(2022, 11, 16, 16, 16), "Lorem ipsum");
+    var activity = new Activity(LocalTime.of(16, 16), "Lorem ipsum");
     sut.setActivity(activity);
 
     assertAll(

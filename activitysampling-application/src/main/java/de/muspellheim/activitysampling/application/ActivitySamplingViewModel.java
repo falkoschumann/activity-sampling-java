@@ -144,8 +144,7 @@ class ActivitySamplingViewModel {
       for (var activity : day.activities()) {
         items.add(
             new ActivityItem(
-                activity.timestamp().format(timeFormatter) + " - " + activity.description(),
-                activity));
+                activity.time().format(timeFormatter) + " - " + activity.description(), activity));
       }
     }
 
