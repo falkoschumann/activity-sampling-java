@@ -44,6 +44,11 @@
                               <MenuItem fx:id="stopMenuItem" mnemonicParsing="false" onAction="#handleStop" text="Stop" />
                            </items>
                         </Menu>
+                        <Menu mnemonicParsing="false" text="Report">
+                          <items>
+                            <MenuItem mnemonicParsing="false" onAction="#handleTimesheet" text="Timesheet" />
+                          </items>
+                        </Menu>
                         <Menu mnemonicParsing="false" text="View">
                            <items>
                               <MenuItem mnemonicParsing="false" onAction="#handleRefresh" text="Refresh" />

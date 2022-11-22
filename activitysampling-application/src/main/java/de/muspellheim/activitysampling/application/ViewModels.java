@@ -12,9 +12,18 @@ class ViewModels {
 
   static ActivitySamplingViewModel newActivitySampling(
       Runnable onCountdownElapsed, Consumer<String> onError) {
+    var activitiesService = getActivitiesService();
+    return new ActivitySamplingViewModel(activitiesService, onCountdownElapsed, onError);
+  }
+
+  static TimesheetViewModel newTimesheet() {
+    var activitiesService = getActivitiesService();
+    return new TimesheetViewModel(activitiesService);
+  }
+
+  private static ActivitiesServiceImpl getActivitiesService() {
     var file = Paths.get(Configuration.INSTANCE.getLogFile());
-    CsvEventStore eventStore = new CsvEventStore(file);
-    var service = new ActivitiesServiceImpl(eventStore);
-    return new ActivitySamplingViewModel(service, onCountdownElapsed, onError);
+    var eventStore = new CsvEventStore(file);
+    return new ActivitiesServiceImpl(eventStore);
   }
 }

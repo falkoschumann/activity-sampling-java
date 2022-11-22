@@ -35,4 +35,18 @@ public class ActivitiesServiceImpl implements ActivitiesService {
             });
     return new RecentActivities(workingDaysProjection.get(), timeSummaryProjection.get());
   }
+
+  @Override
+  public Timesheet createTimesheet(LocalDate from, LocalDate to) {
+    var timesheetProjection = new TimesheetProjection(from, to);
+    var totalProjection = new TotalProjection(from, to);
+    eventStore
+        .replay()
+        .forEach(
+            event -> {
+              timesheetProjection.apply(event);
+              totalProjection.apply(event);
+            });
+    return new Timesheet(timesheetProjection.get(), totalProjection.get());
+  }
 }

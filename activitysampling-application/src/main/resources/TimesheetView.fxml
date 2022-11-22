@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Scene?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.stage.Stage?>
+
+
+<fx:root fx:id="stage" title="Timesheet" type="Stage" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.muspellheim.activitysampling.application.TimesheetView">
+   <scene>
+      <Scene stylesheets="@style.css">
+         <root>
+            <TableView fx:id="timesheetTable">
+              <columns>
+                <TableColumn fx:id="dateColumn" prefWidth="100.0" text="Date" />
+                  <TableColumn fx:id="activityColumn" prefWidth="300.0" text="Activity" />
+                <TableColumn fx:id="durationColumn" prefWidth="100.0" text="Duration" />
+              </columns>
+            </TableView>
+         </root>
+      </Scene>
+   </scene>
+</fx:root>

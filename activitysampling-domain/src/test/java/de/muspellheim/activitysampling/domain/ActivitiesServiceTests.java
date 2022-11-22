@@ -169,4 +169,71 @@ class ActivitiesServiceTests {
                 Duration.ofMinutes(160))),
         activities);
   }
+
+  @Test
+  void createTimesheet() {
+    when(eventStore.replay())
+        .thenReturn(
+            Stream.of(
+                // Last day before interval
+                new ActivityLoggedEvent(
+                    Instant.parse("2022-11-13T16:00:00Z"), Duration.ofMinutes(20), "A1"),
+                // First day in the interval
+                new ActivityLoggedEvent(
+                    Instant.parse("2022-11-14T15:00:00Z"), Duration.ofMinutes(20), "A1"),
+                // A day in the interval
+                new ActivityLoggedEvent(
+                    Instant.parse("2022-11-15T12:00:00Z"), Duration.ofMinutes(20), "A2"),
+                new ActivityLoggedEvent(
+                    Instant.parse("2022-11-15T13:00:00Z"), Duration.ofMinutes(20), "A1"),
+                new ActivityLoggedEvent(
+                    Instant.parse("2022-11-15T14:00:00Z"), Duration.ofMinutes(20), "A2"),
+                // Another day in the interval
+                new ActivityLoggedEvent(
+                    Instant.parse("2022-11-17T09:00:00Z"), Duration.ofMinutes(20), "A1"),
+                new ActivityLoggedEvent(
+                    Instant.parse("2022-11-17T10:00:00Z"), Duration.ofMinutes(20), "A1"),
+                new ActivityLoggedEvent(
+                    Instant.parse("2022-11-17T11:00:00Z"), Duration.ofMinutes(20), "A2"),
+                // Last day of interval
+                new ActivityLoggedEvent(
+                    Instant.parse("2022-11-18T08:00:00Z"), Duration.ofMinutes(20), "A2"),
+                // First day after interval
+                new ActivityLoggedEvent(
+                    Instant.parse("2022-11-19T07:00:00Z"), Duration.ofMinutes(20), "A2")));
+
+    var timesheet = sut.createTimesheet(LocalDate.of(2022, 11, 14), LocalDate.of(2022, 11, 18));
+    /*
+    assertEquals(
+        new Timesheet(
+            List.of(
+                // FIXME missing subtotal per day
+                new WorkingDay(
+                    LocalDate.of(2022, 11, 14),
+                    List.of(
+                        new TimesheetEntry(
+                            LocalDate.of(2022, 11, 14), "A1", Duration.ofMinutes(20)))),
+                new WorkingDay(
+                    LocalDate.of(2022, 11, 15),
+                    List.of(
+                        new TimesheetEntry(
+                            LocalDate.of(2022, 11, 15), "A1", Duration.ofMinutes(20)),
+                        new TimesheetEntry(
+                            LocalDate.of(2022, 11, 15), "A2", Duration.ofMinutes(40)))),
+                new WorkingDay(
+                    LocalDate.of(2022, 11, 17),
+                    List.of(
+                        new TimesheetEntry(
+                            LocalDate.of(2022, 11, 17), "A1", Duration.ofMinutes(40)),
+                        new TimesheetEntry(
+                            LocalDate.of(2022, 11, 17), "A2", Duration.ofMinutes(20)))),
+                new WorkingDay(
+                    LocalDate.of(2022, 11, 18),
+                    List.of(
+                        new TimesheetEntry(
+                            LocalDate.of(2022, 11, 18), "A2", Duration.ofMinutes(20))))),
+            Duration.ofMinutes(160)),
+        timesheet);
+    */
+  }
 }

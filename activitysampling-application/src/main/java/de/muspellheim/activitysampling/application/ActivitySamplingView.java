@@ -127,6 +127,12 @@ public class ActivitySamplingView {
   }
 
   @FXML
+  private void handleTimesheet() {
+    var timesheetView = TimesheetView.newInstance(stage);
+    timesheetView.run();
+  }
+
+  @FXML
   private void handleRefresh() {
     viewModel.load();
   }
