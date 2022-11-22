@@ -32,6 +32,17 @@ class ActivitiesServiceTests {
   }
 
   @Test
+  void logActivity_TrimsDescription() {
+    clock.setTimestamp(Instant.parse("2022-11-16T11:26:00Z"));
+    sut.logActivity("  Lorem ipsum ");
+
+    verify(eventStore)
+        .record(
+            new ActivityLoggedEvent(
+                Instant.parse("2022-11-16T11:26:00Z"), Duration.ofMinutes(20), "Lorem ipsum"));
+  }
+
+  @Test
   void selectRecentActivities_MonthWith30Days_ReturnsLast31DaysInDescendentOrder() {
     clock.setTimestamp(Instant.parse("2022-09-30T10:00:00Z"));
     when(eventStore.replay())

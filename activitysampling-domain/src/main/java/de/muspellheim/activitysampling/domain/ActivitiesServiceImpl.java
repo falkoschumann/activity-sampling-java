@@ -18,7 +18,7 @@ public class ActivitiesServiceImpl implements ActivitiesService {
   @Override
   public void logActivity(String description) {
     eventStore.record(
-        new ActivityLoggedEvent(clock.instant(), Duration.ofMinutes(20), description));
+        new ActivityLoggedEvent(clock.instant(), Duration.ofMinutes(20), description.trim()));
   }
 
   @Override
