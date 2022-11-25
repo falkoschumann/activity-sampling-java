@@ -207,26 +207,12 @@ class ActivitiesServiceTests {
     assertEquals(
         new Timesheet(
             List.of(
-                new TimesheetByDay(
-                    LocalDate.of(2022, 11, 14),
-                    List.of(new TimesheetEntry("A1", Duration.ofMinutes(20))),
-                    Duration.ofMinutes(20)),
-                new TimesheetByDay(
-                    LocalDate.of(2022, 11, 15),
-                    List.of(
-                        new TimesheetEntry("A1", Duration.ofMinutes(20)),
-                        new TimesheetEntry("A2", Duration.ofMinutes(40))),
-                    Duration.ofMinutes(60)),
-                new TimesheetByDay(
-                    LocalDate.of(2022, 11, 17),
-                    List.of(
-                        new TimesheetEntry("A1", Duration.ofMinutes(40)),
-                        new TimesheetEntry("A2", Duration.ofMinutes(20))),
-                    Duration.ofMinutes(60)),
-                new TimesheetByDay(
-                    LocalDate.of(2022, 11, 18),
-                    List.of(new TimesheetEntry("A2", Duration.ofMinutes(20))),
-                    Duration.ofMinutes(20))),
+                new TimesheetEntry(LocalDate.of(2022, 11, 14), "A1", Duration.ofMinutes(20)),
+                new TimesheetEntry(LocalDate.of(2022, 11, 15), "A1", Duration.ofMinutes(20)),
+                new TimesheetEntry(LocalDate.of(2022, 11, 15), "A2", Duration.ofMinutes(40)),
+                new TimesheetEntry(LocalDate.of(2022, 11, 17), "A1", Duration.ofMinutes(40)),
+                new TimesheetEntry(LocalDate.of(2022, 11, 17), "A2", Duration.ofMinutes(20)),
+                new TimesheetEntry(LocalDate.of(2022, 11, 18), "A2", Duration.ofMinutes(20))),
             Duration.ofMinutes(160)),
         timesheet);
   }

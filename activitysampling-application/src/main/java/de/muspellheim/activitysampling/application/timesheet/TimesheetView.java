@@ -1,7 +1,7 @@
 package de.muspellheim.activitysampling.application.timesheet;
 
-import de.muspellheim.activitysampling.application.*;
 import de.muspellheim.activitysampling.application.shared.*;
+import java.time.temporal.*;
 import javafx.beans.property.*;
 import javafx.fxml.*;
 import javafx.geometry.*;
@@ -10,15 +10,17 @@ import javafx.stage.*;
 
 public class TimesheetView {
   @FXML private Stage stage;
-  @FXML private DatePicker from;
-  @FXML private DatePicker to;
+  @FXML private Label title1;
+  @FXML private Label title2;
+  @FXML private ChoiceBox<ChronoUnit> period;
   @FXML private TableView<TimesheetItem> timesheetTable;
   @FXML private TableColumn<TimesheetItem, String> dateColumn;
-  @FXML private TableColumn<TimesheetItem, String> activityColumn;
-  @FXML private TableColumn<TimesheetItem, String> durationColumn;
-  @FXML private TextField total;
+  @FXML private TableColumn<TimesheetItem, String> notesColumn;
+  @FXML private TableColumn<TimesheetItem, String> hoursColumn;
+  @FXML private Label total;
 
-  private final TimesheetViewModel viewModel = ViewModels.newTimesheet(ErrorView::handleError);
+  private final TimesheetViewModel viewModel =
+      new TimesheetViewModel(Registry.getActivitiesService());
 
   public static TimesheetView newInstance(Stage owner) {
     String file = "/TimesheetView.fxml";
@@ -37,27 +39,36 @@ public class TimesheetView {
 
   @FXML
   private void initialize() {
-    from.valueProperty().bindBidirectional(viewModel.fromProperty());
-    to.valueProperty().bindBidirectional(viewModel.toProperty());
+    viewModel.setOnError(ErrorView::handleError);
+    period.setConverter(new ChronoUnitStringConverter());
+    period.getItems().addAll(ChronoUnit.DAYS, ChronoUnit.WEEKS, ChronoUnit.MONTHS);
+    period.valueProperty().bindBidirectional(viewModel.periodProperty());
+    title1.textProperty().bind(viewModel.title1Property());
+    title2.textProperty().bind(viewModel.title2Property());
     timesheetTable.setItems(viewModel.getTimesheetItems());
     dateColumn.setCellFactory(column -> new TimesheetTableCell<>(Pos.BASELINE_CENTER));
     dateColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().date()));
-    activityColumn.setCellFactory(column -> new TimesheetTableCell<>());
-    activityColumn.setCellValueFactory(
+    notesColumn.setCellFactory(column -> new TimesheetTableCell<>());
+    notesColumn.setCellValueFactory(
         param -> new SimpleObjectProperty<>(param.getValue().activity()));
-    durationColumn.setCellFactory(column -> new TimesheetTableCell<>(Pos.BASELINE_CENTER));
-    durationColumn.setCellValueFactory(
+    hoursColumn.setCellFactory(column -> new TimesheetTableCell<>(Pos.BASELINE_CENTER));
+    hoursColumn.setCellValueFactory(
         param -> new SimpleObjectProperty<>(param.getValue().duration()));
     total.textProperty().bind(viewModel.totalProperty());
   }
 
   public void run() {
     stage.show();
-    viewModel.update();
+    viewModel.run();
   }
 
   @FXML
-  private void handleUpdate() {
-    viewModel.update();
+  private void handleBack() {
+    viewModel.back();
+  }
+
+  @FXML
+  private void handleForward() {
+    viewModel.forward();
   }
 }

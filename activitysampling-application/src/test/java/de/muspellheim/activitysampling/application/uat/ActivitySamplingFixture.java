@@ -1,35 +1,12 @@
-package de.muspellheim.activitysampling.application;
+package de.muspellheim.activitysampling.application.uat;
 
 import de.muspellheim.activitysampling.application.activitysampling.*;
-import de.muspellheim.activitysampling.domain.*;
-import de.muspellheim.activitysampling.infrastructure.*;
-import java.nio.file.*;
 import java.time.*;
-import java.util.*;
 
-class SystemUnderTest {
-  private final TickingClock clock;
-  private final ActivitySamplingViewModel viewModel;
-
-  SystemUnderTest(Path activityLogFile) {
-    var eventStore = new CsvEventStore(activityLogFile);
-    clock = new TickingClock();
-    var activitiesService = new ActivitiesServiceImpl(eventStore, clock);
-    viewModel = new ActivitySamplingViewModel(activitiesService, () -> {}, m -> {});
-    viewModel.run();
-  }
-
-  /*
-   * Row fixtures
-   */
-
-  List<String> recentActivities() {
-    return viewModel.getRecentActivities().stream().map(ActivityItem::text).toList();
-  }
-
-  /*
-   * Action fixtures
-   */
+public class ActivitySamplingFixture {
+  private final TickingClock clock = SystemUnderTest.INSTANCE.getClock();
+  private final ActivitySamplingViewModel viewModel =
+      SystemUnderTest.INSTANCE.getActivitySamplingViewModel();
 
   void now(Instant timestamp) {
     clock.setTimestamp(timestamp);

@@ -1,6 +1,5 @@
 package de.muspellheim.activitysampling.application.activitysampling;
 
-import de.muspellheim.activitysampling.application.*;
 import de.muspellheim.activitysampling.application.shared.*;
 import de.muspellheim.activitysampling.application.timesheet.*;
 import java.time.*;
@@ -29,7 +28,7 @@ public class ActivitySamplingView {
   private final Notifier notifier = new Notifier();
 
   private final ActivitySamplingViewModel viewModel =
-      ViewModels.newActivitySampling(notifier::showNotification, ErrorView::handleError);
+      new ActivitySamplingViewModel(Registry.getActivitiesService());
 
   private final Timer timer = new Timer("System clock", true);
   private CountdownTask countdownTask;
@@ -49,6 +48,8 @@ public class ActivitySamplingView {
 
   @FXML
   private void initialize() {
+    viewModel.setOnCountdownElapsed(notifier::showNotification);
+    viewModel.setOnError(ErrorView::handleError);
     stage.setOnCloseRequest(e -> notifier.dispose());
     menuBar.setUseSystemMenuBar(true);
     stopMenuItem.disableProperty().bind(viewModel.stopMenuItemDisableProperty());

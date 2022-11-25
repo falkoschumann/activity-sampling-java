@@ -7,12 +7,9 @@ module de.muspellheim.activitysampling.application {
   requires jdk.localedata;
 
   opens de.muspellheim.activitysampling.application to
-      javafx.fxml,
       javafx.graphics;
   opens de.muspellheim.activitysampling.application.activitysampling to
-      javafx.fxml,
-      javafx.graphics;
+      javafx.fxml;
   opens de.muspellheim.activitysampling.application.timesheet to
-      javafx.fxml,
-      javafx.graphics;
+      javafx.fxml;
 }

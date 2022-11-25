@@ -1,6 +1,7 @@
 package de.muspellheim.activitysampling.application;
 
 import de.muspellheim.activitysampling.application.activitysampling.*;
+import de.muspellheim.activitysampling.application.shared.*;
 import javafx.application.*;
 import javafx.stage.*;
 

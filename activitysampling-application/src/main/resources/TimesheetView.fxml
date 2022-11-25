@@ -1,39 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.*?>
-<?import javafx.stage.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Scene?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.stage.Stage?>
+
 <fx:root fx:id="stage" title="Timesheet" type="Stage" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.muspellheim.activitysampling.application.timesheet.TimesheetView">
    <scene>
       <Scene stylesheets="@style.css">
          <root>
-            <BorderPane prefWidth="600.0">
+            <BorderPane>
                <center>
-                  <TableView fx:id="timesheetTable">
+                  <TableView fx:id="timesheetTable" prefHeight="600.0" prefWidth="800.0">
                     <columns>
-                      <TableColumn fx:id="dateColumn" prefWidth="110.0" text="Date" />
-                        <TableColumn fx:id="activityColumn" prefWidth="360.0" text="Activity" />
-                      <TableColumn fx:id="durationColumn" prefWidth="100.0" text="Duration" />
+                      <TableColumn fx:id="dateColumn" prefWidth="120.0" text="Date" />
+                        <TableColumn fx:id="notesColumn" prefWidth="550.0" text="Notes" />
+                      <TableColumn fx:id="hoursColumn" prefWidth="100.0" text="Hours" />
                     </columns>
                   </TableView>
                </center>
                <top>
-                  <HBox alignment="CENTER_LEFT" spacing="4.0" BorderPane.alignment="CENTER">
+                  <HBox alignment="CENTER_LEFT">
                      <children>
-                        <Label text="From:" />
-                        <DatePicker fx:id="from" />
-                        <Label text="To:">
+                        <Button mnemonicParsing="false" onAction="#handleBack">
+                           <graphic>
+                              <ImageView pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@icons/back.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#handleForward">
+                           <graphic>
+                              <ImageView pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@icons/forward.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
                            <HBox.margin>
-                              <Insets left="12.0" />
+                              <Insets right="8.0" />
                            </HBox.margin>
-                        </Label>
-                        <DatePicker fx:id="to" />
-                        <Button mnemonicParsing="false" onAction="#handleUpdate" text="Update">
+                        </Button>
+                        <Label fx:id="title1" style="-fx-font-weight: bold;" styleClass="title" text="This Week: " />
+                        <Label fx:id="title2" maxWidth="1.7976931348623157E308" styleClass="title" text="21 - 27. November 2022" HBox.hgrow="ALWAYS" />
+                        <ChoiceBox fx:id="period">
                            <HBox.margin>
-                              <Insets left="12.0" />
-                           </HBox.margin></Button>
+                              <Insets left="8.0" />
+                           </HBox.margin></ChoiceBox>
                      </children>
                      <BorderPane.margin>
                         <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
@@ -41,10 +64,10 @@
                   </HBox>
                </top>
                <bottom>
-                  <HBox alignment="CENTER_LEFT" spacing="4.0" BorderPane.alignment="CENTER">
+                  <HBox alignment="CENTER_LEFT" BorderPane.alignment="CENTER">
                      <children>
-                        <Label styleClass="base" text="Total:" />
-                        <TextField fx:id="total" alignment="CENTER" editable="false" prefWidth="80.0" styleClass="base" />
+                        <Label styleClass="base" text="Total: " />
+                        <Label fx:id="total" text="00:00" />
                      </children>
                      <BorderPane.margin>
                         <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />

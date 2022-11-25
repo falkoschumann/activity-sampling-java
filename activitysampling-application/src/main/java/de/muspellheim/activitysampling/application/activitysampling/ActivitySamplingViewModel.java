@@ -12,8 +12,10 @@ import javafx.collections.*;
 
 public class ActivitySamplingViewModel {
   private final ActivitiesService activitiesService;
-  private final Runnable onCountdownElapsed;
-  private final Consumer<String> onError;
+
+  // Events
+  private Runnable onCountdownElapsed = () -> {};
+  private Consumer<String> onError = System.err::println;
 
   // State
   private final ReadOnlyObjectWrapper<Duration> interval;
@@ -34,11 +36,8 @@ public class ActivitySamplingViewModel {
   private final ReadOnlyStringWrapper hoursThisWeekLabelText;
   private final ReadOnlyStringWrapper hoursThisMonthLabelText;
 
-  public ActivitySamplingViewModel(
-      ActivitiesService activitiesService, Runnable onCountdownElapsed, Consumer<String> onError) {
+  public ActivitySamplingViewModel(ActivitiesService activitiesService) {
     this.activitiesService = activitiesService;
-    this.onCountdownElapsed = onCountdownElapsed;
-    this.onError = onError;
 
     interval = new ReadOnlyObjectWrapper<>(Duration.ZERO);
     intervalLogged = new ReadOnlyBooleanWrapper(false);
@@ -77,6 +76,22 @@ public class ActivitySamplingViewModel {
     hoursYesterdayLabelText = new ReadOnlyStringWrapper("00:00");
     hoursThisWeekLabelText = new ReadOnlyStringWrapper("00:00");
     hoursThisMonthLabelText = new ReadOnlyStringWrapper("00:00");
+  }
+
+  public Runnable getOnCountdownElapsed() {
+    return onCountdownElapsed;
+  }
+
+  public void setOnCountdownElapsed(Runnable onCountdownElapsed) {
+    this.onCountdownElapsed = onCountdownElapsed;
+  }
+
+  public Consumer<String> getOnError() {
+    return onError;
+  }
+
+  public void setOnError(Consumer<String> onError) {
+    this.onError = onError;
   }
 
   public BooleanExpression stopMenuItemDisableProperty() {

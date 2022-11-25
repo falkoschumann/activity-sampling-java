@@ -2,4 +2,4 @@ package de.muspellheim.activitysampling.domain;
 
 import java.time.*;
 
-public record TimesheetEntry(String activity, Duration duration) {}
+public record TimesheetEntry(LocalDate date, String notes, Duration hours) {}

@@ -21,16 +21,11 @@ class TimesheetTableCell<T> extends TableCell<TimesheetItem, T> {
     if (empty || item == null) {
       setText(null);
       setGraphic(null);
-      getStyleClass().removeAll("base");
       setTextAlignment(null);
       setOnMouseClicked(null);
     } else {
       setText(item.toString());
       setAlignment(alignment);
-      getStyleClass().add("base");
-      if (getTableRow().getItem().date().isBlank()) {
-        getStyleClass().removeAll("base");
-      }
     }
   }
 }

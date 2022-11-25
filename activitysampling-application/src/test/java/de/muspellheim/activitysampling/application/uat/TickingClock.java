@@ -1,4 +1,4 @@
-package de.muspellheim.activitysampling.application;
+package de.muspellheim.activitysampling.application.uat;
 
 import java.time.*;
 import java.util.*;

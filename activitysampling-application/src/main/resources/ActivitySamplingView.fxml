@@ -1,10 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.*?>
-<?import javafx.stage.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Scene?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.input.KeyCodeCombination?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.stage.Stage?>
+
 <fx:root fx:id="stage" title="Activity Sampling" type="Stage" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.muspellheim.activitysampling.application.activitysampling.ActivitySamplingView">
    <scene>
       <Scene stylesheets="@style.css">
@@ -36,7 +47,10 @@
                         </Menu>
                         <Menu mnemonicParsing="false" text="Report">
                           <items>
-                            <MenuItem mnemonicParsing="false" onAction="#handleTimesheet" text="Timesheet" />
+                            <MenuItem mnemonicParsing="false" onAction="#handleTimesheet" text="Timesheet">
+                                 <accelerator>
+                                    <KeyCodeCombination alt="UP" code="T" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                                 </accelerator></MenuItem>
                           </items>
                         </Menu>
                         <Menu mnemonicParsing="false" text="View">

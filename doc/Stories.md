@@ -20,7 +20,7 @@ Periodically ask the user about their current activity and log it for analysis.
 
 - Show recent activities.
 - Show time summary for today, yesterday, this week and this month.
-- Create timesheet with total hours per activity and day.
+- Create timesheet with date, notes and hours.
 - Create detailed timesheet with start and end time.
 - Show hours by week, month, quarter and year.
 - Show hours by customer, project and task.

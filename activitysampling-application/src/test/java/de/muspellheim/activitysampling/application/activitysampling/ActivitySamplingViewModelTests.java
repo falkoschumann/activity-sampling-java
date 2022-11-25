@@ -36,13 +36,14 @@ class ActivitySamplingViewModelTests {
                     Duration.ofMinutes(10),
                     Duration.ofMinutes(15),
                     Duration.ofMinutes(20))));
+    sut.setOnCountdownElapsed(onCountdownElapsed);
+    sut.setOnError(onError);
     sut.run();
   }
 
   @Test
   void run_ViewIsInitialized() {
     assertAll(
-        "View is initialized",
         () -> assertTrue(sut.stopMenuItemDisableProperty().get(), "Stop menu item disable"),
         () -> assertEquals("", sut.activityTextProperty().get(), "Activity text"),
         () -> assertFalse(sut.formDisableProperty().get(), "Form disable"),
@@ -103,7 +104,6 @@ class ActivitySamplingViewModelTests {
     sut.logActivity();
 
     assertAll(
-        "Leaves form enabled",
         () -> {
           var inOrder = inOrder(activitiesService);
           inOrder.verify(activitiesService).logActivity("foobar");
@@ -122,7 +122,6 @@ class ActivitySamplingViewModelTests {
     sut.logActivity();
 
     assertAll(
-        "Disables form",
         () -> {
           var inOrder = inOrder(activitiesService);
           inOrder.verify(activitiesService).logActivity("foobar");
@@ -150,7 +149,6 @@ class ActivitySamplingViewModelTests {
     sut.setActivity(activity);
 
     assertAll(
-        "Updates form",
         () -> assertEquals("Lorem ipsum", sut.activityTextProperty().get(), "Activity text"),
         () -> assertFalse(sut.logButtonDisableProperty().get(), "Log button disable"));
   }
@@ -161,7 +159,6 @@ class ActivitySamplingViewModelTests {
     sut.startCountdown(Duration.ofMinutes(20));
 
     assertAll(
-        "Disables form and initializes countdown",
         () -> assertFalse(sut.stopMenuItemDisableProperty().get(), "Stop menu item disable"),
         () -> assertTrue(sut.formDisableProperty().get(), "Form disable"),
         () -> assertTrue(sut.logButtonDisableProperty().get(), "Log button disable"),
@@ -180,7 +177,6 @@ class ActivitySamplingViewModelTests {
     sut.progressCountdown(Duration.ofSeconds(1));
 
     assertAll(
-        "Updates countdown",
         () -> assertFalse(sut.stopMenuItemDisableProperty().get(), "Stop menu item disable"),
         () -> assertTrue(sut.formDisableProperty().get(), "Form disable"),
         () -> assertTrue(sut.logButtonDisableProperty().get(), "Log button disable"),
@@ -199,7 +195,6 @@ class ActivitySamplingViewModelTests {
     sut.progressCountdown(Duration.ofSeconds(2));
 
     assertAll(
-        "Updates countdown",
         () -> assertFalse(sut.stopMenuItemDisableProperty().get(), "Stop menu item disable"),
         () -> assertTrue(sut.formDisableProperty().get(), "Form disable"),
         () -> assertTrue(sut.logButtonDisableProperty().get(), "Log button disable"),
@@ -218,7 +213,6 @@ class ActivitySamplingViewModelTests {
     sut.progressCountdown(Duration.ofSeconds(59));
 
     assertAll(
-        "Updates countdown",
         () -> assertFalse(sut.stopMenuItemDisableProperty().get(), "Stop menu item disable"),
         () -> assertTrue(sut.formDisableProperty().get(), "Form disable"),
         () -> assertTrue(sut.logButtonDisableProperty().get(), "Log button disable"),
@@ -238,7 +232,6 @@ class ActivitySamplingViewModelTests {
     sut.progressCountdown(Duration.ofSeconds(60));
 
     assertAll(
-        "Updates countdown and notifies",
         () -> assertFalse(sut.stopMenuItemDisableProperty().get(), "Stop menu item disable"),
         () -> assertFalse(sut.formDisableProperty().get(), "Form disable"),
         () -> assertFalse(sut.logButtonDisableProperty().get(), "Log button disable"),
@@ -258,7 +251,6 @@ class ActivitySamplingViewModelTests {
     sut.stopCountdown();
 
     assertAll(
-        "Enables form",
         () -> assertTrue(sut.stopMenuItemDisableProperty().get(), "Stop menu item disable"),
         () -> assertFalse(sut.formDisableProperty().get(), "Form disable"),
         () -> assertFalse(sut.logButtonDisableProperty().get(), "Log button disable"),

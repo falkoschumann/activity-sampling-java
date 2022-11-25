@@ -10,7 +10,7 @@ and this project adheres to
 
 ## Added
 
-- Create timesheet with total hours per activity and day.
+- Create timesheet with date, notes and hours.
 
 ## [1.1.0] - 2022-11-17
 
