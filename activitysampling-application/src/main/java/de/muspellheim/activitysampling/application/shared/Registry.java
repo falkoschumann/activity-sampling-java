@@ -14,7 +14,7 @@ public class Registry {
     Configuration configuration = Configuration.INSTANCE;
     var file = Paths.get(configuration.getLogFile());
     var clock = configuration.getClock();
-    var eventStore = new CsvEventStore(file);
-    return new ActivitiesServiceImpl(eventStore, clock);
+    var activities = new CsvActivities(file);
+    return new ActivitiesServiceImpl(activities, clock);
   }
 }

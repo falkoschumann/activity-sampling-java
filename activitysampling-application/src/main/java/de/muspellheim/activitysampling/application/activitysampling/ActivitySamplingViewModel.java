@@ -145,7 +145,7 @@ public class ActivitySamplingViewModel {
   public void load() {
     RecentActivities recentActivities;
     try {
-      recentActivities = activitiesService.selectRecentActivities();
+      recentActivities = activitiesService.getRecentActivities();
     } catch (Exception e) {
       var message = Exceptions.joinExceptionMessages("Failed to load activities.", e);
       onError.accept(message);
@@ -155,17 +155,18 @@ public class ActivitySamplingViewModel {
     var items = new ArrayList<ActivityItem>();
     var dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL);
     var timeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
-    for (var day : recentActivities.workingDays()) {
+    for (var day : recentActivities.getWorkingDays()) {
       items.add(new ActivityItem(day.date().format(dateFormatter)));
       for (var activity : day.activities()) {
         items.add(
             new ActivityItem(
-                activity.time().format(timeFormatter) + " - " + activity.description(), activity));
+                activity.timestamp().format(timeFormatter) + " - " + activity.description(),
+                activity));
       }
     }
 
     var timeFormat = "%1$02d:%2$02d";
-    var timeSummary = recentActivities.timeSummary();
+    var timeSummary = recentActivities.getTimeSummary();
     hoursTodayLabelText.set(
         timeFormat.formatted(
             timeSummary.hoursToday().toHours(), timeSummary.hoursToday().toMinutesPart()));
@@ -178,7 +179,6 @@ public class ActivitySamplingViewModel {
     hoursThisMonthLabelText.set(
         timeFormat.formatted(
             timeSummary.hoursThisMonth().toHours(), timeSummary.hoursThisMonth().toMinutesPart()));
-
     this.recentActivities.setAll(items);
   }
 

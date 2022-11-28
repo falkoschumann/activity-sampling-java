@@ -15,27 +15,26 @@ import org.mockito.junit.jupiter.*;
 @ExtendWith(MockitoExtension.class)
 class ActivitySamplingViewModelTests {
   @Mock private ActivitiesService activitiesService;
-
   @Mock private Runnable onCountdownElapsed;
-
   @Mock private Consumer<String> onError;
-
   @InjectMocks private ActivitySamplingViewModel sut;
 
   @BeforeEach
   void init() {
-    when(activitiesService.selectRecentActivities())
-        .thenReturn(
-            new RecentActivities(
-                List.of(
-                    new WorkingDay(
-                        LocalDate.of(2022, 11, 16),
-                        List.of(new Activity(LocalTime.of(16, 16), "Lorem ipsum")))),
-                new TimeSummary(
-                    Duration.ofMinutes(5),
-                    Duration.ofMinutes(10),
-                    Duration.ofMinutes(15),
-                    Duration.ofMinutes(20))));
+    var recentActivities = new RecentActivities(LocalDate.parse("2022-11-16"));
+    recentActivities.apply(
+        new Activity(
+            LocalDateTime.parse("2022-11-16T16:16"), Duration.ofMinutes(5), "Lorem ipsum"));
+    recentActivities.apply(
+        new Activity(
+            LocalDateTime.parse("2022-11-15T15:15"), Duration.ofMinutes(5), "Lorem ipsum"));
+    recentActivities.apply(
+        new Activity(
+            LocalDateTime.parse("2022-11-14T14:14"), Duration.ofMinutes(5), "Lorem ipsum"));
+    recentActivities.apply(
+        new Activity(
+            LocalDateTime.parse("2022-11-07T07:07"), Duration.ofMinutes(5), "Lorem ipsum"));
+    when(activitiesService.getRecentActivities()).thenReturn(recentActivities);
     sut.setOnCountdownElapsed(onCountdownElapsed);
     sut.setOnError(onError);
     sut.run();
@@ -57,11 +56,36 @@ class ActivitySamplingViewModelTests {
                 List.of(
                     new ActivityItem("Mittwoch, 16. November 2022"),
                     new ActivityItem(
-                        "16:16 - Lorem ipsum", new Activity(LocalTime.of(16, 16), "Lorem ipsum"))),
+                        "16:16 - Lorem ipsum",
+                        new Activity(
+                            LocalDateTime.parse("2022-11-16T16:16"),
+                            Duration.ofMinutes(5),
+                            "Lorem ipsum")),
+                    new ActivityItem("Dienstag, 15. November 2022"),
+                    new ActivityItem(
+                        "15:15 - Lorem ipsum",
+                        new Activity(
+                            LocalDateTime.parse("2022-11-15T15:15"),
+                            Duration.ofMinutes(5),
+                            "Lorem ipsum")),
+                    new ActivityItem("Montag, 14. November 2022"),
+                    new ActivityItem(
+                        "14:14 - Lorem ipsum",
+                        new Activity(
+                            LocalDateTime.parse("2022-11-14T14:14"),
+                            Duration.ofMinutes(5),
+                            "Lorem ipsum")),
+                    new ActivityItem("Montag, 7. November 2022"),
+                    new ActivityItem(
+                        "07:07 - Lorem ipsum",
+                        new Activity(
+                            LocalDateTime.parse("2022-11-07T07:07"),
+                            Duration.ofMinutes(5),
+                            "Lorem ipsum"))),
                 sut.getRecentActivities(),
                 "Recent activities"),
         () -> assertEquals("00:05", sut.hoursTodayLabelTextProperty().get()),
-        () -> assertEquals("00:10", sut.hoursYesterdayLabelTextProperty().get()),
+        () -> assertEquals("00:05", sut.hoursYesterdayLabelTextProperty().get()),
         () -> assertEquals("00:15", sut.hoursThisWeekLabelTextProperty().get()),
         () -> assertEquals("00:20", sut.hoursThisMonthLabelTextProperty().get()));
   }
@@ -70,7 +94,7 @@ class ActivitySamplingViewModelTests {
   void load_Failed_NotifyError() {
     doThrow(new IllegalStateException("Something went wrong."))
         .when(activitiesService)
-        .selectRecentActivities();
+        .getRecentActivities();
 
     sut.load();
 
@@ -107,7 +131,7 @@ class ActivitySamplingViewModelTests {
         () -> {
           var inOrder = inOrder(activitiesService);
           inOrder.verify(activitiesService).logActivity("foobar");
-          inOrder.verify(activitiesService).selectRecentActivities();
+          inOrder.verify(activitiesService).getRecentActivities();
         },
         () -> assertFalse(sut.formDisableProperty().get(), "Form disable"),
         () -> assertFalse(sut.logButtonDisableProperty().get(), "Log button disable"));
@@ -125,7 +149,7 @@ class ActivitySamplingViewModelTests {
         () -> {
           var inOrder = inOrder(activitiesService);
           inOrder.verify(activitiesService).logActivity("foobar");
-          inOrder.verify(activitiesService).selectRecentActivities();
+          inOrder.verify(activitiesService).getRecentActivities();
         },
         () -> assertTrue(sut.formDisableProperty().get(), "Form disable"),
         () -> assertTrue(sut.logButtonDisableProperty().get(), "Log button disable"));
@@ -145,7 +169,8 @@ class ActivitySamplingViewModelTests {
 
   @Test
   void setActivity_UpdatesForm() {
-    var activity = new Activity(LocalTime.of(16, 16), "Lorem ipsum");
+    var activity =
+        new Activity(LocalDateTime.of(2022, 11, 26, 16, 16), Duration.ZERO, "Lorem ipsum");
     sut.setActivity(activity);
 
     assertAll(

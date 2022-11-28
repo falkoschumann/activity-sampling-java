@@ -12,6 +12,10 @@ and this project adheres to
 
 - Create timesheet with date, notes and hours.
 
+### Changed
+
+- Save timestamp with local timezone instead of UTC.
+
 ## [1.1.0] - 2022-11-17
 
 ### Added
@@ -33,7 +37,5 @@ and this project adheres to
 - Notify when interval expired.
 
 [Unreleased]: https://github.com/falkoschumann/activity-sampling-java/compare/v1.1.0...HEAD
-
 [1.1.0]: https://github.com/falkoschumann/activity-sampling-java/compare/v1.0.0...v1.1.0
-
 [1.0.0]: https://github.com/falkoschumann/activity-sampling-java/releases/tag/v1.0.0

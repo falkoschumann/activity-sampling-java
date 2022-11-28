@@ -16,21 +16,20 @@ import org.mockito.junit.jupiter.*;
 @ExtendWith(MockitoExtension.class)
 class TimesheetViewModelTests {
   @Mock private ActivitiesService activitiesService;
-
   @Mock private Consumer<String> onError;
 
   private TimesheetViewModel sut;
 
   @BeforeEach
   void init() {
-    when(activitiesService.createTimesheet(any(), any()))
-        .thenReturn(
-            new Timesheet(
-                List.of(
-                    new TimesheetEntry(LocalDate.of(2022, 11, 20), "A1", Duration.ofMinutes(10)),
-                    new TimesheetEntry(LocalDate.of(2022, 11, 20), "A2", Duration.ofMinutes(5)),
-                    new TimesheetEntry(LocalDate.of(2022, 11, 21), "A1", Duration.ofMinutes(5))),
-                Duration.ofMinutes(20)));
+    var timesheet = new Timesheet();
+    timesheet.apply(
+        new Activity(LocalDateTime.parse("2022-11-20T12:00"), Duration.ofMinutes(10), "A1"));
+    timesheet.apply(
+        new Activity(LocalDateTime.parse("2022-11-20T12:00"), Duration.ofMinutes(5), "A2"));
+    timesheet.apply(
+        new Activity(LocalDateTime.parse("2022-11-21T12:00"), Duration.ofMinutes(5), "A1"));
+    when(activitiesService.createTimesheet(any(), any())).thenReturn(timesheet);
     var clock = Clock.fixed(Instant.parse("2022-11-23T20:42:00Z"), ZoneId.systemDefault());
     sut = new TimesheetViewModel(activitiesService, clock);
     sut.setOnError(onError);

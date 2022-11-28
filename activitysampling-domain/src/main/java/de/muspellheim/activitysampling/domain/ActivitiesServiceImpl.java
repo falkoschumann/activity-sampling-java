@@ -3,50 +3,38 @@ package de.muspellheim.activitysampling.domain;
 import java.time.*;
 
 public class ActivitiesServiceImpl implements ActivitiesService {
-  private final EventStore eventStore;
+  private final Activities activities;
   private final Clock clock;
 
-  public ActivitiesServiceImpl(EventStore eventStore) {
-    this(eventStore, Clock.systemUTC());
+  public ActivitiesServiceImpl(Activities activities) {
+    this(activities, Clock.systemUTC());
   }
 
-  public ActivitiesServiceImpl(EventStore eventStore, Clock clock) {
-    this.eventStore = eventStore;
+  public ActivitiesServiceImpl(Activities activities, Clock clock) {
+    this.activities = activities;
     this.clock = clock;
   }
 
   @Override
   public void logActivity(String description) {
-    eventStore.record(
-        new ActivityLoggedEvent(clock.instant(), Duration.ofMinutes(20), description.trim()));
+    // FIXME create activity with parametrized duration
+    activities.append(
+        new Activity(LocalDateTime.now(clock), Duration.ofMinutes(20), description.trim()));
   }
 
   @Override
-  public RecentActivities selectRecentActivities() {
-    var today = LocalDate.ofInstant(clock.instant(), ZoneId.systemDefault());
-    var workingDaysProjection = new WorkingDaysProjection(today);
-    var timeSummaryProjection = new TimeSummaryProjection(today);
-    eventStore
-        .replay()
-        .forEach(
-            e -> {
-              workingDaysProjection.apply(e);
-              timeSummaryProjection.apply(e);
-            });
-    return new RecentActivities(workingDaysProjection.get(), timeSummaryProjection.get());
+  public RecentActivities getRecentActivities() {
+    var today = LocalDate.now(clock);
+    var from = today.minusDays(30);
+    var recentActivities = new RecentActivities(today);
+    activities.findInPeriod(from, today).forEach(recentActivities::apply);
+    return recentActivities;
   }
 
   @Override
   public Timesheet createTimesheet(LocalDate from, LocalDate to) {
-    var timesheetProjection = new TimesheetProjection(from, to);
-    var totalProjection = new TotalProjection(from, to);
-    eventStore
-        .replay()
-        .forEach(
-            event -> {
-              timesheetProjection.apply(event);
-              totalProjection.apply(event);
-            });
-    return new Timesheet(timesheetProjection.get(), totalProjection.get());
+    var timesheet = new Timesheet();
+    activities.findInPeriod(from, to).forEach(timesheet::apply);
+    return timesheet;
   }
 }

@@ -5,7 +5,7 @@ import java.time.*;
 public interface ActivitiesService {
   void logActivity(String description);
 
-  RecentActivities selectRecentActivities();
+  RecentActivities getRecentActivities();
 
   Timesheet createTimesheet(LocalDate from, LocalDate to);
 }

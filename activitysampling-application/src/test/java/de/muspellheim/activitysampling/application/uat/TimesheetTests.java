@@ -2,6 +2,7 @@ package de.muspellheim.activitysampling.application.uat;
 
 import org.junit.jupiter.api.*;
 
+@Disabled
 class TimesheetTests {
   @BeforeEach
   void init() {
@@ -9,7 +10,6 @@ class TimesheetTests {
   }
 
   @Test
-  @Disabled
   void mainScenario() {
     // TODO implement acceptance test for timesheet
     /*

@@ -173,7 +173,7 @@ public class TimesheetViewModel {
     var dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM);
     var timeFormat = "%1$02d:%2$02d";
     var items = new ArrayList<TimesheetItem>();
-    for (var entry : timesheet.entries()) {
+    for (var entry : timesheet.getEntries()) {
       items.add(
           new TimesheetItem(
               dateFormatter.format(entry.date()),
@@ -181,6 +181,7 @@ public class TimesheetViewModel {
               timeFormat.formatted(entry.hours().toHours(), entry.hours().toMinutesPart())));
     }
     timesheetItems.setAll(items);
-    total.set(timeFormat.formatted(timesheet.total().toHours(), timesheet.total().toMinutesPart()));
+    total.set(
+        timeFormat.formatted(timesheet.getTotal().toHours(), timesheet.getTotal().toMinutesPart()));
   }
 }
