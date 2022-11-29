@@ -39,10 +39,10 @@ public class ActivitySamplingViewModel {
   public ActivitySamplingViewModel(ActivitiesService activitiesService) {
     this.activitiesService = activitiesService;
 
-    interval = new ReadOnlyObjectWrapper<>(Duration.ZERO);
+    interval = new ReadOnlyObjectWrapper<>(Duration.ofMinutes(20));
     intervalLogged = new ReadOnlyBooleanWrapper(false);
     countdownActive = new ReadOnlyBooleanWrapper(false);
-    countdown = new ReadOnlyObjectWrapper<>(Duration.ZERO);
+    countdown = new ReadOnlyObjectWrapper<>(interval.get());
 
     stopMenuItemDisable =
         Bindings.createBooleanBinding(() -> countdownActive.not().get(), countdownActive);
@@ -184,7 +184,7 @@ public class ActivitySamplingViewModel {
 
   public void logActivity() {
     try {
-      activitiesService.logActivity(activityText.get());
+      activitiesService.logActivity(activityText.get(), interval.get());
       intervalLogged.set(true);
     } catch (Exception e) {
       var message = Exceptions.joinExceptionMessages("Failed to log activity.", e);

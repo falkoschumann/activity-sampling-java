@@ -49,7 +49,7 @@ class ActivitySamplingViewModelTests {
         () -> assertTrue(sut.logButtonDisableProperty().get(), "Log button disable"),
         () ->
             assertEquals(
-                "00:00:00", sut.countdownLabelTextProperty().get(), "Countdown label text"),
+                "00:20:00", sut.countdownLabelTextProperty().get(), "Countdown label text"),
         () -> assertEquals(0.0, sut.countdownProgressProperty().get(), "Countdown progress"),
         () ->
             assertEquals(
@@ -130,7 +130,7 @@ class ActivitySamplingViewModelTests {
     assertAll(
         () -> {
           var inOrder = inOrder(activitiesService);
-          inOrder.verify(activitiesService).logActivity("foobar");
+          inOrder.verify(activitiesService).logActivity("foobar", Duration.ofMinutes(20));
           inOrder.verify(activitiesService).getRecentActivities();
         },
         () -> assertFalse(sut.formDisableProperty().get(), "Form disable"),
@@ -148,7 +148,7 @@ class ActivitySamplingViewModelTests {
     assertAll(
         () -> {
           var inOrder = inOrder(activitiesService);
-          inOrder.verify(activitiesService).logActivity("foobar");
+          inOrder.verify(activitiesService).logActivity("foobar", Duration.ofMinutes(1));
           inOrder.verify(activitiesService).getRecentActivities();
         },
         () -> assertTrue(sut.formDisableProperty().get(), "Form disable"),
@@ -159,7 +159,7 @@ class ActivitySamplingViewModelTests {
   void logActivity_Failed_NotifyError() {
     doThrow(new IllegalStateException("Something went wrong."))
         .when(activitiesService)
-        .logActivity(any());
+        .logActivity(any(), any());
     sut.activityTextProperty().set("foobar");
 
     sut.logActivity();
@@ -170,7 +170,7 @@ class ActivitySamplingViewModelTests {
   @Test
   void setActivity_UpdatesForm() {
     var activity =
-        new Activity(LocalDateTime.of(2022, 11, 26, 16, 16), Duration.ZERO, "Lorem ipsum");
+        new Activity(LocalDateTime.of(2022, 11, 26, 16, 16), Duration.ofMinutes(20), "Lorem ipsum");
     sut.setActivity(activity);
 
     assertAll(

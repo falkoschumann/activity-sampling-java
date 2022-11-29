@@ -16,10 +16,8 @@ public class ActivitiesServiceImpl implements ActivitiesService {
   }
 
   @Override
-  public void logActivity(String description) {
-    // FIXME create activity with parametrized duration
-    activities.append(
-        new Activity(LocalDateTime.now(clock), Duration.ofMinutes(20), description.trim()));
+  public void logActivity(String description, Duration duration) {
+    activities.append(new Activity(LocalDateTime.now(clock), duration, description.trim()));
   }
 
   @Override

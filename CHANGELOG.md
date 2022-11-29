@@ -16,6 +16,10 @@ and this project adheres to
 
 - Save timestamp with local timezone instead of UTC.
 
+### Fixed
+
+- Duration was always logged with 20 minutes. 
+
 ## [1.1.0] - 2022-11-17
 
 ### Added

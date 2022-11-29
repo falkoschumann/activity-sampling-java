@@ -23,7 +23,7 @@ class ActivitiesServiceTests {
   @Test
   void logActivity_RecordsActivityLogged() {
     clock.setTimestamp(Instant.parse("2022-11-16T11:26:00Z"));
-    sut.logActivity("Lorem ipsum");
+    sut.logActivity("Lorem ipsum", Duration.ofMinutes(20));
 
     verify(activities)
         .append(
@@ -34,12 +34,12 @@ class ActivitiesServiceTests {
   @Test
   void logActivity_TrimsDescription() {
     clock.setTimestamp(Instant.parse("2022-11-16T11:26:00Z"));
-    sut.logActivity("  Lorem ipsum ");
+    sut.logActivity("  Lorem ipsum ", Duration.ofMinutes(30));
 
     verify(activities)
         .append(
             new Activity(
-                LocalDateTime.parse("2022-11-16T12:26:00"), Duration.ofMinutes(20), "Lorem ipsum"));
+                LocalDateTime.parse("2022-11-16T12:26:00"), Duration.ofMinutes(30), "Lorem ipsum"));
   }
 
   @Test
