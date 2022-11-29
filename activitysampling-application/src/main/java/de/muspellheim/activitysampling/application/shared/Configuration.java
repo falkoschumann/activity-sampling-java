@@ -6,7 +6,7 @@ import java.time.*;
 public class Configuration {
   private static final String PROP_LOG_FILE = "activitySampling.logFile";
   private static final String DEFAULT_LOG_FILE =
-      System.getProperty("user.home") + System.lineSeparator() + "activity-log.csv";
+      System.getProperty("user.home") + System.getProperty("file.separator") + "activity-log.csv";
 
   public static final Configuration INSTANCE = new Configuration();
 
