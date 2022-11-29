@@ -1,20 +1,19 @@
 package de.muspellheim.activitysampling.application.shared;
 
+import java.nio.file.*;
 import java.time.*;
 
 public class Configuration {
-  public static final Configuration INSTANCE = new Configuration();
-
   private static final String PROP_LOG_FILE = "activitySampling.logFile";
   private static final String DEFAULT_LOG_FILE =
       System.getProperty("user.home") + System.lineSeparator() + "activity-log.csv";
 
-  private Clock clock = Clock.systemDefaultZone();
-  private String logFile;
+  public static final Configuration INSTANCE = new Configuration();
 
-  private Configuration() {
-    logFile = System.getProperty(PROP_LOG_FILE, DEFAULT_LOG_FILE);
-  }
+  private Clock clock = Clock.systemDefaultZone();
+  private Path logFile = Paths.get(System.getProperty(PROP_LOG_FILE, DEFAULT_LOG_FILE));
+
+  private Configuration() {}
 
   public Clock getClock() {
     return clock;
@@ -24,11 +23,11 @@ public class Configuration {
     this.clock = clock;
   }
 
-  public String getLogFile() {
+  public Path getLogFile() {
     return logFile;
   }
 
-  public void setLogFile(String logFile) {
+  public void setLogFile(Path logFile) {
     this.logFile = logFile;
   }
 }

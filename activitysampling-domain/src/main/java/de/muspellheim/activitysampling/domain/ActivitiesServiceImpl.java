@@ -7,7 +7,7 @@ public class ActivitiesServiceImpl implements ActivitiesService {
   private final Clock clock;
 
   public ActivitiesServiceImpl(Activities activities) {
-    this(activities, Clock.systemUTC());
+    this(activities, Clock.systemDefaultZone());
   }
 
   public ActivitiesServiceImpl(Activities activities, Clock clock) {

@@ -2,7 +2,6 @@ package de.muspellheim.activitysampling.application.shared;
 
 import de.muspellheim.activitysampling.domain.*;
 import de.muspellheim.activitysampling.infrastructure.*;
-import java.nio.file.*;
 
 public class Registry {
 
@@ -12,7 +11,7 @@ public class Registry {
 
   public static ActivitiesService getActivitiesService() {
     Configuration configuration = Configuration.INSTANCE;
-    var file = Paths.get(configuration.getLogFile());
+    var file = configuration.getLogFile();
     var clock = configuration.getClock();
     var activities = new CsvActivities(file);
     return new ActivitiesServiceImpl(activities, clock);

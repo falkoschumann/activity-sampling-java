@@ -17,9 +17,9 @@ class SystemUnderTest {
   }
 
   void reset() {
-    var storeFile = Paths.get("build/activity-log.csv");
+    var logFile = Paths.get("build/activity-log.csv");
     try {
-      Files.deleteIfExists(storeFile);
+      Files.deleteIfExists(logFile);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -28,7 +28,7 @@ class SystemUnderTest {
 
     Configuration configuration = Configuration.INSTANCE;
     configuration.setClock(clock);
-    configuration.setLogFile(storeFile.toString());
+    configuration.setLogFile(logFile);
 
     ActivitiesService activitiesService = Registry.getActivitiesService();
     activitySamplingViewModel = new ActivitySamplingViewModel(activitiesService);

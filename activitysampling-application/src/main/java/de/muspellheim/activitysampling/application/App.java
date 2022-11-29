@@ -2,6 +2,7 @@ package de.muspellheim.activitysampling.application;
 
 import de.muspellheim.activitysampling.application.activitysampling.*;
 import de.muspellheim.activitysampling.application.shared.*;
+import java.nio.file.*;
 import javafx.application.*;
 import javafx.stage.*;
 
@@ -11,7 +12,8 @@ public class App extends Application {
   @Override
   public void init() {
     if (getParameters().getNamed().containsKey(ARG_LOG_FILE)) {
-      Configuration.INSTANCE.setLogFile(getParameters().getNamed().get(ARG_LOG_FILE));
+      var logFile = Paths.get(getParameters().getNamed().get(ARG_LOG_FILE));
+      Configuration.INSTANCE.setLogFile(logFile);
     }
   }
 
