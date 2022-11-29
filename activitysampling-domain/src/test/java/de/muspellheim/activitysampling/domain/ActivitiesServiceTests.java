@@ -304,4 +304,83 @@ class ActivitiesServiceTests {
                 "entries"),
         () -> assertEquals(Duration.ofMinutes(160), timesheet.getTotal(), "total"));
   }
+
+  @Test
+  @Disabled
+  void createDetailedTimesheet() {
+    when(activities.findAll())
+        .thenReturn(
+            List.of(
+                new Activity(
+                    LocalDateTime.parse("2022-11-29T09:20:00"), Duration.ofMinutes(20), "A1"),
+                new Activity(
+                    LocalDateTime.parse("2022-11-29T09:40:00"), Duration.ofMinutes(20), "A1"),
+                new Activity(
+                    LocalDateTime.parse("2022-11-29T10:00:00"), Duration.ofMinutes(20), "A1"),
+                new Activity(
+                    LocalDateTime.parse("2022-11-29T10:20:00"), Duration.ofMinutes(20), "A1"),
+                new Activity(
+                    LocalDateTime.parse("2022-11-29T10:30:00"), Duration.ofMinutes(20), "A2"),
+                new Activity(
+                    LocalDateTime.parse("2022-11-29T11:00:00"), Duration.ofMinutes(20), "A2"),
+                new Activity(
+                    LocalDateTime.parse("2022-11-29T11:20:00"), Duration.ofMinutes(20), "A2"),
+                new Activity(
+                    LocalDateTime.parse("2022-11-29T11:40:00"), Duration.ofMinutes(20), "A2"),
+                new Activity(
+                    LocalDateTime.parse("2022-11-29T12:00:00"), Duration.ofMinutes(20), "A2"),
+                // Break
+                new Activity(
+                    LocalDateTime.parse("2022-11-29T12:40:00"), Duration.ofMinutes(20), "A1"),
+                new Activity(
+                    LocalDateTime.parse("2022-11-29T13:00:00"), Duration.ofMinutes(20), "A1"),
+                new Activity(
+                    LocalDateTime.parse("2022-11-29T13:20:00"), Duration.ofMinutes(20), "A3"),
+                new Activity(
+                    LocalDateTime.parse("2022-11-29T13:40:00"), Duration.ofMinutes(20), "A3"),
+                new Activity(
+                    LocalDateTime.parse("2022-11-29T14:00:00"), Duration.ofMinutes(20), "A3"),
+                new Activity(
+                    LocalDateTime.parse("2022-11-29T14:20:00"), Duration.ofMinutes(20), "A2"),
+                new Activity(
+                    LocalDateTime.parse("2022-11-29T14:40:00"), Duration.ofMinutes(20), "A2"),
+                new Activity(
+                    LocalDateTime.parse("2022-11-29T15:00:00"), Duration.ofMinutes(20), "A2"),
+                new Activity(
+                    LocalDateTime.parse("2022-11-29T15:20:00"), Duration.ofMinutes(20), "A2"),
+                new Activity(
+                    LocalDateTime.parse("2022-11-29T15:40:00"), Duration.ofMinutes(20), "A2"),
+                new Activity(
+                    LocalDateTime.parse("2022-11-29T16:00:00"), Duration.ofMinutes(20), "A2"),
+                new Activity(
+                    LocalDateTime.parse("2022-11-29T16:20:00"), Duration.ofMinutes(20), "A2"),
+                new Activity(
+                    LocalDateTime.parse("2022-11-29T16:40:00"), Duration.ofMinutes(20), "A2"),
+                new Activity(
+                    LocalDateTime.parse("2022-11-29T17:00:00"), Duration.ofMinutes(20), "A2")));
+
+    var timesheet =
+        sut.createTimesheet(LocalDate.parse("2022-11-29"), LocalDate.parse("2022-11-29"));
+
+    assertAll(
+        "Detailed timesheet",
+        () ->
+            assertEquals(
+                List.of(
+                    // TODO change locale date to locale date time
+                    new TimesheetEntry(
+                        LocalDate.parse("2022-11-29T09:00"), "A1", Duration.ofMinutes(80)),
+                    new TimesheetEntry(
+                        LocalDate.parse("2022-11-29T10:20"), "A2", Duration.ofMinutes(100)),
+                    // 20 min break
+                    new TimesheetEntry(
+                        LocalDate.parse("2022-11-29T12:20"), "A1", Duration.ofMinutes(40)),
+                    new TimesheetEntry(
+                        LocalDate.parse("2022-11-29T13:00"), "A3", Duration.ofMinutes(60)),
+                    new TimesheetEntry(
+                        LocalDate.parse("2022-11-29T14:00"), "A2", Duration.ofMinutes(180))),
+                timesheet.getEntries(),
+                "entries"),
+        () -> assertEquals(Duration.ofMinutes(160), timesheet.getTotal(), "total"));
+  }
 }
