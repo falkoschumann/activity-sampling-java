@@ -35,8 +35,8 @@ class ActivitySamplingViewModelTests {
         new Activity(
             LocalDateTime.parse("2022-11-07T07:07"), Duration.ofMinutes(5), "Lorem ipsum"));
     when(activitiesService.getRecentActivities()).thenReturn(recentActivities);
-    sut.setOnCountdownElapsed(onCountdownElapsed);
-    sut.setOnError(onError);
+    sut.addOnCountdownElapsedListener(v -> onCountdownElapsed.run());
+    sut.addOnErrorListener(onError);
     sut.run();
   }
 
@@ -265,6 +265,25 @@ class ActivitySamplingViewModelTests {
                 "00:01:00", sut.countdownLabelTextProperty().get(), "Countdown label text"),
         () -> assertEquals(0.0, sut.countdownProgressProperty().get(), "Countdown progress"),
         () -> verify(onCountdownElapsed, times(1)).run());
+  }
+
+  @Test
+  void progressCountdown_CountdownIsNotActive_DoesNothing() {
+    sut.activityTextProperty().set("foobar");
+    sut.startCountdown(Duration.ofMinutes(1));
+    sut.stopCountdown();
+
+    sut.progressCountdown(Duration.ofSeconds(10));
+
+    assertAll(
+        () -> assertTrue(sut.stopMenuItemDisableProperty().get(), "Stop menu item disable"),
+        () -> assertFalse(sut.formDisableProperty().get(), "Form disable"),
+        () -> assertFalse(sut.logButtonDisableProperty().get(), "Log button disable"),
+        () ->
+            assertEquals(
+                "00:01:00", sut.countdownLabelTextProperty().get(), "Countdown label text"),
+        () -> assertEquals(0.0, sut.countdownProgressProperty().get(), "Countdown progress"),
+        () -> verify(onCountdownElapsed, never()).run());
   }
 
   @Test

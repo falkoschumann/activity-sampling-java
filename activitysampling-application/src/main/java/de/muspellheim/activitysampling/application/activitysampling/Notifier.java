@@ -1,19 +1,25 @@
 package de.muspellheim.activitysampling.application.activitysampling;
 
 import java.awt.*;
+import java.time.*;
+import javafx.application.*;
 
 class Notifier {
+  private final ActivitySamplingViewModel viewModel;
   private TrayIcon trayIcon;
 
-  Notifier() {
+  Notifier(ActivitySamplingViewModel viewModel) {
+    this.viewModel = viewModel;
+    viewModel.addOnCountdownElapsedListener(v -> showNotification());
     if (SystemTray.isSupported()) {
       EventQueue.invokeLater(
           () -> {
-            String imageUrl = getImageUrl();
+            var imageUrl = getImageUrl();
             var url = getClass().getResource(imageUrl);
             var image = Toolkit.getDefaultToolkit().getImage(url);
             var tray = SystemTray.getSystemTray();
-            trayIcon = new TrayIcon(image, "Activity Sampling");
+            var menu = createPopupMenu();
+            trayIcon = new TrayIcon(image, "Activity Sampling", menu);
             trayIcon.setImageAutoSize(true);
             try {
               tray.add(trayIcon);
@@ -49,7 +55,56 @@ class Notifier {
         .isIdentity();
   }
 
-  void showNotification() {
+  private PopupMenu createPopupMenu() {
+    var menu = new PopupMenu();
+
+    var startMenu = new Menu("Start");
+    menu.add(startMenu);
+
+    var start5minMEnuItem = new MenuItem("5 min");
+    start5minMEnuItem.addActionListener(e -> start(Duration.ofMinutes(5)));
+    startMenu.add(start5minMEnuItem);
+
+    var start10minMenuItem = new MenuItem("10 min");
+    start10minMenuItem.addActionListener(e -> start(Duration.ofMinutes(10)));
+    startMenu.add(start10minMenuItem);
+
+    var start15minMenuItem = new MenuItem("15 min");
+    start15minMenuItem.addActionListener(e -> start(Duration.ofMinutes(15)));
+    startMenu.add(start15minMenuItem);
+
+    var start20MinMenuItem = new MenuItem("20 min");
+    start20MinMenuItem.addActionListener(e -> start(Duration.ofMinutes(20)));
+    startMenu.add(start20MinMenuItem);
+
+    var start30minMenuItem = new MenuItem("30 min");
+    start30minMenuItem.addActionListener(e -> start(Duration.ofMinutes(30)));
+    startMenu.add(start30minMenuItem);
+
+    var start60minMenuItem = new MenuItem("60 min");
+    start60minMenuItem.addActionListener(e -> start(Duration.ofMinutes(60)));
+    startMenu.add(start60minMenuItem);
+
+    var start1minMenuItem = new MenuItem("1 min");
+    start1minMenuItem.addActionListener(e -> start(Duration.ofMinutes(1)));
+    startMenu.add(start1minMenuItem);
+
+    var stopMenuItem = new MenuItem("Stop");
+    stopMenuItem.addActionListener(e -> stop());
+    menu.add(stopMenuItem);
+
+    return menu;
+  }
+
+  private void start(Duration duration) {
+    Platform.runLater(() -> viewModel.startCountdown(duration));
+  }
+
+  private void stop() {
+    Platform.runLater(viewModel::stopCountdown);
+  }
+
+  private void showNotification() {
     if (trayIcon == null) {
       return;
     }

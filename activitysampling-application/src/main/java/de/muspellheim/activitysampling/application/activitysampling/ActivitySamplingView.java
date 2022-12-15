@@ -3,9 +3,6 @@ package de.muspellheim.activitysampling.application.activitysampling;
 import de.muspellheim.activitysampling.application.shared.*;
 import de.muspellheim.activitysampling.application.timesheet.*;
 import java.time.*;
-import java.util.*;
-import java.util.concurrent.*;
-import javafx.application.*;
 import javafx.fxml.*;
 import javafx.scene.control.*;
 import javafx.stage.*;
@@ -25,13 +22,11 @@ public class ActivitySamplingView {
   @FXML private Label hoursThisWeekLabel;
   @FXML private Label hoursThisMonthLabel;
 
-  private final Notifier notifier = new Notifier();
-
   private final ActivitySamplingViewModel viewModel =
       new ActivitySamplingViewModel(Registry.getActivitiesService());
 
-  private final Timer timer = new Timer("System clock", true);
-  private CountdownTask countdownTask;
+  private final SystemClock systemClock = new SystemClock();
+  private final Notifier notifier = new Notifier(viewModel);
 
   public static ActivitySamplingView newInstance(Stage stage) {
     String file = "/ActivitySamplingView.fxml";
@@ -48,8 +43,8 @@ public class ActivitySamplingView {
 
   @FXML
   private void initialize() {
-    viewModel.setOnCountdownElapsed(notifier::showNotification);
-    viewModel.setOnError(ErrorView::handleError);
+    systemClock.addOnTickListener(viewModel::progressCountdown);
+    viewModel.addOnErrorListener(ErrorView::handleError);
     stage.setOnCloseRequest(e -> notifier.dispose());
     menuBar.setUseSystemMenuBar(true);
     stopMenuItem.disableProperty().bind(viewModel.stopMenuItemDisableProperty());
@@ -114,20 +109,12 @@ public class ActivitySamplingView {
   }
 
   private void startCountdown(Duration interval) {
-    stopCountdown();
     viewModel.startCountdown(interval);
-    countdownTask = new CountdownTask();
-    timer.scheduleAtFixedRate(countdownTask, 0, TimeUnit.SECONDS.toMillis(1));
   }
 
   @FXML
   private void handleStop() {
-    stopCountdown();
     viewModel.stopCountdown();
-  }
-
-  private void stopCountdown() {
-    Optional.ofNullable(countdownTask).ifPresent(TimerTask::cancel);
   }
 
   @FXML
@@ -144,12 +131,5 @@ public class ActivitySamplingView {
   @FXML
   private void handleLog() {
     viewModel.logActivity();
-  }
-
-  private class CountdownTask extends TimerTask {
-    @Override
-    public void run() {
-      Platform.runLater(() -> viewModel.progressCountdown(Duration.ofSeconds(1)));
-    }
   }
 }

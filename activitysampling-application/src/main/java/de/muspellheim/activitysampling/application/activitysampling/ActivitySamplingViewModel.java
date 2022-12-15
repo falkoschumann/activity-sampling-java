@@ -14,8 +14,8 @@ public class ActivitySamplingViewModel {
   private final ActivitiesService activitiesService;
 
   // Events
-  private Runnable onCountdownElapsed = () -> {};
-  private Consumer<String> onError = System.err::println;
+  private EventEmitter<Void> onCountdownElapsed = new EventEmitter<>();
+  private EventEmitter<String> onError = new EventEmitter<>();
 
   // State
   private final ReadOnlyObjectWrapper<Duration> interval;
@@ -78,20 +78,20 @@ public class ActivitySamplingViewModel {
     hoursThisMonthLabelText = new ReadOnlyStringWrapper("00:00");
   }
 
-  public Runnable getOnCountdownElapsed() {
-    return onCountdownElapsed;
+  public void addOnCountdownElapsedListener(Consumer<Void> listener) {
+    onCountdownElapsed.addListener(listener);
   }
 
-  public void setOnCountdownElapsed(Runnable onCountdownElapsed) {
-    this.onCountdownElapsed = onCountdownElapsed;
+  public void removeOnCountdownElapsedListener(Consumer<Void> listener) {
+    onCountdownElapsed.removeListener(listener);
   }
 
-  public Consumer<String> getOnError() {
-    return onError;
+  public void addOnErrorListener(Consumer<String> listener) {
+    onError.addListener(listener);
   }
 
-  public void setOnError(Consumer<String> onError) {
-    this.onError = onError;
+  public void removeOnErrorListener(Consumer<String> listener) {
+    onError.removeListener(listener);
   }
 
   public BooleanExpression stopMenuItemDisableProperty() {
@@ -148,7 +148,7 @@ public class ActivitySamplingViewModel {
       recentActivities = activitiesService.getRecentActivities();
     } catch (Exception e) {
       var message = Exceptions.joinExceptionMessages("Failed to load activities.", e);
-      onError.accept(message);
+      onError.emit(message);
       return;
     }
 
@@ -188,7 +188,7 @@ public class ActivitySamplingViewModel {
       intervalLogged.set(true);
     } catch (Exception e) {
       var message = Exceptions.joinExceptionMessages("Failed to log activity.", e);
-      onError.accept(message);
+      onError.emit(message);
       return;
     }
 
@@ -207,10 +207,14 @@ public class ActivitySamplingViewModel {
   }
 
   public void progressCountdown(Duration duration) {
+    if (!countdownActive.get()) {
+      return;
+    }
+
     countdown.set(countdown.get().minus(duration));
     if (countdown.get().isZero()) {
       intervalLogged.set(false);
-      onCountdownElapsed.run();
+      onCountdownElapsed.emit(null);
       countdown.set(interval.get());
     }
   }
