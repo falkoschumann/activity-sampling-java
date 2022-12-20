@@ -1,3 +1,8 @@
+/*
+ * Activity Sampling - Domain
+ * Copyright (c) 2022 Falko Schumann <falko.schumann@muspellheim.de>
+ */
+
 package de.muspellheim.activitysampling.domain;
 
 import java.time.*;
@@ -7,6 +12,19 @@ public class Timesheet {
   private final SortedMap<LocalDate, SortedMap<String, Duration>> activitiesPerDay =
       new TreeMap<>();
   private Duration total = Duration.ZERO;
+
+  public void apply(Activity activity) {
+    var date = activity.timestamp().toLocalDate();
+    if (!activitiesPerDay.containsKey(date)) {
+      activitiesPerDay.put(date, new TreeMap<>());
+    }
+    var activities = activitiesPerDay.get(date);
+    var duration =
+        activities.getOrDefault(activity.description(), Duration.ZERO).plus(activity.duration());
+    activities.put(activity.description(), duration);
+
+    total = total.plus(activity.duration());
+  }
 
   public Iterable<TimesheetEntry> getEntries() {
     var entries = new ArrayList<TimesheetEntry>();
@@ -20,17 +38,5 @@ public class Timesheet {
 
   public Duration getTotal() {
     return total;
-  }
-
-  public void apply(Activity activity) {
-    var date = activity.timestamp().toLocalDate();
-    var activities = activitiesPerDay.getOrDefault(date, new TreeMap<>());
-    activitiesPerDay.put(date, activities);
-
-    var duration = activities.getOrDefault(activity.description(), Duration.ZERO);
-    duration = duration.plus(activity.duration());
-    activities.put(activity.description(), duration);
-
-    total = total.plus(activity.duration());
   }
 }

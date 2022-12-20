@@ -1,0 +1,5 @@
+/*
+ * Activity Sampling - Domain
+ * Copyright (c) $YEAR Falko Schumann <falko.schumann@muspellheim.de>
+ */
+

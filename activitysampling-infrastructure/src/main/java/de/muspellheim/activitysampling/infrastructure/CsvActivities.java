@@ -1,3 +1,8 @@
+/*
+ * Activity Sampling - Infrastructure
+ * Copyright (c) 2022 Falko Schumann <falko.schumann@muspellheim.de>
+ */
+
 package de.muspellheim.activitysampling.infrastructure;
 
 import de.muspellheim.activitysampling.domain.*;
@@ -8,7 +13,7 @@ import java.time.temporal.*;
 import java.util.*;
 import org.apache.commons.csv.*;
 
-public class CsvActivities extends ActivitiesBase {
+public class CsvActivities implements Activities {
   private static final String COLUMN_TIMESTAMP = "Timestamp";
   private static final String COLUMN_DURATION = "Duration";
   private static final String COLUMN_DESCRIPTION = "Description";
@@ -20,7 +25,7 @@ public class CsvActivities extends ActivitiesBase {
   }
 
   @Override
-  public List<Activity> findAll() {
+  public List<Activity> findInPeriod(LocalDate from, LocalDate to) {
     try (var parser = newParser()) {
       return parser.stream()
           .map(
@@ -29,6 +34,11 @@ public class CsvActivities extends ActivitiesBase {
                       LocalDateTime.parse(record.get(COLUMN_TIMESTAMP)),
                       Duration.parse(record.get(COLUMN_DURATION)),
                       record.get(COLUMN_DESCRIPTION)))
+          .filter(
+              a -> {
+                var date = a.timestamp().toLocalDate();
+                return !date.isBefore(from) && !date.isAfter(to);
+              })
           .toList();
     } catch (NoSuchFileException e) {
       return List.of();

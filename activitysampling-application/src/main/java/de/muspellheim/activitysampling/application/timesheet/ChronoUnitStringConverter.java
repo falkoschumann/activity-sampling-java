@@ -1,3 +1,8 @@
+/*
+ * Activity Sampling - Application
+ * Copyright (c) 2022 Falko Schumann <falko.schumann@muspellheim.de>
+ */
+
 package de.muspellheim.activitysampling.application.timesheet;
 
 import java.time.temporal.*;

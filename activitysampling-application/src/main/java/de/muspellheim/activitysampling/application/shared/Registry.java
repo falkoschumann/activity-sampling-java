@@ -1,3 +1,8 @@
+/*
+ * Activity Sampling - Application
+ * Copyright (c) 2022 Falko Schumann <falko.schumann@muspellheim.de>
+ */
+
 package de.muspellheim.activitysampling.application.shared;
 
 import de.muspellheim.activitysampling.domain.*;
@@ -14,6 +19,8 @@ public class Registry {
     var file = configuration.getLogFile();
     var clock = configuration.getClock();
     var activities = new CsvActivities(file);
-    return new ActivitiesServiceImpl(activities, clock);
+    var service = new ActivitiesServiceImpl(activities);
+    service.setClock(clock);
+    return service;
   }
 }

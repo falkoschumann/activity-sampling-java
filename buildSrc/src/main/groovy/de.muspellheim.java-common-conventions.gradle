@@ -5,20 +5,7 @@ plugins {
   id 'java'
   id 'jvm-test-suite'
   id 'com.diffplug.spotless'
-}
-
-repositories {
-  mavenCentral()
-}
-
-dependencies {
-  compileOnly 'org.projectlombok:lombok:1.18.24'
-  annotationProcessor 'org.projectlombok:lombok:1.18.24'
-  testCompileOnly 'org.projectlombok:lombok:1.18.24'
-  testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
-  testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
-  testImplementation 'org.mockito:mockito-core:4.9.0'
-  testImplementation 'org.mockito:mockito-junit-jupiter:4.9.0'
+  id 'io.freefair.lombok'
 }
 
 version = rootProject.version
@@ -27,20 +14,42 @@ ext {
   copyrightYear = LocalDate.now().year
 }
 
-testing {
-  suites {
-    test {
-      useJUnitJupiter()
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
+  testImplementation 'org.mockito:mockito-core:4.9.0'
+  testImplementation 'org.mockito:mockito-junit-jupiter:4.9.0'
+}
+
+compileJava {
+  options.release = 17
+  options.encoding = 'UTF-8'
+}
+
+tasks {
+  processResources {
+    filesMatching('**/*.properties') {
+      expand([version: version, copyrightYear: copyrightYear])
     }
   }
+}
+
+compileTestJava {
+  options.release = 17
+  options.encoding = 'UTF-8'
 }
 
 test {
   systemProperty "user.country", "DE"
   systemProperty "user.language", "de"
   systemProperty "user.timezone", "Europe/Berlin"
+  useJUnitPlatform()
   testLogging {
     events "passed", "skipped", "failed"
+    showExceptions = true
     exceptionFormat = 'full'
   }
   finalizedBy jacocoTestReport
@@ -53,5 +62,6 @@ jacocoTestReport {
 spotless {
   java {
     googleJavaFormat()
+    licenseHeaderFile 'config/LicenseHeader.txt'
   }
 }

@@ -6,16 +6,15 @@ plugins {
 
 jlink {
   options = [
-    '--strip-native-commands',
-    '--strip-debug',
-    '--no-man-pages',
-    '--no-header-files',
     '--compress', '2',
     '--include-locales', 'en',
+    '--no-header-files',
+    '--no-man-pages',
+    '--strip-native-commands',
+    '--strip-debug',
   ]
   jpackage {
     imageOptions += [
-      '--description', 'Periodically ask the user about their current activity and log it for analysis.',
       '--vendor', 'Muspellheim',
     ]
     installerOptions = [
@@ -27,12 +26,12 @@ jlink {
 if (Os.isFamily(Os.FAMILY_MAC)) {
   jlink {
     jpackage {
-      icon = "$projectDir/src/main/mac/app-icon.icns"
+      icon = "$projectDir/src/main/macos/app-icon.icns"
       imageOptions += [
         '--copyright', "Copyright © ${copyrightYear} Falko Schumann",
         '--mac-sign',
         '--mac-signing-key-user-name', 'Falko Schumann (QC6EN37P56)',
-        '--resource-dir', "$projectDir/src/main/mac",
+        '--resource-dir', "$projectDir/src/main/macos",
       ]
       installerType = 'dmg'
     }
@@ -49,6 +48,7 @@ if (Os.isFamily(Os.FAMILY_WINDOWS)) {
       ]
       installerType = 'msi'
       installerOptions = [
+        '--copyright', "Copyright (c) ${copyrightYear} Falko Schumann",
         '--win-dir-chooser',
         '--win-menu',
         '--win-menu-group', 'Muspellheim',

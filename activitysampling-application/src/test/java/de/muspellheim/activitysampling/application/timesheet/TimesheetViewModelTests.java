@@ -1,3 +1,8 @@
+/*
+ * Activity Sampling - Application
+ * Copyright (c) 2022 Falko Schumann <falko.schumann@muspellheim.de>
+ */
+
 package de.muspellheim.activitysampling.application.timesheet;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,7 +21,7 @@ import org.mockito.junit.jupiter.*;
 @ExtendWith(MockitoExtension.class)
 class TimesheetViewModelTests {
   @Mock private ActivitiesService activitiesService;
-  @Mock private Consumer<String> onError;
+  @Mock private Consumer<List<String>> onError;
 
   private TimesheetViewModel sut;
 
@@ -161,6 +166,6 @@ class TimesheetViewModelTests {
 
     sut.back();
 
-    verify(onError).accept("Failed to load timesheet. Something went wrong.");
+    verify(onError).accept(List.of("Failed to load timesheet.", "Something went wrong."));
   }
 }

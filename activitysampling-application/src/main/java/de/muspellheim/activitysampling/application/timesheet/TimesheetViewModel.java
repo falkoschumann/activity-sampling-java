@@ -1,3 +1,8 @@
+/*
+ * Activity Sampling - Application
+ * Copyright (c) 2022 Falko Schumann <falko.schumann@muspellheim.de>
+ */
+
 package de.muspellheim.activitysampling.application.timesheet;
 
 import de.muspellheim.activitysampling.application.shared.*;
@@ -15,7 +20,7 @@ public class TimesheetViewModel {
   private final ActivitiesService activitiesService;
 
   // Events
-  private Consumer<String> onError;
+  private Consumer<List<String>> onError;
 
   // State
   private final ObjectProperty<LocalDate> from;
@@ -86,11 +91,11 @@ public class TimesheetViewModel {
             period);
   }
 
-  public Consumer<String> getOnError() {
+  public Consumer<List<String>> getOnError() {
     return onError;
   }
 
-  public void setOnError(Consumer<String> onError) {
+  public void setOnError(Consumer<List<String>> onError) {
     this.onError = onError;
   }
 
@@ -165,8 +170,8 @@ public class TimesheetViewModel {
     try {
       timesheet = activitiesService.createTimesheet(from.get(), to.get());
     } catch (Exception e) {
-      var message = Exceptions.joinExceptionMessages("Failed to load timesheet.", e);
-      onError.accept(message);
+      var messages = Exceptions.collectExceptionMessages("Failed to load timesheet.", e);
+      onError.accept(messages);
       return;
     }
 

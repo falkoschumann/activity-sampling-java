@@ -1,23 +1,25 @@
+/*
+ * Activity Sampling - Domain
+ * Copyright (c) 2022 Falko Schumann <falko.schumann@muspellheim.de>
+ */
+
 package de.muspellheim.activitysampling.domain;
 
 import java.time.*;
+import lombok.*;
 
 public class ActivitiesServiceImpl implements ActivitiesService {
   private final Activities activities;
-  private final Clock clock;
+  @Getter @Setter private Clock clock = Clock.systemDefaultZone();
 
   public ActivitiesServiceImpl(Activities activities) {
-    this(activities, Clock.systemDefaultZone());
-  }
-
-  public ActivitiesServiceImpl(Activities activities, Clock clock) {
     this.activities = activities;
-    this.clock = clock;
   }
 
   @Override
   public void logActivity(String description, Duration duration) {
-    activities.append(new Activity(LocalDateTime.now(clock), duration, description.trim()));
+    var activity = new Activity(LocalDateTime.now(clock), duration, description.trim());
+    activities.append(activity);
   }
 
   @Override

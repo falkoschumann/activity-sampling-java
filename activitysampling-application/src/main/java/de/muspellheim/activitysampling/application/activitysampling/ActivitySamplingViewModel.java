@@ -1,3 +1,8 @@
+/*
+ * Activity Sampling - Application
+ * Copyright (c) 2022 Falko Schumann <falko.schumann@muspellheim.de>
+ */
+
 package de.muspellheim.activitysampling.application.activitysampling;
 
 import de.muspellheim.activitysampling.application.shared.*;
@@ -15,7 +20,7 @@ public class ActivitySamplingViewModel {
 
   // Events
   private EventEmitter<Void> onCountdownElapsed = new EventEmitter<>();
-  private EventEmitter<String> onError = new EventEmitter<>();
+  private EventEmitter<List<String>> onError = new EventEmitter<>();
 
   // State
   private final ReadOnlyObjectWrapper<Duration> interval;
@@ -38,7 +43,7 @@ public class ActivitySamplingViewModel {
 
   public ActivitySamplingViewModel(ActivitiesService activitiesService) {
     this.activitiesService = activitiesService;
-
+    // TODO Make default interval configurable; use when countdown off
     interval = new ReadOnlyObjectWrapper<>(Duration.ofMinutes(20));
     intervalLogged = new ReadOnlyBooleanWrapper(false);
     countdownActive = new ReadOnlyBooleanWrapper(false);
@@ -86,11 +91,11 @@ public class ActivitySamplingViewModel {
     onCountdownElapsed.removeListener(listener);
   }
 
-  public void addOnErrorListener(Consumer<String> listener) {
+  public void addOnErrorListener(Consumer<List<String>> listener) {
     onError.addListener(listener);
   }
 
-  public void removeOnErrorListener(Consumer<String> listener) {
+  public void removeOnErrorListener(Consumer<List<String>> listener) {
     onError.removeListener(listener);
   }
 
@@ -147,8 +152,8 @@ public class ActivitySamplingViewModel {
     try {
       recentActivities = activitiesService.getRecentActivities();
     } catch (Exception e) {
-      var message = Exceptions.joinExceptionMessages("Failed to load activities.", e);
-      onError.emit(message);
+      var messages = Exceptions.collectExceptionMessages("Failed to load activities.", e);
+      onError.emit(messages);
       return;
     }
 
@@ -187,8 +192,8 @@ public class ActivitySamplingViewModel {
       activitiesService.logActivity(activityText.get(), interval.get());
       intervalLogged.set(true);
     } catch (Exception e) {
-      var message = Exceptions.joinExceptionMessages("Failed to log activity.", e);
-      onError.emit(message);
+      var messages = Exceptions.collectExceptionMessages("Failed to log activity.", e);
+      onError.emit(messages);
       return;
     }
 

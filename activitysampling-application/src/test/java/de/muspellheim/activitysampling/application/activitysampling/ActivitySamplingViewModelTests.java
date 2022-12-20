@@ -1,3 +1,8 @@
+/*
+ * Activity Sampling - Application
+ * Copyright (c) 2022 Falko Schumann <falko.schumann@muspellheim.de>
+ */
+
 package de.muspellheim.activitysampling.application.activitysampling;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,7 +21,7 @@ import org.mockito.junit.jupiter.*;
 class ActivitySamplingViewModelTests {
   @Mock private ActivitiesService activitiesService;
   @Mock private Runnable onCountdownElapsed;
-  @Mock private Consumer<String> onError;
+  @Mock private Consumer<List<String>> onError;
   @InjectMocks private ActivitySamplingViewModel sut;
 
   @BeforeEach
@@ -98,7 +103,7 @@ class ActivitySamplingViewModelTests {
 
     sut.load();
 
-    verify(onError).accept("Failed to load activities. Something went wrong.");
+    verify(onError).accept(List.of("Failed to load activities.", "Something went wrong."));
   }
 
   @Test
@@ -164,7 +169,7 @@ class ActivitySamplingViewModelTests {
 
     sut.logActivity();
 
-    verify(onError).accept("Failed to log activity. Something went wrong.");
+    verify(onError).accept(List.of("Failed to log activity.", "Something went wrong."));
   }
 
   @Test

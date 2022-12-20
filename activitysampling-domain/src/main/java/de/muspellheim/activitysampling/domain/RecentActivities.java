@@ -1,3 +1,8 @@
+/*
+ * Activity Sampling - Domain
+ * Copyright (c) 2022 Falko Schumann <falko.schumann@muspellheim.de>
+ */
+
 package de.muspellheim.activitysampling.domain;
 
 import java.time.*;
@@ -6,11 +11,16 @@ import java.util.*;
 public class RecentActivities {
   private final LocalDate today;
 
-  private final SortedMap<LocalDate, SortedSet<Activity>> workingDays = new TreeMap<>();
+  private final SortedMap<LocalDate, SortedSet<Activity>> workingDays =
+      new TreeMap<>(Comparator.reverseOrder());
   private Duration hoursToday = Duration.ZERO;
   private Duration hoursYesterday = Duration.ZERO;
   private Duration hoursThisWeek = Duration.ZERO;
   private Duration hoursThisMonth = Duration.ZERO;
+
+  public RecentActivities() {
+    this(LocalDate.now());
+  }
 
   public RecentActivities(LocalDate today) {
     this.today = today;
@@ -18,8 +28,17 @@ public class RecentActivities {
 
   public void apply(Activity activity) {
     var date = activity.timestamp().toLocalDate();
-    var startOfMonth = today.withDayOfMonth(1);
+    if (date.isAfter(today)) {
+      return;
+    }
 
+    if (!workingDays.containsKey(date)) {
+      workingDays.put(date, new TreeSet<>(Comparator.reverseOrder()));
+    }
+    var activities = workingDays.get(date);
+    activities.add(activity);
+
+    var startOfMonth = today.withDayOfMonth(1);
     if (date.equals(today)) {
       hoursToday = hoursToday.plus(activity.duration());
     } else if (date.equals(today.minusDays(1))) {
@@ -32,18 +51,11 @@ public class RecentActivities {
     if (!date.isBefore(startOfMonth)) {
       hoursThisMonth = hoursThisMonth.plus(activity.duration());
     }
-
-    var activities =
-        workingDays.getOrDefault(
-            date, new TreeSet<>((a1, a2) -> a2.timestamp().compareTo(a1.timestamp())));
-    activities.add(activity);
-    workingDays.put(date, activities);
   }
 
   public Iterable<WorkingDay> getWorkingDays() {
     return workingDays.entrySet().stream()
         .map(d -> new WorkingDay(d.getKey(), List.copyOf(d.getValue())))
-        .sorted((d1, d2) -> d2.date().compareTo(d1.date()))
         .toList();
   }
 

@@ -1,11 +1,22 @@
+/*
+ * Activity Sampling - Application
+ * Copyright (c) 2022 Falko Schumann <falko.schumann@muspellheim.de>
+ */
+
 package de.muspellheim.activitysampling.application.shared;
 
+import java.util.*;
+
 public class Exceptions {
-  public static String joinExceptionMessages(String errorMessage, Throwable cause) {
+  public static List<String> collectExceptionMessages(String errorMessage, Throwable cause) {
     if (cause == null) {
-      return errorMessage;
+      return List.of(errorMessage);
     }
 
-    return joinExceptionMessages(errorMessage + " " + cause.getMessage(), cause.getCause());
+    var messages = new ArrayList<String>();
+    messages.add(errorMessage);
+    List<String> causeMessages = collectExceptionMessages(cause.getMessage(), cause.getCause());
+    messages.addAll(causeMessages);
+    return messages;
   }
 }
