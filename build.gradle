@@ -1,4 +1,10 @@
+/*
+ * Activity Sampling
+ * Copyright (c) 2022 Falko Schumann <falko.schumann@muspellheim.de>
+ */
+
 plugins {
+  id 'activitysampling.groovy-gradle-conventions'
   id 'base'
   id 'jacoco-report-aggregation'
   id 'test-report-aggregation'

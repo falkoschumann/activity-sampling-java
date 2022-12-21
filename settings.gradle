@@ -1,3 +1,8 @@
+/*
+ * Activity Sampling
+ * Copyright (c) 2022 Falko Schumann <falko.schumann@muspellheim.de>
+ */
+
 rootProject.name = 'activity-sampling'
 include(
   'activitysampling-application',

@@ -1,0 +1,9 @@
+plugins {
+  id 'com.diffplug.spotless'
+}
+
+spotless {
+  groovyGradle {
+    licenseHeaderFile('config/LicenseHeader.txt', 'plugins|import|rootProject')
+  }
+}

@@ -1,6 +1,7 @@
 import java.time.LocalDate
 
 plugins {
+  id 'activitysampling.groovy-gradle-conventions'
   id 'jacoco'
   id 'java'
   id 'jvm-test-suite'
@@ -43,12 +44,12 @@ compileTestJava {
 }
 
 test {
-  systemProperty "user.country", "DE"
-  systemProperty "user.language", "de"
-  systemProperty "user.timezone", "Europe/Berlin"
+  systemProperty 'user.country', 'DE'
+  systemProperty 'user.language', 'de'
+  systemProperty 'user.timezone', 'Europe/Berlin'
   useJUnitPlatform()
   testLogging {
-    events "passed", "skipped", "failed"
+    events 'passed', 'skipped', 'failed'
     showExceptions = true
     exceptionFormat = 'full'
   }

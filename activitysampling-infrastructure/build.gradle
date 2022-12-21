@@ -1,6 +1,11 @@
+/*
+ * Activity Sampling - Infrastructure
+ * Copyright (c) 2022 Falko Schumann <falko.schumann@muspellheim.de>
+ */
+
 plugins {
-  id 'de.muspellheim.java-library-conventions'
-  id 'de.muspellheim.java-module-conventions'
+  id 'activitysampling.java-library-conventions'
+  id 'activitysampling.java-module-conventions'
 }
 
 dependencies {
