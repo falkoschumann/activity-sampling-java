@@ -8,4 +8,5 @@ extraJavaModuleInfo {
     exports('org.apache.commons.csv')
     requiresStatic('java.sql')
   }
+  automaticModule("jsr305-3.0.2.jar", "javax.annotation")
 }
