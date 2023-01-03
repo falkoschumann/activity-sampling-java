@@ -44,7 +44,8 @@ public class RecentActivities {
     } else if (date.equals(today.minusDays(1))) {
       hoursYesterday = hoursYesterday.plus(activity.duration());
     }
-    if ((today.getDayOfYear() - date.getDayOfYear()) < 7
+    if ((today.getDayOfYear() - date.getDayOfYear()) >= 0
+        && (today.getDayOfYear() - date.getDayOfYear()) < 7
         && date.getDayOfWeek().getValue() <= today.getDayOfWeek().getValue()) {
       hoursThisWeek = hoursThisWeek.plus(activity.duration());
     }
