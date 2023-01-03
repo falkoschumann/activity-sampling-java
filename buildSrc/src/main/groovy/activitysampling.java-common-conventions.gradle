@@ -8,6 +8,7 @@ plugins {
   id 'pmd'
   id 'com.diffplug.spotless'
   id 'io.freefair.lombok'
+  id 'org.sonarqube'
 }
 
 version = rootProject.version

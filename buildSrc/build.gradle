@@ -7,6 +7,7 @@ dependencies {
   implementation 'io.freefair.gradle:lombok-plugin:6.6.1'
   implementation 'org.beryx:badass-jlink-plugin:2.25.0'
   implementation 'org.ow2.asm:asm:8.0.1'
+  implementation 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.5.0.2730'
 }
 
 repositories {
