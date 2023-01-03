@@ -83,3 +83,11 @@ spotless {
     licenseHeaderFile 'config/LicenseHeader.txt'
   }
 }
+
+sonarqube {
+  properties {
+    property "sonar.projectKey", "falkoschumann_activity-sampling-java"
+    property "sonar.organization", "falkoschumann"
+    property "sonar.host.url", "https://sonarcloud.io"
+  }
+}
