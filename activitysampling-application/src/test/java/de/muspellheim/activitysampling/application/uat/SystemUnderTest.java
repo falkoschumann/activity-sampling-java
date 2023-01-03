@@ -5,11 +5,13 @@
 
 package de.muspellheim.activitysampling.application.uat;
 
-import de.muspellheim.activitysampling.application.activitysampling.*;
-import de.muspellheim.activitysampling.application.shared.*;
-import de.muspellheim.activitysampling.domain.*;
-import java.io.*;
-import java.nio.file.*;
+import de.muspellheim.activitysampling.application.activitysampling.ActivitySamplingViewModel;
+import de.muspellheim.activitysampling.application.shared.Configuration;
+import de.muspellheim.activitysampling.application.shared.Registry;
+import de.muspellheim.activitysampling.domain.ActivitiesService;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 class SystemUnderTest {
   static final SystemUnderTest INSTANCE = new SystemUnderTest();
@@ -21,7 +23,7 @@ class SystemUnderTest {
     reset();
   }
 
-  void reset() {
+  final void reset() {
     var logFile = Paths.get("build/activity-log.csv");
     try {
       Files.deleteIfExists(logFile);

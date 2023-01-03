@@ -5,12 +5,20 @@
 
 package de.muspellheim.activitysampling.application.activitysampling;
 
-import de.muspellheim.activitysampling.application.shared.*;
-import de.muspellheim.activitysampling.application.timesheet.*;
-import java.time.*;
-import javafx.fxml.*;
-import javafx.scene.control.*;
-import javafx.stage.*;
+import de.muspellheim.activitysampling.application.shared.ErrorView;
+import de.muspellheim.activitysampling.application.shared.Registry;
+import de.muspellheim.activitysampling.application.timesheet.TimesheetView;
+import java.time.Duration;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
 public class ActivitySamplingView {
   @FXML private Stage stage;
@@ -47,7 +55,7 @@ public class ActivitySamplingView {
   }
 
   @FXML
-  private void initialize() {
+  void initialize() {
     systemClock.addOnTickListener(viewModel::progressCountdown);
     viewModel.addOnErrorListener(ErrorView::handleError);
     stage.setOnCloseRequest(e -> notifier.dispose());
@@ -74,42 +82,42 @@ public class ActivitySamplingView {
   }
 
   @FXML
-  private void handleQuit() {
+  void handleQuit() {
     stage.close();
   }
 
   @FXML
-  private void handleStart5min() {
+  void handleStart5min() {
     startCountdown(Duration.ofMinutes(5));
   }
 
   @FXML
-  private void handleStart10min() {
+  void handleStart10min() {
     startCountdown(Duration.ofMinutes(10));
   }
 
   @FXML
-  private void handleStart15min() {
+  void handleStart15min() {
     startCountdown(Duration.ofMinutes(15));
   }
 
   @FXML
-  private void handleStart20min() {
+  void handleStart20min() {
     startCountdown(Duration.ofMinutes(20));
   }
 
   @FXML
-  private void handleStart30min() {
+  void handleStart30min() {
     startCountdown(Duration.ofMinutes(30));
   }
 
   @FXML
-  private void handleStart60min() {
+  void handleStart60min() {
     startCountdown(Duration.ofMinutes(60));
   }
 
   @FXML
-  private void handleStart1min() {
+  void handleStart1min() {
     startCountdown(Duration.ofMinutes(1));
   }
 
@@ -118,23 +126,23 @@ public class ActivitySamplingView {
   }
 
   @FXML
-  private void handleStop() {
+  void handleStop() {
     viewModel.stopCountdown();
   }
 
   @FXML
-  private void handleTimesheet() {
+  void handleTimesheet() {
     var timesheetView = TimesheetView.newInstance(stage);
     timesheetView.run();
   }
 
   @FXML
-  private void handleRefresh() {
+  void handleRefresh() {
     viewModel.load();
   }
 
   @FXML
-  private void handleLog() {
+  void handleLog() {
     viewModel.logActivity();
   }
 }

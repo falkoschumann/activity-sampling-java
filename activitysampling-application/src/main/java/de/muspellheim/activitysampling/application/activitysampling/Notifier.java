@@ -5,18 +5,29 @@
 
 package de.muspellheim.activitysampling.application.activitysampling;
 
-import java.awt.*;
-import java.time.*;
-import javafx.application.*;
+import java.awt.AWTException;
+import java.awt.EventQueue;
+import java.awt.GraphicsEnvironment;
+import java.awt.Menu;
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
+import java.awt.SystemTray;
+import java.awt.Toolkit;
+import java.awt.TrayIcon;
+import java.time.Duration;
+import javafx.application.Platform;
 
 class Notifier {
+  private static final int TRAY_ICON_SIZE_WINDOWS10 = 16;
+  private static final int TRAY_ICON_SIZE_MACOS12 = 20;
+
   private final ActivitySamplingViewModel viewModel;
   private TrayIcon trayIcon;
 
   Notifier(ActivitySamplingViewModel viewModel) {
     this.viewModel = viewModel;
-    viewModel.addOnCountdownElapsedListener(v -> showNotification());
     if (SystemTray.isSupported()) {
+      viewModel.addOnCountdownElapsedListener(v -> showNotification());
       EventQueue.invokeLater(
           () -> {
             var imageUrl = getImageUrl();
@@ -28,8 +39,7 @@ class Notifier {
             trayIcon.setImageAutoSize(true);
             try {
               tray.add(trayIcon);
-            } catch (AWTException ignore) {
-              trayIcon = null;
+            } catch (AWTException ignored) {
             }
           });
     }
@@ -39,14 +49,11 @@ class Notifier {
     var trayIconSize = SystemTray.getSystemTray().getTrayIconSize();
     var isRetina = isRetina();
     String imageUrl;
-    if (trayIconSize.height == 16) {
-      // Windows 10
+    if (trayIconSize.height == TRAY_ICON_SIZE_WINDOWS10) {
       imageUrl = isRetina ? "/icons/punch-clock-32.png" : "/icons/punch-clock-16.png";
-    } else if (trayIconSize.height == 20) {
-      // macOS 12
+    } else if (trayIconSize.height == TRAY_ICON_SIZE_MACOS12) {
       imageUrl = isRetina ? "/icons/punch-clock-40.png" : "/icons/punch-clock-20.png";
     } else {
-      // Other OS
       imageUrl = "/icons/punch-clock-16.png";
     }
     return imageUrl;
@@ -110,10 +117,6 @@ class Notifier {
   }
 
   private void showNotification() {
-    if (trayIcon == null) {
-      return;
-    }
-
     EventQueue.invokeLater(
         () -> trayIcon.displayMessage("What are you working on?", null, TrayIcon.MessageType.NONE));
   }

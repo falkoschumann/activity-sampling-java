@@ -5,7 +5,11 @@
 
 package de.muspellheim.activitysampling.application.uat;
 
-import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 @Disabled
 class TimesheetTests {
@@ -15,6 +19,7 @@ class TimesheetTests {
   }
 
   @Test
+  @Disabled
   void mainScenario() {
     // TODO implement acceptance test for timesheet
     /*
@@ -23,5 +28,6 @@ class TimesheetTests {
 
     activitySamplingFixture.now(Instant.parse("2022-11-16T17:05:00Z"));
     */
+    fail();
   }
 }

@@ -5,6 +5,7 @@ plugins {
   id 'jacoco'
   id 'java'
   id 'jvm-test-suite'
+  id 'pmd'
   id 'com.diffplug.spotless'
   id 'io.freefair.lombok'
 }
@@ -63,6 +64,13 @@ test {
 
 jacocoTestReport {
   dependsOn test
+}
+
+pmd {
+  consoleOutput = true
+  rulesMinimumPriority = 3
+  ruleSetConfig = resources.text.fromFile("$rootDir/config/pmd/ruleset.xml")
+  ruleSets = []
 }
 
 spotless {

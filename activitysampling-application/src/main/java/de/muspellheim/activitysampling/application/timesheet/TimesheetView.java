@@ -5,13 +5,18 @@
 
 package de.muspellheim.activitysampling.application.timesheet;
 
-import de.muspellheim.activitysampling.application.shared.*;
-import java.time.temporal.*;
-import javafx.beans.property.*;
-import javafx.fxml.*;
-import javafx.geometry.*;
-import javafx.scene.control.*;
-import javafx.stage.*;
+import de.muspellheim.activitysampling.application.shared.ErrorView;
+import de.muspellheim.activitysampling.application.shared.Registry;
+import java.time.temporal.ChronoUnit;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.stage.Stage;
 
 public class TimesheetView {
   @FXML private Stage stage;
@@ -43,7 +48,7 @@ public class TimesheetView {
   }
 
   @FXML
-  private void initialize() {
+  void initialize() {
     viewModel.setOnError(ErrorView::handleError);
     period.setConverter(new ChronoUnitStringConverter());
     period.getItems().addAll(ChronoUnit.DAYS, ChronoUnit.WEEKS, ChronoUnit.MONTHS);
@@ -68,12 +73,12 @@ public class TimesheetView {
   }
 
   @FXML
-  private void handleBack() {
+  void handleBack() {
     viewModel.back();
   }
 
   @FXML
-  private void handleForward() {
+  void handleForward() {
     viewModel.forward();
   }
 }
