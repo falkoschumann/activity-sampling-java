@@ -25,6 +25,11 @@ dependencies {
   testImplementation 'org.mockito:mockito-junit-jupiter:4.9.0'
 }
 
+java {
+  sourceCompatibility = 17
+  targetCompatibility = 17
+}
+
 compileJava {
   options.release = 17
   options.encoding = 'UTF-8'
