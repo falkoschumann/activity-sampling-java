@@ -1,4 +1,4 @@
-name: Java CI with Gradle
+name: Build
 
 on:
   push:
@@ -15,13 +15,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up JDK 17
+      - name: Checkout source code
+        uses: actions/checkout@v3
+      - name: Set up Java
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'corretto'
-      - name: Build with Gradle
-        uses: gradle/gradle-build-action@3fbe033aaae657f011f88f29be9e65ed26bd29ef
-        with:
-          arguments: build
+      - name: Set up Gradle
+        uses: gradle/gradle-build-action@v2
+      - name: Build
+        run: ./build.sh

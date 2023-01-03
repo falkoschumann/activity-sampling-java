@@ -1,4 +1,4 @@
-﻿![Java CI with Gradle](https://github.com/falkoschumann/activity-sampling-java/actions/workflows/gradle.yml/badge.svg)
+﻿![Build](https://github.com/falkoschumann/activity-sampling-java/actions/workflows/build.yml/badge.svg)
 
 # Activity Sampling
 
