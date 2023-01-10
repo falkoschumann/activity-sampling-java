@@ -5,8 +5,9 @@
 
 package de.muspellheim.activitysampling.domain;
 
-import java.time.*;
-import java.util.*;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Objects;
 
 public record WorkingDay(LocalDate date, List<Activity> activities) {
   public WorkingDay {

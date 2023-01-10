@@ -5,8 +5,12 @@
 
 package de.muspellheim.activitysampling.domain;
 
-import java.time.*;
-import java.util.*;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class Timesheet {
   private final SortedMap<LocalDate, SortedMap<String, Duration>> activitiesPerDay =

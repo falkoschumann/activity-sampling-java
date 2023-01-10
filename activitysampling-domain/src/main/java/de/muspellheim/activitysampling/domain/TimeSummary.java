@@ -5,8 +5,8 @@
 
 package de.muspellheim.activitysampling.domain;
 
-import java.time.*;
-import java.util.*;
+import java.time.Duration;
+import java.util.Objects;
 
 public record TimeSummary(
     Duration hoursToday, Duration hoursYesterday, Duration hoursThisWeek, Duration hoursThisMonth) {

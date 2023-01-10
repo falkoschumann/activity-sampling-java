@@ -5,7 +5,7 @@
 
 package de.muspellheim.activitysampling.application.timesheet;
 
-import java.util.*;
+import java.util.Objects;
 
 public record TimesheetItem(String date, String activity, String duration) {
   public TimesheetItem {

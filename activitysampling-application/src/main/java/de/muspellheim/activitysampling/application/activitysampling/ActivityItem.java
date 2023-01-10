@@ -5,8 +5,8 @@
 
 package de.muspellheim.activitysampling.application.activitysampling;
 
-import de.muspellheim.activitysampling.domain.*;
-import java.util.*;
+import de.muspellheim.activitysampling.domain.Activity;
+import java.util.Objects;
 
 public record ActivityItem(String text, Activity activity) {
   public ActivityItem {

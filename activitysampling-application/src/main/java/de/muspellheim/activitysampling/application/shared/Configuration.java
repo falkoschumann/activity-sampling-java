@@ -5,8 +5,9 @@
 
 package de.muspellheim.activitysampling.application.shared;
 
-import java.nio.file.*;
-import java.time.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.Clock;
 
 public class Configuration {
   private static final String PROP_LOG_FILE = "activitySampling.logFile";

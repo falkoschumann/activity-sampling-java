@@ -5,8 +5,8 @@
 
 package de.muspellheim.activitysampling.application.timesheet;
 
-import javafx.geometry.*;
-import javafx.scene.control.*;
+import javafx.geometry.Pos;
+import javafx.scene.control.TableCell;
 
 class TimesheetTableCell<T> extends TableCell<TimesheetItem, T> {
   private final Pos alignment;

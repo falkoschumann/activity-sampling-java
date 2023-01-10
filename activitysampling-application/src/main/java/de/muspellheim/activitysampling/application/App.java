@@ -5,11 +5,11 @@
 
 package de.muspellheim.activitysampling.application;
 
-import de.muspellheim.activitysampling.application.activitysampling.*;
-import de.muspellheim.activitysampling.application.shared.*;
-import java.nio.file.*;
-import javafx.application.*;
-import javafx.stage.*;
+import de.muspellheim.activitysampling.application.activitysampling.ActivitySamplingView;
+import de.muspellheim.activitysampling.application.shared.Configuration;
+import java.nio.file.Paths;
+import javafx.application.Application;
+import javafx.stage.Stage;
 
 public class App extends Application {
   private static final String ARG_LOG_FILE = "log-file";

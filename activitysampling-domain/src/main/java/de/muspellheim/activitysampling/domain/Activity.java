@@ -5,8 +5,9 @@
 
 package de.muspellheim.activitysampling.domain;
 
-import java.time.*;
-import java.util.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.Objects;
 
 public record Activity(LocalDateTime timestamp, Duration duration, String description)
     implements Comparable<Activity> {

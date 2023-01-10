@@ -5,6 +5,7 @@
 
 package de.muspellheim.activitysampling.domain;
 
-import java.time.*;
+import java.time.Duration;
+import java.time.LocalDate;
 
 public record TimesheetEntry(LocalDate date, String notes, Duration hours) {}

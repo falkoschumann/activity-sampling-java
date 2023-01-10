@@ -5,12 +5,13 @@
 
 package de.muspellheim.activitysampling.application.activitysampling;
 
-import de.muspellheim.activitysampling.domain.*;
-import java.time.*;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.function.*;
-import javafx.application.*;
+import de.muspellheim.activitysampling.domain.EventEmitter;
+import java.time.Duration;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+import javafx.application.Platform;
 
 class SystemClock {
   private final EventEmitter<Duration> onTick = new EventEmitter<>();

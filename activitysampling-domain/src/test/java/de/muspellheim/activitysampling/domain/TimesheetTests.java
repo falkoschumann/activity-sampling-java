@@ -5,11 +5,13 @@
 
 package de.muspellheim.activitysampling.domain;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.time.*;
-import java.util.*;
-import org.junit.jupiter.api.*;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import org.junit.jupiter.api.Test;
 
 class TimesheetTests {
   @Test

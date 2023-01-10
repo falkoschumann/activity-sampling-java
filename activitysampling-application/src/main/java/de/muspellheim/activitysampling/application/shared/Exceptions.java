@@ -5,7 +5,8 @@
 
 package de.muspellheim.activitysampling.application.shared;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Exceptions {
   public static List<String> collectExceptionMessages(String errorMessage, Throwable cause) {

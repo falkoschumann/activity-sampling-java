@@ -5,8 +5,11 @@
 
 package de.muspellheim.activitysampling.application.uat;
 
-import java.time.*;
-import java.util.*;
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.util.Objects;
 
 class TickingClock extends Clock {
   private Instant timestamp;
@@ -50,16 +53,15 @@ class TickingClock extends Clock {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    if (!super.equals(o)) return false;
-    TickingClock that = (TickingClock) o;
-    return timestamp.equals(that.timestamp) && zone.equals(that.zone);
+    if (o instanceof TickingClock c) {
+      return timestamp.equals(c.timestamp) && zone.equals(c.zone);
+    }
+    return false;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(super.hashCode(), timestamp, zone);
+    return Objects.hash(timestamp, zone);
   }
 
   @Override

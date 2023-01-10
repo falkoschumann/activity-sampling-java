@@ -5,8 +5,9 @@
 
 package de.muspellheim.activitysampling.application.shared;
 
-import de.muspellheim.activitysampling.domain.*;
-import de.muspellheim.activitysampling.infrastructure.*;
+import de.muspellheim.activitysampling.domain.ActivitiesService;
+import de.muspellheim.activitysampling.domain.ActivitiesServiceImpl;
+import de.muspellheim.activitysampling.infrastructure.CsvActivities;
 
 public class Registry {
 

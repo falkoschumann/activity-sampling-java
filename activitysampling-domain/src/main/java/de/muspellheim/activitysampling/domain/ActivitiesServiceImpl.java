@@ -5,8 +5,12 @@
 
 package de.muspellheim.activitysampling.domain;
 
-import java.time.*;
-import lombok.*;
+import java.time.Clock;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import lombok.Getter;
+import lombok.Setter;
 
 public class ActivitiesServiceImpl implements ActivitiesService {
   private final Activities activities;

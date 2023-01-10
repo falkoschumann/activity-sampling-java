@@ -5,15 +5,30 @@
 
 package de.muspellheim.activitysampling.application.activitysampling;
 
-import de.muspellheim.activitysampling.application.shared.*;
-import de.muspellheim.activitysampling.domain.*;
-import java.time.*;
-import java.time.format.*;
-import java.util.*;
-import java.util.function.*;
-import javafx.beans.binding.*;
-import javafx.beans.property.*;
-import javafx.collections.*;
+import de.muspellheim.activitysampling.application.shared.Exceptions;
+import de.muspellheim.activitysampling.domain.ActivitiesService;
+import de.muspellheim.activitysampling.domain.Activity;
+import de.muspellheim.activitysampling.domain.EventEmitter;
+import de.muspellheim.activitysampling.domain.RecentActivities;
+import java.time.Duration;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanExpression;
+import javafx.beans.binding.DoubleExpression;
+import javafx.beans.binding.StringExpression;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 public class ActivitySamplingViewModel {
   private final ActivitiesService activitiesService;

@@ -5,8 +5,8 @@
 
 package de.muspellheim.activitysampling.application.shared;
 
-import java.util.*;
-import javafx.scene.control.*;
+import java.util.List;
+import javafx.scene.control.Alert;
 
 public class ErrorView {
   private ErrorView() {

@@ -5,44 +5,45 @@
 
 package de.muspellheim.activitysampling.application.uat;
 
-import de.muspellheim.activitysampling.application.activitysampling.*;
-import java.time.*;
+import de.muspellheim.activitysampling.application.activitysampling.ActivitySamplingViewModel;
+import java.time.Duration;
+import java.time.Instant;
 
 public class ActivitySamplingFixture {
   private final TickingClock clock = SystemUnderTest.INSTANCE.getClock();
   private final ActivitySamplingViewModel viewModel =
       SystemUnderTest.INSTANCE.getActivitySamplingViewModel();
 
-  void now(Instant timestamp) {
+  void enterTimestamp(Instant timestamp) {
     clock.setTimestamp(timestamp);
   }
 
-  void startCountdown(int minutes) {
+  void enterStartCountdown(int minutes) {
     viewModel.startCountdown(Duration.ofMinutes(minutes));
   }
 
-  void tick(Duration duration) {
+  void enterTick(Duration duration) {
     clock.tick(duration);
     viewModel.progressCountdown(duration);
   }
 
-  String countdown() {
+  String checkCountdown() {
     return viewModel.countdownLabelTextProperty().get();
   }
 
-  double countdownProgress() {
+  double checkCountdownProgress() {
     return viewModel.countdownProgressProperty().get();
   }
 
-  void activityText(String text) {
+  void enterActivityText(String text) {
     viewModel.activityTextProperty().set(text);
   }
 
-  void logActivity() {
+  void pressLogActivity() {
     viewModel.logActivity();
   }
 
-  void selectActivity(String text) {
+  void enterSelectActivity(String text) {
     var activity =
         viewModel.getRecentActivities().stream()
             .filter(a -> a.text().equals(text))
@@ -52,23 +53,23 @@ public class ActivitySamplingFixture {
     viewModel.setActivity(activity);
   }
 
-  String activityText() {
+  String checkActivityText() {
     return viewModel.activityTextProperty().get();
   }
 
-  String hoursToday() {
+  String checkHoursToday() {
     return viewModel.hoursTodayLabelTextProperty().get();
   }
 
-  String hoursYesterday() {
+  String checkHoursYesterday() {
     return viewModel.hoursYesterdayLabelTextProperty().get();
   }
 
-  String hoursThisWeek() {
+  String checkHoursThisWeek() {
     return viewModel.hoursThisWeekLabelTextProperty().get();
   }
 
-  String hoursThisMonth() {
+  String checkHoursThisMonth() {
     return viewModel.hoursThisMonthLabelTextProperty().get();
   }
 }

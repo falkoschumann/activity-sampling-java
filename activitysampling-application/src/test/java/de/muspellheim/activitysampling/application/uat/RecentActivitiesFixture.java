@@ -5,8 +5,9 @@
 
 package de.muspellheim.activitysampling.application.uat;
 
-import de.muspellheim.activitysampling.application.activitysampling.*;
-import java.util.*;
+import de.muspellheim.activitysampling.application.activitysampling.ActivityItem;
+import de.muspellheim.activitysampling.application.activitysampling.ActivitySamplingViewModel;
+import java.util.List;
 
 class RecentActivitiesFixture {
   private final ActivitySamplingViewModel viewModel =

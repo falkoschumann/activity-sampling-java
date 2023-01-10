@@ -5,14 +5,19 @@
 
 package de.muspellheim.activitysampling.infrastructure;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import de.muspellheim.activitysampling.domain.*;
-import java.io.*;
-import java.nio.file.*;
-import java.time.*;
-import java.util.*;
-import org.junit.jupiter.api.*;
+import de.muspellheim.activitysampling.domain.Activity;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class CsvActivitiesTests {
   private static final Path FILE = Paths.get("build/activities.csv");

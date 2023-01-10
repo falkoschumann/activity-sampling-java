@@ -5,7 +5,8 @@
 
 package de.muspellheim.activitysampling.domain;
 
-import java.time.*;
+import java.time.Duration;
+import java.time.LocalDate;
 
 public interface ActivitiesService {
   void logActivity(String description, Duration duration);

@@ -5,16 +5,26 @@
 
 package de.muspellheim.activitysampling.application.timesheet;
 
-import de.muspellheim.activitysampling.application.shared.*;
-import de.muspellheim.activitysampling.domain.*;
-import java.time.*;
-import java.time.format.*;
-import java.time.temporal.*;
-import java.util.*;
-import java.util.function.*;
-import javafx.beans.binding.*;
-import javafx.beans.property.*;
-import javafx.collections.*;
+import de.muspellheim.activitysampling.application.shared.Exceptions;
+import de.muspellheim.activitysampling.domain.ActivitiesService;
+import de.muspellheim.activitysampling.domain.Timesheet;
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.StringExpression;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 public class TimesheetViewModel {
   private final ActivitiesService activitiesService;

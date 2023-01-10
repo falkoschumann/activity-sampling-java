@@ -5,8 +5,14 @@
 
 package de.muspellheim.activitysampling.domain;
 
-import java.time.*;
-import java.util.*;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.util.Comparator;
+import java.util.List;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 public class RecentActivities {
   private final LocalDate today;

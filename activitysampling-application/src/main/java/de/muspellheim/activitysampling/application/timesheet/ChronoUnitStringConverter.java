@@ -5,8 +5,8 @@
 
 package de.muspellheim.activitysampling.application.timesheet;
 
-import java.time.temporal.*;
-import javafx.util.*;
+import java.time.temporal.ChronoUnit;
+import javafx.util.StringConverter;
 
 public class ChronoUnitStringConverter extends StringConverter<ChronoUnit> {
   @Override

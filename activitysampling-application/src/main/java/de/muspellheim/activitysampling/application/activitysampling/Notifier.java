@@ -40,6 +40,7 @@ class Notifier {
             try {
               tray.add(trayIcon);
             } catch (AWTException ignored) {
+              trayIcon = null;
             }
           });
     }
@@ -73,9 +74,9 @@ class Notifier {
     var startMenu = new Menu("Start");
     menu.add(startMenu);
 
-    var start5minMEnuItem = new MenuItem("5 min");
-    start5minMEnuItem.addActionListener(e -> start(Duration.ofMinutes(5)));
-    startMenu.add(start5minMEnuItem);
+    var start5minMenuItem = new MenuItem("5 min");
+    start5minMenuItem.addActionListener(e -> start(Duration.ofMinutes(5)));
+    startMenu.add(start5minMenuItem);
 
     var start10minMenuItem = new MenuItem("10 min");
     start10minMenuItem.addActionListener(e -> start(Duration.ofMinutes(10)));

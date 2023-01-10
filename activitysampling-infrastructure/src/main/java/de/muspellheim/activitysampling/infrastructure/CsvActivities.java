@@ -5,13 +5,21 @@
 
 package de.muspellheim.activitysampling.infrastructure;
 
-import de.muspellheim.activitysampling.domain.*;
-import java.io.*;
-import java.nio.file.*;
-import java.time.*;
-import java.time.temporal.*;
-import java.util.*;
-import org.apache.commons.csv.*;
+import de.muspellheim.activitysampling.domain.Activities;
+import de.muspellheim.activitysampling.domain.Activity;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVPrinter;
 
 public class CsvActivities implements Activities {
   private static final String COLUMN_TIMESTAMP = "Timestamp";
@@ -29,11 +37,11 @@ public class CsvActivities implements Activities {
     try (var parser = newParser()) {
       return parser.stream()
           .map(
-              record ->
+              it ->
                   new Activity(
-                      LocalDateTime.parse(record.get(COLUMN_TIMESTAMP)),
-                      Duration.parse(record.get(COLUMN_DURATION)),
-                      record.get(COLUMN_DESCRIPTION)))
+                      LocalDateTime.parse(it.get(COLUMN_TIMESTAMP)),
+                      Duration.parse(it.get(COLUMN_DURATION)),
+                      it.get(COLUMN_DESCRIPTION)))
           .filter(
               a -> {
                 var date = a.timestamp().toLocalDate();
