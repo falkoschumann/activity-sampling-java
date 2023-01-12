@@ -27,15 +27,6 @@ javafx {
   modules = ['javafx.controls', 'javafx.fxml']
 }
 
-jlink {
-  jpackage {
-    imageOptions += [
-      '--description', 'Periodically ask the user about their current activity and log it for ' +
-      'analysis.',
-    ]
-  }
-}
-
 if (Os.isFamily(Os.FAMILY_MAC)) {
   jlink {
     jpackage {

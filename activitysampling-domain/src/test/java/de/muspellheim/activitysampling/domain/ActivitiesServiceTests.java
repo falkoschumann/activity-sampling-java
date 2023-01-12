@@ -27,7 +27,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class ActivitiesServiceTests {
-  @Mock private Activities activities;
+  @Mock private ActivitiesRepository activitiesRepository;
   @InjectMocks private ActivitiesServiceImpl sut;
 
   private void setClock(String timestamp) {
@@ -39,7 +39,7 @@ class ActivitiesServiceTests {
     setClock("2022-11-16T11:26:00Z");
     sut.logActivity("Lorem ipsum", Duration.ofMinutes(20));
 
-    verify(activities)
+    verify(activitiesRepository)
         .append(
             new Activity(
                 LocalDateTime.parse("2022-11-16T12:26:00"), Duration.ofMinutes(20), "Lorem ipsum"));
@@ -50,7 +50,7 @@ class ActivitiesServiceTests {
     setClock("2022-11-16T11:26:00Z");
     sut.logActivity("  Lorem ipsum ", Duration.ofMinutes(30));
 
-    verify(activities)
+    verify(activitiesRepository)
         .append(
             new Activity(
                 LocalDateTime.parse("2022-11-16T12:26:00"), Duration.ofMinutes(30), "Lorem ipsum"));
@@ -59,7 +59,8 @@ class ActivitiesServiceTests {
   @Test
   void getRecentActivities_MonthWith30Days_ReturnsLast31DaysInDescendentOrder() {
     setClock("2022-09-30T10:00:00Z");
-    when(activities.findInPeriod(LocalDate.parse("2022-08-31"), LocalDate.parse("2022-09-30")))
+    when(activitiesRepository.findInPeriod(
+            LocalDate.parse("2022-08-31"), LocalDate.parse("2022-09-30")))
         .thenReturn(
             List.of(
                 // Last month
@@ -167,7 +168,8 @@ class ActivitiesServiceTests {
   @Test
   void getRecentActivities_MonthWith31Days_ReturnsLast31DaysInDescendentOrder() {
     setClock("2022-12-31T10:00:00Z");
-    when(activities.findInPeriod(LocalDate.parse("2022-12-01"), LocalDate.parse("2022-12-31")))
+    when(activitiesRepository.findInPeriod(
+            LocalDate.parse("2022-12-01"), LocalDate.parse("2022-12-31")))
         .thenReturn(
             List.of(
                 // First day of this month
@@ -264,7 +266,8 @@ class ActivitiesServiceTests {
 
   @Test
   void createTimesheet() {
-    when(activities.findInPeriod(LocalDate.parse("2022-11-14"), LocalDate.parse("2022-11-18")))
+    when(activitiesRepository.findInPeriod(
+            LocalDate.parse("2022-11-14"), LocalDate.parse("2022-11-18")))
         .thenReturn(
             List.of(
                 // First day in the interval

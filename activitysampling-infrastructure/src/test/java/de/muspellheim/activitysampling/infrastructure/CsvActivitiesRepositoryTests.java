@@ -19,15 +19,15 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class CsvActivitiesTests {
+class CsvActivitiesRepositoryTests {
   private static final Path FILE = Paths.get("build/activities.csv");
 
-  private CsvActivities sut;
+  private CsvActivitiesRepository sut;
 
   @BeforeEach
   void init() throws IOException {
     Files.deleteIfExists(FILE);
-    sut = new CsvActivities(FILE);
+    sut = new CsvActivitiesRepository(FILE);
   }
 
   @Test

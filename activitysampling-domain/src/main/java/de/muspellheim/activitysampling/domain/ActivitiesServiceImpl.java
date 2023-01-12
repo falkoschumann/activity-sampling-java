@@ -13,17 +13,17 @@ import lombok.Getter;
 import lombok.Setter;
 
 public class ActivitiesServiceImpl implements ActivitiesService {
-  private final Activities activities;
+  private final ActivitiesRepository activitiesRepository;
   @Getter @Setter private Clock clock = Clock.systemDefaultZone();
 
-  public ActivitiesServiceImpl(Activities activities) {
-    this.activities = activities;
+  public ActivitiesServiceImpl(ActivitiesRepository activitiesRepository) {
+    this.activitiesRepository = activitiesRepository;
   }
 
   @Override
   public void logActivity(String description, Duration duration) {
     var activity = new Activity(LocalDateTime.now(clock), duration, description.trim());
-    activities.append(activity);
+    activitiesRepository.append(activity);
   }
 
   @Override
@@ -31,14 +31,14 @@ public class ActivitiesServiceImpl implements ActivitiesService {
     var today = LocalDate.now(clock);
     var from = today.minusDays(30);
     var recentActivities = new RecentActivities(today);
-    activities.findInPeriod(from, today).forEach(recentActivities::apply);
+    activitiesRepository.findInPeriod(from, today).forEach(recentActivities::apply);
     return recentActivities;
   }
 
   @Override
   public Timesheet createTimesheet(LocalDate from, LocalDate to) {
     var timesheet = new Timesheet();
-    activities.findInPeriod(from, to).forEach(timesheet::apply);
+    activitiesRepository.findInPeriod(from, to).forEach(timesheet::apply);
     return timesheet;
   }
 }

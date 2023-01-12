@@ -7,7 +7,7 @@ package de.muspellheim.activitysampling.application.shared;
 
 import de.muspellheim.activitysampling.domain.ActivitiesService;
 import de.muspellheim.activitysampling.domain.ActivitiesServiceImpl;
-import de.muspellheim.activitysampling.infrastructure.CsvActivities;
+import de.muspellheim.activitysampling.infrastructure.CsvActivitiesRepository;
 
 public class Registry {
 
@@ -19,7 +19,7 @@ public class Registry {
     Configuration configuration = Configuration.INSTANCE;
     var file = configuration.getLogFile();
     var clock = configuration.getClock();
-    var activities = new CsvActivities(file);
+    var activities = new CsvActivitiesRepository(file);
     var service = new ActivitiesServiceImpl(activities);
     service.setClock(clock);
     return service;
