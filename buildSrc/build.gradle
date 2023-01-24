@@ -4,7 +4,7 @@ plugins {
 
 dependencies {
   implementation 'com.diffplug.spotless:spotless-plugin-gradle:6.11.0'
-  implementation 'org.beryx:badass-jlink-plugin:2.25.0'
+  implementation 'org.beryx:badass-jlink-plugin:2.26.0'
   implementation 'org.ow2.asm:asm:8.0.1'
 }
 
