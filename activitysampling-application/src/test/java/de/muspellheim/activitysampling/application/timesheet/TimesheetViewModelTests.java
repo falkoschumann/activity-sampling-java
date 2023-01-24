@@ -40,11 +40,11 @@ class TimesheetViewModelTests {
   @BeforeEach
   void init() {
     var timesheet = new Timesheet();
-    timesheet.apply(
+    timesheet.add(
         new Activity(LocalDateTime.parse("2022-11-20T12:00"), Duration.ofMinutes(10), "A1"));
-    timesheet.apply(
+    timesheet.add(
         new Activity(LocalDateTime.parse("2022-11-20T12:00"), Duration.ofMinutes(5), "A2"));
-    timesheet.apply(
+    timesheet.add(
         new Activity(LocalDateTime.parse("2022-11-21T12:00"), Duration.ofMinutes(5), "A1"));
     when(activitiesService.createTimesheet(any(), any())).thenReturn(timesheet);
     var clock = Clock.fixed(Instant.parse("2022-11-23T20:42:00Z"), ZoneId.systemDefault());

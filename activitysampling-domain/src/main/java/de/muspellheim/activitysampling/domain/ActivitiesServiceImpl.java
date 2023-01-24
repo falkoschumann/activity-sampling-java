@@ -38,7 +38,8 @@ public class ActivitiesServiceImpl implements ActivitiesService {
   @Override
   public Timesheet createTimesheet(LocalDate from, LocalDate to) {
     var timesheet = new Timesheet();
-    activitiesRepository.findInPeriod(from, to).forEach(timesheet::apply);
+    var activities = activitiesRepository.findInPeriod(from, to);
+    timesheet.addAll(activities);
     return timesheet;
   }
 }

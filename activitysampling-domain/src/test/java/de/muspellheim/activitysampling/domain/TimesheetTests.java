@@ -9,121 +9,109 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class TimesheetTests {
   @Test
-  void getEntries_NoActivity_ReturnsEmpty() {
+  void whenIfNoActivitiesAreAdded_ThenThereAreNoEntries() {
     var sut = new Timesheet();
 
-    var entries = sut.getEntries();
-
-    assertEquals(List.of(), entries);
+    assertEquals(List.of(), sut.getEntries(), "entries");
+    assertEquals(Duration.ZERO, sut.getTotal(), "total");
   }
 
   @Test
-  void getEntries_FirstActivity_Returns1Entry() {
+  void when1ActivityAdded_ThenThereIs1Entry() {
+    var date = LocalDate.of(2022, 12, 18);
     var sut = new Timesheet();
-    sut.apply(new Activity(LocalDateTime.of(2022, 12, 18, 14, 39), Duration.ofMinutes(30), "foo"));
 
-    var entries = sut.getEntries();
+    sut.add(new Activity(date.atTime(14, 39), Duration.ofMinutes(30), "foo"));
 
     assertEquals(
-        List.of(new TimesheetEntry(LocalDate.of(2022, 12, 18), "foo", Duration.ofMinutes(30))),
-        entries);
+        List.of(new Timesheet.Entry(date, "foo", Duration.ofMinutes(30))),
+        sut.getEntries(),
+        "entries");
+    assertEquals(Duration.ofMinutes(30), sut.getTotal(), "total");
   }
 
   @Test
-  void getEntries_2SameActivities_Returns1SummedEntry() {
+  void whenMultipleSameActivitiesAdded_ThenThereSummedAs1Entry() {
+    var date = LocalDate.of(2022, 12, 18);
     var sut = new Timesheet();
-    sut.apply(new Activity(LocalDateTime.of(2022, 12, 18, 14, 19), Duration.ofMinutes(30), "foo"));
-    sut.apply(new Activity(LocalDateTime.of(2022, 12, 18, 14, 39), Duration.ofMinutes(20), "foo"));
 
-    var entries = sut.getEntries();
+    sut.addAll(
+        List.of(
+            new Activity(date.atTime(14, 19), Duration.ofMinutes(30), "foo"),
+            new Activity(date.atTime(14, 39), Duration.ofMinutes(20), "foo")));
 
     assertEquals(
-        List.of(new TimesheetEntry(LocalDate.of(2022, 12, 18), "foo", Duration.ofMinutes(50))),
-        entries);
+        List.of(new Timesheet.Entry(date, "foo", Duration.ofMinutes(50))),
+        sut.getEntries(),
+        "entries");
+    assertEquals(Duration.ofMinutes(50), sut.getTotal(), "total");
   }
 
   @Test
-  void getEntries_2DifferentActivities_Returns2Entries() {
+  void whenMultipleDifferentActivitiesAdded_ThenReturns2Entries() {
+    var date = LocalDate.of(2022, 12, 18);
     var sut = new Timesheet();
-    sut.apply(new Activity(LocalDateTime.of(2022, 12, 18, 14, 19), Duration.ofMinutes(30), "foo"));
-    sut.apply(new Activity(LocalDateTime.of(2022, 12, 18, 14, 39), Duration.ofMinutes(20), "bar"));
 
-    var entries = sut.getEntries();
+    sut.addAll(
+        List.of(
+            new Activity(date.atTime(14, 19), Duration.ofMinutes(30), "foo"),
+            new Activity(date.atTime(14, 39), Duration.ofMinutes(20), "bar")));
 
     assertEquals(
         List.of(
-            new TimesheetEntry(LocalDate.of(2022, 12, 18), "bar", Duration.ofMinutes(20)),
-            new TimesheetEntry(LocalDate.of(2022, 12, 18), "foo", Duration.ofMinutes(30))),
-        entries);
+            new Timesheet.Entry(date, "bar", Duration.ofMinutes(20)),
+            new Timesheet.Entry(date, "foo", Duration.ofMinutes(30))),
+        sut.getEntries(),
+        "entries");
+    assertEquals(Duration.ofMinutes(50), sut.getTotal(), "total");
   }
 
   @Test
-  void getEntries_MultipleDifferentActivitiesOnSameDay_ReturnsSummedEntryPerActivity() {
+  void whenMultipleDifferentActivitiesAddedOnSameDay_ThenEntriesAreSummedPerActivity() {
+    var date = LocalDate.of(2022, 12, 18);
     var sut = new Timesheet();
-    sut.apply(new Activity(LocalDateTime.of(2022, 12, 18, 14, 19), Duration.ofMinutes(30), "foo"));
-    sut.apply(new Activity(LocalDateTime.of(2022, 12, 18, 14, 39), Duration.ofMinutes(20), "bar"));
-    sut.apply(new Activity(LocalDateTime.of(2022, 12, 18, 15, 19), Duration.ofMinutes(30), "foo"));
-    sut.apply(new Activity(LocalDateTime.of(2022, 12, 18, 15, 39), Duration.ofMinutes(20), "bar"));
-    var entries = sut.getEntries();
+
+    sut.addAll(
+        List.of(
+            new Activity(date.atTime(14, 19), Duration.ofMinutes(30), "foo"),
+            new Activity(date.atTime(14, 39), Duration.ofMinutes(20), "bar"),
+            new Activity(date.atTime(15, 19), Duration.ofMinutes(30), "foo"),
+            new Activity(date.atTime(15, 39), Duration.ofMinutes(20), "bar")));
 
     assertEquals(
         List.of(
-            new TimesheetEntry(LocalDate.of(2022, 12, 18), "bar", Duration.ofMinutes(40)),
-            new TimesheetEntry(LocalDate.of(2022, 12, 18), "foo", Duration.ofMinutes(60))),
-        entries);
+            new Timesheet.Entry(date, "bar", Duration.ofMinutes(40)),
+            new Timesheet.Entry(date, "foo", Duration.ofMinutes(60))),
+        sut.getEntries(),
+        "entries");
+    assertEquals(Duration.ofMinutes(100), sut.getTotal(), "total");
   }
 
   @Test
-  void getEntries_MultipleDifferentActivitiesOnDifferentDays_ReturnsSummedEntryPerActivityAndDay() {
+  void whenMultipleDifferentActivitiesAddedOnDifferentDays_ThenEntriesAreSummedPerActivityAndDay() {
+    var date1 = LocalDate.of(2022, 12, 17);
+    var date2 = LocalDate.of(2022, 12, 18);
     var sut = new Timesheet();
-    sut.apply(new Activity(LocalDateTime.of(2022, 12, 17, 14, 19), Duration.ofMinutes(30), "foo"));
-    sut.apply(new Activity(LocalDateTime.of(2022, 12, 17, 14, 39), Duration.ofMinutes(20), "bar"));
-    sut.apply(new Activity(LocalDateTime.of(2022, 12, 18, 15, 19), Duration.ofMinutes(30), "bar"));
-    sut.apply(new Activity(LocalDateTime.of(2022, 12, 18, 15, 39), Duration.ofMinutes(30), "bar"));
 
-    var entries = sut.getEntries();
+    sut.addAll(
+        List.of(
+            new Activity(date1.atTime(14, 19), Duration.ofMinutes(30), "foo"),
+            new Activity(date1.atTime(14, 39), Duration.ofMinutes(20), "bar"),
+            new Activity(date2.atTime(15, 19), Duration.ofMinutes(30), "bar"),
+            new Activity(date2.atTime(15, 39), Duration.ofMinutes(30), "bar")));
 
     assertEquals(
         List.of(
-            new TimesheetEntry(LocalDate.of(2022, 12, 17), "bar", Duration.ofMinutes(20)),
-            new TimesheetEntry(LocalDate.of(2022, 12, 17), "foo", Duration.ofMinutes(30)),
-            new TimesheetEntry(LocalDate.of(2022, 12, 18), "bar", Duration.ofMinutes(60))),
-        entries);
-  }
-
-  @Test
-  void getTotal_NoActivity_ReturnsZero() {
-    var sut = new Timesheet();
-
-    var total = sut.getTotal();
-
-    assertEquals(Duration.ZERO, total);
-  }
-
-  @Test
-  void getTotal_1Activity_ReturnsDuration() {
-    var sut = new Timesheet();
-    sut.apply(new Activity(LocalDateTime.of(2022, 12, 18, 14, 39), Duration.ofMinutes(30), "foo"));
-
-    var total = sut.getTotal();
-
-    assertEquals(Duration.ofMinutes(30), total);
-  }
-
-  @Test
-  void getTotal_2Activities_ReturnsSum() {
-    var sut = new Timesheet();
-    sut.apply(new Activity(LocalDateTime.of(2022, 12, 17, 14, 19), Duration.ofMinutes(30), "foo"));
-    sut.apply(new Activity(LocalDateTime.of(2022, 12, 18, 14, 39), Duration.ofMinutes(20), "foo"));
-
-    var total = sut.getTotal();
-
-    assertEquals(Duration.ofMinutes(50), total);
+            new Timesheet.Entry(date1, "bar", Duration.ofMinutes(20)),
+            new Timesheet.Entry(date1, "foo", Duration.ofMinutes(30)),
+            new Timesheet.Entry(date2, "bar", Duration.ofMinutes(60))),
+        sut.getEntries(),
+        "entries");
+    assertEquals(Duration.ofMinutes(110), sut.getTotal(), "total");
   }
 }

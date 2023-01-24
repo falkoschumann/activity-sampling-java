@@ -7,10 +7,12 @@ plugins {
   id 'java'
   id 'jvm-test-suite'
   id 'com.diffplug.spotless'
+  id 'info.solidsoft.pitest'
   id 'io.freefair.lombok'
   id 'org.sonarqube'
 }
 
+group = 'de.muspellheim'
 version = rootProject.version
 
 ext {
@@ -32,6 +34,7 @@ compileJava {
   options.release = 17
   options.encoding = 'utf-8'
   options.compilerArgs.addAll(['-Werror', '-implicit:class'])
+  options.deprecation = true
 }
 
 tasks {
@@ -59,6 +62,7 @@ compileTestJava {
   options.release = 17
   options.encoding = 'utf-8'
   options.compilerArgs.addAll(['-Werror', '-implicit:class'])
+  options.deprecation = true
 }
 
 jacocoTestReport {
@@ -67,6 +71,13 @@ jacocoTestReport {
     xml.required = true
   }
 }
+
+pitest {
+  junit5PluginVersion = '1.1.2'
+  timestampedReports = false
+}
+
+check.dependsOn 'pitest'
 
 checkstyle {
   var archive = configurations.checkstyle.filter {
