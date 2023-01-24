@@ -46,9 +46,6 @@ tasks {
 }
 
 test {
-  systemProperty 'user.country', 'DE'
-  systemProperty 'user.language', 'de'
-  systemProperty 'user.timezone', 'Europe/Berlin'
   useJUnitPlatform()
   testLogging {
     events 'passed', 'skipped', 'failed'
@@ -56,6 +53,9 @@ test {
     exceptionFormat = 'full'
   }
   finalizedBy jacocoTestReport
+  systemProperty 'user.country', 'DE'
+  systemProperty 'user.language', 'de'
+  systemProperty 'user.timezone', 'Europe/Berlin'
 }
 
 compileTestJava {
@@ -75,6 +75,11 @@ jacocoTestReport {
 pitest {
   junit5PluginVersion = '1.1.2'
   timestampedReports = false
+  jvmArgs = [
+    '-Duser.country=DE',
+    '-Duser.language=de',
+    '-Duser.timezone=Europe/Berlin',
+  ]
 }
 
 check.dependsOn 'pitest'
