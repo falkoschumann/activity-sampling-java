@@ -30,11 +30,17 @@ dependencies {
   testImplementation 'org.mockito:mockito-junit-jupiter:4.9.0'
 }
 
-compileJava {
-  options.release = 17
-  options.encoding = 'utf-8'
-  options.compilerArgs.addAll(['-Werror', '-implicit:class'])
-  options.deprecation = true
+java {
+  compileJava {
+    options.release = 17
+    options.encoding = 'utf-8'
+    options.compilerArgs.addAll(['-Xlint:all', '-Werror', '-implicit:class'])
+  }
+  compileTestJava {
+    options.release = 17
+    options.encoding = 'utf-8'
+    options.compilerArgs.addAll(['-Xlint:all', '-Werror', '-implicit:class'])
+  }
 }
 
 tasks {
@@ -53,16 +59,6 @@ test {
     exceptionFormat = 'full'
   }
   finalizedBy jacocoTestReport
-  systemProperty 'user.country', 'DE'
-  systemProperty 'user.language', 'de'
-  systemProperty 'user.timezone', 'Europe/Berlin'
-}
-
-compileTestJava {
-  options.release = 17
-  options.encoding = 'utf-8'
-  options.compilerArgs.addAll(['-Werror', '-implicit:class'])
-  options.deprecation = true
 }
 
 jacocoTestReport {
@@ -75,15 +71,7 @@ jacocoTestReport {
 pitest {
   junit5PluginVersion = '1.1.2'
   timestampedReports = false
-  verbose = true
-  jvmArgs = [
-    '-Duser.country=DE',
-    '-Duser.language=de',
-    '-Duser.timezone=Europe/Berlin',
-  ]
 }
-
-check.dependsOn 'pitest'
 
 checkstyle {
   var archive = configurations.checkstyle.filter {

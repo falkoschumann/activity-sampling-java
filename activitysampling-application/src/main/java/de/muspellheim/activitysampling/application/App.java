@@ -12,6 +12,8 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 
 public class App extends Application {
+  // TODO configure default duration, if log without timer
+  // TODO copy text from recent activities and timesheet
   private static final String ARG_LOG_FILE = "log-file";
 
   @Override

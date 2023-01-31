@@ -25,7 +25,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.function.Consumer;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,11 +38,6 @@ class ActivitySamplingViewModelTests {
   @Mock private Runnable onCountdownElapsed;
   @Mock private Consumer<List<String>> onError;
   @InjectMocks private ActivitySamplingViewModel sut;
-
-  @BeforeAll
-  static void initAll() {
-    System.out.println(System.getProperties());
-  }
 
   @BeforeEach
   void init() {

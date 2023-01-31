@@ -19,6 +19,8 @@ public class Timesheet {
       new TreeMap<>();
   private Duration total = Duration.ZERO;
 
+  public Timesheet() {}
+
   public void add(Activity activity) {
     var date = activity.timestamp().toLocalDate();
     if (!activitiesPerDay.containsKey(date)) {
