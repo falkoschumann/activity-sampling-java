@@ -5,7 +5,6 @@
 
 package de.muspellheim.activitysampling.domain;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
@@ -15,26 +14,21 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 public class RecentActivities {
-  private final LocalDate today;
-
   private final SortedMap<LocalDate, SortedSet<Activity>> workingDays =
       new TreeMap<>(Comparator.reverseOrder());
-  private Duration hoursToday = Duration.ZERO;
-  private Duration hoursYesterday = Duration.ZERO;
-  private Duration hoursThisWeek = Duration.ZERO;
-  private Duration hoursThisMonth = Duration.ZERO;
+  private TimeSummary timeSummary;
 
   public RecentActivities() {
     this(LocalDate.now());
   }
 
   public RecentActivities(LocalDate today) {
-    this.today = today;
+    timeSummary = TimeSummary.of(today);
   }
 
   public void apply(Activity activity) {
     var date = activity.timestamp().toLocalDate();
-    if (date.isAfter(today)) {
+    if (date.isAfter(timeSummary.today())) {
       return;
     }
 
@@ -44,20 +38,7 @@ public class RecentActivities {
     var activities = workingDays.get(date);
     activities.add(activity);
 
-    var startOfMonth = today.withDayOfMonth(1);
-    if (date.equals(today)) {
-      hoursToday = hoursToday.plus(activity.duration());
-    } else if (date.equals(today.minusDays(1))) {
-      hoursYesterday = hoursYesterday.plus(activity.duration());
-    }
-    if ((today.getDayOfYear() - date.getDayOfYear()) >= 0
-        && (today.getDayOfYear() - date.getDayOfYear()) < 7
-        && date.getDayOfWeek().getValue() <= today.getDayOfWeek().getValue()) {
-      hoursThisWeek = hoursThisWeek.plus(activity.duration());
-    }
-    if (!date.isBefore(startOfMonth)) {
-      hoursThisMonth = hoursThisMonth.plus(activity.duration());
-    }
+    timeSummary = timeSummary.add(activity);
   }
 
   public Iterable<WorkingDay> getWorkingDays() {
@@ -67,6 +48,6 @@ public class RecentActivities {
   }
 
   public TimeSummary getTimeSummary() {
-    return new TimeSummary(hoursToday, hoursYesterday, hoursThisWeek, hoursThisMonth);
+    return timeSummary;
   }
 }

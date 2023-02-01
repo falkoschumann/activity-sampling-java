@@ -157,6 +157,7 @@ class ActivitiesServiceTests {
         () ->
             assertEquals(
                 new TimeSummary(
+                    LocalDate.of(2022, 9, 30),
                     Duration.ofMinutes(40),
                     Duration.ofMinutes(40),
                     Duration.ofMinutes(120),
@@ -256,6 +257,7 @@ class ActivitiesServiceTests {
         () ->
             assertEquals(
                 new TimeSummary(
+                    LocalDate.of(2022, 12, 31),
                     Duration.ofMinutes(40),
                     Duration.ofMinutes(40),
                     Duration.ofMinutes(120),

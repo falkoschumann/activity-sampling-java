@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -123,19 +124,24 @@ class RecentActivitiesTests {
     var timeSummary = sut.getTimeSummary();
 
     assertEquals(
-        new TimeSummary(Duration.ZERO, Duration.ZERO, Duration.ZERO, Duration.ZERO), timeSummary);
+        new TimeSummary(
+            LocalDate.now(), Duration.ZERO, Duration.ZERO, Duration.ZERO, Duration.ZERO),
+        timeSummary);
   }
 
   @Test
   void getTimeSummary_1Activity_InitializesTotals() {
-    var sut = new RecentActivities(LocalDate.of(2022, 12, 17));
+    var today = LocalDate.of(2022, 12, 17);
+    var sut = new RecentActivities(today);
     sut.apply(
-        new Activity(LocalDateTime.of(2022, 12, 17, 14, 23), Duration.ofMinutes(20), "foobar"));
+        new Activity(
+            LocalDateTime.of(today, LocalTime.of(14, 23)), Duration.ofMinutes(20), "foobar"));
 
     var timeSummary = sut.getTimeSummary();
 
     assertEquals(
         new TimeSummary(
+            today,
             Duration.ofMinutes(20),
             Duration.ofMinutes(0),
             Duration.ofMinutes(20),
@@ -145,16 +151,20 @@ class RecentActivitiesTests {
 
   @Test
   void getTimeSummary_SumsToday() {
-    var sut = new RecentActivities(LocalDate.of(2022, 12, 16));
+    var today = LocalDate.of(2022, 12, 16);
+    var sut = new RecentActivities(today);
     sut.apply(
-        new Activity(LocalDateTime.of(2022, 12, 16, 14, 23), Duration.ofMinutes(20), "foobar"));
+        new Activity(
+            LocalDateTime.of(today, LocalTime.of(14, 23)), Duration.ofMinutes(20), "foobar"));
     sut.apply(
-        new Activity(LocalDateTime.of(2022, 12, 16, 14, 43), Duration.ofMinutes(20), "foobar"));
+        new Activity(
+            LocalDateTime.of(today, LocalTime.of(14, 43)), Duration.ofMinutes(20), "foobar"));
 
     var timeSummary = sut.getTimeSummary();
 
     assertEquals(
         new TimeSummary(
+            today,
             Duration.ofMinutes(40),
             Duration.ofMinutes(0),
             Duration.ofMinutes(40),
@@ -164,16 +174,21 @@ class RecentActivitiesTests {
 
   @Test
   void getTimeSummary_SumsYesterday() {
-    var sut = new RecentActivities(LocalDate.of(2022, 12, 17));
+    var today = LocalDate.of(2022, 12, 17);
+    var yesterday = LocalDate.of(2022, 12, 16);
+    var sut = new RecentActivities(today);
     sut.apply(
-        new Activity(LocalDateTime.of(2022, 12, 16, 14, 23), Duration.ofMinutes(20), "foobar"));
+        new Activity(
+            LocalDateTime.of(yesterday, LocalTime.of(14, 23)), Duration.ofMinutes(20), "foobar"));
     sut.apply(
-        new Activity(LocalDateTime.of(2022, 12, 16, 14, 43), Duration.ofMinutes(20), "foobar"));
+        new Activity(
+            LocalDateTime.of(yesterday, LocalTime.of(14, 43)), Duration.ofMinutes(20), "foobar"));
 
     var timeSummary = sut.getTimeSummary();
 
     assertEquals(
         new TimeSummary(
+            today,
             Duration.ofMinutes(0),
             Duration.ofMinutes(40),
             Duration.ofMinutes(40),
@@ -183,7 +198,8 @@ class RecentActivitiesTests {
 
   @Test
   void getTimeSummary_SumsThisWeek() {
-    var sut = new RecentActivities(LocalDate.of(2022, 12, 17));
+    var today = LocalDate.of(2022, 12, 17);
+    var sut = new RecentActivities(today);
     sut.apply(
         new Activity(LocalDateTime.of(2022, 12, 15, 14, 23), Duration.ofMinutes(20), "foobar"));
     sut.apply(
@@ -193,6 +209,7 @@ class RecentActivitiesTests {
 
     assertEquals(
         new TimeSummary(
+            today,
             Duration.ofMinutes(0),
             Duration.ofMinutes(0),
             Duration.ofMinutes(40),
@@ -202,7 +219,8 @@ class RecentActivitiesTests {
 
   @Test
   void getTimeSummary_SumsThisMonth() {
-    var sut = new RecentActivities(LocalDate.of(2022, 12, 17));
+    var today = LocalDate.of(2022, 12, 17);
+    var sut = new RecentActivities(today);
     sut.apply(
         new Activity(LocalDateTime.of(2022, 12, 1, 14, 23), Duration.ofMinutes(20), "foobar"));
     sut.apply(
@@ -212,6 +230,7 @@ class RecentActivitiesTests {
 
     assertEquals(
         new TimeSummary(
+            today,
             Duration.ofMinutes(0),
             Duration.ofMinutes(0),
             Duration.ofMinutes(0),
@@ -221,7 +240,8 @@ class RecentActivitiesTests {
 
   @Test
   void getTimeSummary_DoesNotSumPreviousMonth() {
-    var sut = new RecentActivities(LocalDate.of(2022, 12, 17));
+    var today = LocalDate.of(2022, 12, 17);
+    var sut = new RecentActivities(today);
     sut.apply(
         new Activity(LocalDateTime.of(2022, 11, 30, 14, 23), Duration.ofMinutes(20), "foobar"));
     sut.apply(
@@ -231,6 +251,7 @@ class RecentActivitiesTests {
 
     assertEquals(
         new TimeSummary(
+            today,
             Duration.ofMinutes(0),
             Duration.ofMinutes(0),
             Duration.ofMinutes(0),
@@ -240,7 +261,8 @@ class RecentActivitiesTests {
 
   @Test
   void getTimeSummary_DoesNotSumFuture() {
-    var sut = new RecentActivities(LocalDate.of(2022, 11, 17));
+    var today = LocalDate.of(2022, 11, 17);
+    var sut = new RecentActivities(today);
     sut.apply(
         new Activity(LocalDateTime.of(2022, 11, 17, 14, 23), Duration.ofMinutes(20), "foobar"));
     sut.apply(
@@ -250,6 +272,7 @@ class RecentActivitiesTests {
 
     assertEquals(
         new TimeSummary(
+            today,
             Duration.ofMinutes(20),
             Duration.ofMinutes(0),
             Duration.ofMinutes(20),
