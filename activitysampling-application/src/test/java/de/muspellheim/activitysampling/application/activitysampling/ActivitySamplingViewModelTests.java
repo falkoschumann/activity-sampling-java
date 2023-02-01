@@ -20,6 +20,8 @@ import static org.mockito.Mockito.when;
 import de.muspellheim.activitysampling.domain.ActivitiesService;
 import de.muspellheim.activitysampling.domain.Activity;
 import de.muspellheim.activitysampling.domain.RecentActivities;
+import de.muspellheim.activitysampling.domain.TimeSummary;
+import de.muspellheim.activitysampling.domain.WorkingDay;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -41,19 +43,43 @@ class ActivitySamplingViewModelTests {
 
   @BeforeEach
   void init() {
-    var recentActivities = new RecentActivities(LocalDate.parse("2022-11-16"));
-    recentActivities.apply(
-        new Activity(
-            LocalDateTime.parse("2022-11-16T16:16"), Duration.ofMinutes(5), "Lorem ipsum"));
-    recentActivities.apply(
-        new Activity(
-            LocalDateTime.parse("2022-11-15T15:15"), Duration.ofMinutes(5), "Lorem ipsum"));
-    recentActivities.apply(
-        new Activity(
-            LocalDateTime.parse("2022-11-14T14:14"), Duration.ofMinutes(5), "Lorem ipsum"));
-    recentActivities.apply(
-        new Activity(
-            LocalDateTime.parse("2022-11-07T07:07"), Duration.ofMinutes(5), "Lorem ipsum"));
+    var recentActivities =
+        new RecentActivities(
+            List.of(
+                new WorkingDay(
+                    LocalDate.of(2022, 11, 16),
+                    List.of(
+                        new Activity(
+                            LocalDateTime.of(2022, 11, 16, 16, 16),
+                            Duration.ofMinutes(5),
+                            "Lorem ipsum"))),
+                new WorkingDay(
+                    LocalDate.of(2022, 11, 15),
+                    List.of(
+                        new Activity(
+                            LocalDateTime.of(2022, 11, 15, 15, 15),
+                            Duration.ofMinutes(5),
+                            "Lorem ipsum"))),
+                new WorkingDay(
+                    LocalDate.of(2022, 11, 14),
+                    List.of(
+                        new Activity(
+                            LocalDateTime.of(2022, 11, 14, 14, 14),
+                            Duration.ofMinutes(5),
+                            "Lorem ipsum"))),
+                new WorkingDay(
+                    LocalDate.of(2022, 11, 7),
+                    List.of(
+                        new Activity(
+                            LocalDateTime.of(2022, 11, 7, 7, 7),
+                            Duration.ofMinutes(5),
+                            "Lorem ipsum")))),
+            new TimeSummary(
+                LocalDate.of(2022, 11, 16),
+                Duration.ofMinutes(5),
+                Duration.ofMinutes(5),
+                Duration.ofMinutes(15),
+                Duration.ofMinutes(20)));
     when(activitiesService.getRecentActivities()).thenReturn(recentActivities);
     sut.addOnCountdownElapsedListener(v -> onCountdownElapsed.run());
     sut.addOnErrorListener(onError);

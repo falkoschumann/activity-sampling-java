@@ -152,7 +152,7 @@ class ActivitiesServiceTests {
                                 LocalDateTime.parse("2022-08-31T17:00"),
                                 Duration.ofMinutes(20),
                                 "A2")))),
-                activities.getWorkingDays(),
+                activities.workingDays(),
                 "Working days"),
         () ->
             assertEquals(
@@ -162,7 +162,7 @@ class ActivitiesServiceTests {
                     Duration.ofMinutes(40),
                     Duration.ofMinutes(120),
                     Duration.ofMinutes(160)),
-                activities.getTimeSummary(),
+                activities.timeSummary(),
                 "Time summary"));
   }
 
@@ -252,7 +252,7 @@ class ActivitiesServiceTests {
                                 LocalDateTime.parse("2022-12-01T15:00"),
                                 Duration.ofMinutes(20),
                                 "A2")))),
-                activities.getWorkingDays(),
+                activities.workingDays(),
                 "Working days"),
         () ->
             assertEquals(
@@ -262,7 +262,7 @@ class ActivitiesServiceTests {
                     Duration.ofMinutes(40),
                     Duration.ofMinutes(120),
                     Duration.ofMinutes(160)),
-                activities.getTimeSummary(),
+                activities.timeSummary(),
                 "Time summary"));
   }
 

@@ -175,7 +175,7 @@ public class ActivitySamplingViewModel {
     var items = new ArrayList<ActivityItem>();
     var dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL);
     var timeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
-    for (var day : recentActivities.getWorkingDays()) {
+    for (var day : recentActivities.workingDays()) {
       items.add(new ActivityItem(day.date().format(dateFormatter)));
       for (var activity : day.activities()) {
         items.add(
@@ -186,7 +186,7 @@ public class ActivitySamplingViewModel {
     }
 
     var timeFormat = "%1$02d:%2$02d";
-    var timeSummary = recentActivities.getTimeSummary();
+    var timeSummary = recentActivities.timeSummary();
     hoursTodayLabelText.set(
         timeFormat.formatted(
             timeSummary.hoursToday().toHours(), timeSummary.hoursToday().toMinutesPart()));

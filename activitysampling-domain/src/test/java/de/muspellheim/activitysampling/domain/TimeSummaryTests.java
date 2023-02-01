@@ -1,3 +1,8 @@
+/*
+ * Activity Sampling - Domain
+ * Copyright (c) 2023 Falko Schumann <falko.schumann@muspellheim.de>
+ */
+
 package de.muspellheim.activitysampling.domain;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
