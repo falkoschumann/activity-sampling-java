@@ -22,6 +22,7 @@ import de.muspellheim.activitysampling.domain.Activity;
 import de.muspellheim.activitysampling.domain.RecentActivities;
 import de.muspellheim.activitysampling.domain.TimeSummary;
 import de.muspellheim.activitysampling.domain.WorkingDay;
+import de.muspellheim.activitysampling.domain.WorkingDays;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -45,35 +46,36 @@ class ActivitySamplingViewModelTests {
   void init() {
     var recentActivities =
         new RecentActivities(
-            List.of(
-                new WorkingDay(
-                    LocalDate.of(2022, 11, 16),
-                    List.of(
-                        new Activity(
-                            LocalDateTime.of(2022, 11, 16, 16, 16),
-                            Duration.ofMinutes(5),
-                            "Lorem ipsum"))),
-                new WorkingDay(
-                    LocalDate.of(2022, 11, 15),
-                    List.of(
-                        new Activity(
-                            LocalDateTime.of(2022, 11, 15, 15, 15),
-                            Duration.ofMinutes(5),
-                            "Lorem ipsum"))),
-                new WorkingDay(
-                    LocalDate.of(2022, 11, 14),
-                    List.of(
-                        new Activity(
-                            LocalDateTime.of(2022, 11, 14, 14, 14),
-                            Duration.ofMinutes(5),
-                            "Lorem ipsum"))),
-                new WorkingDay(
-                    LocalDate.of(2022, 11, 7),
-                    List.of(
-                        new Activity(
-                            LocalDateTime.of(2022, 11, 7, 7, 7),
-                            Duration.ofMinutes(5),
-                            "Lorem ipsum")))),
+            new WorkingDays(
+                List.of(
+                    new WorkingDay(
+                        LocalDate.of(2022, 11, 16),
+                        List.of(
+                            new Activity(
+                                LocalDateTime.of(2022, 11, 16, 16, 16),
+                                Duration.ofMinutes(5),
+                                "Lorem ipsum"))),
+                    new WorkingDay(
+                        LocalDate.of(2022, 11, 15),
+                        List.of(
+                            new Activity(
+                                LocalDateTime.of(2022, 11, 15, 15, 15),
+                                Duration.ofMinutes(5),
+                                "Lorem ipsum"))),
+                    new WorkingDay(
+                        LocalDate.of(2022, 11, 14),
+                        List.of(
+                            new Activity(
+                                LocalDateTime.of(2022, 11, 14, 14, 14),
+                                Duration.ofMinutes(5),
+                                "Lorem ipsum"))),
+                    new WorkingDay(
+                        LocalDate.of(2022, 11, 7),
+                        List.of(
+                            new Activity(
+                                LocalDateTime.of(2022, 11, 7, 7, 7),
+                                Duration.ofMinutes(5),
+                                "Lorem ipsum"))))),
             new TimeSummary(
                 LocalDate.of(2022, 11, 16),
                 Duration.ofMinutes(5),

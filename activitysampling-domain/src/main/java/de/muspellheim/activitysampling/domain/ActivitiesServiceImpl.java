@@ -31,7 +31,7 @@ public class ActivitiesServiceImpl implements ActivitiesService {
     var today = LocalDate.now(clock);
     var from = today.minusDays(30);
     var activities = activitiesRepository.findInPeriod(from, today);
-    var workingDays = WorkingDay.from(activities);
+    var workingDays = WorkingDays.from(activities);
     var timeSummary = TimeSummary.of(today).add(activities);
     return new RecentActivities(workingDays, timeSummary);
   }

@@ -67,7 +67,7 @@ class ActivitySamplingTests {
             assertEquals(
                 List.of("Mittwoch, 16. November 2022", "18:25 - Lorem ipsum"),
                 recentActivitiesFixture.query(),
-                "Recent countdown"),
+                "Recent activities"),
         () -> assertEquals("00:20", activitySamplingFixture.checkHoursToday(), "Hours today"),
         () ->
             assertEquals("00:00", activitySamplingFixture.checkHoursYesterday(), "Hours yesterday"),
