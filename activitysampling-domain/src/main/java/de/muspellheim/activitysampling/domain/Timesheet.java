@@ -6,49 +6,64 @@
 package de.muspellheim.activitysampling.domain;
 
 import java.time.Duration;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.Objects;
 
-public class Timesheet {
-  public record Entry(LocalDate date, String notes, Duration hours) {}
+public record Timesheet(List<TimesheetEntry> entries, Duration total) {
+  public Timesheet {
+    Objects.requireNonNull(entries, "entries");
+    Objects.requireNonNull(total, "total");
+  }
 
-  private final SortedMap<LocalDate, SortedMap<String, Duration>> activitiesPerDay =
-      new TreeMap<>();
-  private Duration total = Duration.ZERO;
+  public Timesheet() {
+    this(List.of(), Duration.ZERO);
+  }
 
-  public Timesheet() {}
+  public static Timesheet from(Iterable<Activity> activities) {
+    return new Timesheet().add(activities);
+  }
 
-  public void add(Activity activity) {
+  public Timesheet add(Activity activity) {
+    var newEntries = new ArrayList<>(entries);
     var date = activity.timestamp().toLocalDate();
-    if (!activitiesPerDay.containsKey(date)) {
-      activitiesPerDay.put(date, new TreeMap<>());
-    }
-    var activities = activitiesPerDay.get(date);
-    var duration =
-        activities.getOrDefault(activity.description(), Duration.ZERO).plus(activity.duration());
-    activities.put(activity.description(), duration);
 
-    total = total.plus(activity.duration());
-  }
-
-  public void addAll(Iterable<Activity> activities) {
-    activities.forEach(this::add);
-  }
-
-  public Iterable<Entry> getEntries() {
-    var entries = new ArrayList<Entry>();
-    for (var day : activitiesPerDay.entrySet()) {
-      for (var activity : day.getValue().entrySet()) {
-        entries.add(new Entry(day.getKey(), activity.getKey(), activity.getValue()));
+    var index = -1;
+    for (var i = 0; i < newEntries.size(); i++) {
+      var e = newEntries.get(i);
+      if (e.date().equals(date) && e.notes().equals(activity.description())) {
+        index = i;
+        break;
       }
     }
-    return List.copyOf(entries);
+
+    if (index != -1) {
+      var entry = newEntries.get(index);
+      entry = entry.add(activity);
+      newEntries.set(index, entry);
+    } else {
+      var entry = new TimesheetEntry(date, activity.description(), activity.duration());
+      newEntries.add(entry);
+    }
+
+    newEntries.sort(
+        (a1, a2) -> {
+          var result = a1.date().compareTo(a2.date());
+          if (result != 0) {
+            return result;
+          }
+
+          return a1.notes().compareTo(a2.notes());
+        });
+    var newTotal = total.plus(activity.duration());
+    return new Timesheet(newEntries, newTotal);
   }
 
-  public Duration getTotal() {
-    return total;
+  public Timesheet add(Iterable<Activity> activities) {
+    var timesheet = this;
+    for (var activity : activities) {
+      timesheet = timesheet.add(activity);
+    }
+    return timesheet;
   }
 }

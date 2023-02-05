@@ -303,21 +303,16 @@ class ActivitiesServiceTests {
         () ->
             assertEquals(
                 List.of(
-                    new Timesheet.Entry(
-                        LocalDate.parse("2022-11-14"), "A1", Duration.ofMinutes(20)),
-                    new Timesheet.Entry(
-                        LocalDate.parse("2022-11-15"), "A1", Duration.ofMinutes(20)),
-                    new Timesheet.Entry(
-                        LocalDate.parse("2022-11-15"), "A2", Duration.ofMinutes(40)),
-                    new Timesheet.Entry(
-                        LocalDate.parse("2022-11-17"), "A1", Duration.ofMinutes(40)),
-                    new Timesheet.Entry(
-                        LocalDate.parse("2022-11-17"), "A2", Duration.ofMinutes(20)),
-                    new Timesheet.Entry(
+                    new TimesheetEntry(LocalDate.parse("2022-11-14"), "A1", Duration.ofMinutes(20)),
+                    new TimesheetEntry(LocalDate.parse("2022-11-15"), "A1", Duration.ofMinutes(20)),
+                    new TimesheetEntry(LocalDate.parse("2022-11-15"), "A2", Duration.ofMinutes(40)),
+                    new TimesheetEntry(LocalDate.parse("2022-11-17"), "A1", Duration.ofMinutes(40)),
+                    new TimesheetEntry(LocalDate.parse("2022-11-17"), "A2", Duration.ofMinutes(20)),
+                    new TimesheetEntry(
                         LocalDate.parse("2022-11-18"), "A2", Duration.ofMinutes(20))),
-                timesheet.getEntries(),
+                timesheet.entries(),
                 "entries"),
-        () -> assertEquals(Duration.ofMinutes(160), timesheet.getTotal(), "total"));
+        () -> assertEquals(Duration.ofMinutes(160), timesheet.total(), "total"));
   }
 
   @Test

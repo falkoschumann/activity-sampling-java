@@ -18,7 +18,7 @@ public record WorkingDays(List<WorkingDay> workingDays) {
     this(List.of());
   }
 
-  public static WorkingDays from(List<Activity> activities) {
+  public static WorkingDays from(Iterable<Activity> activities) {
     return new WorkingDays().add(activities);
   }
 
@@ -47,7 +47,7 @@ public record WorkingDays(List<WorkingDay> workingDays) {
     return new WorkingDays(list);
   }
 
-  public WorkingDays add(List<Activity> activities) {
+  public WorkingDays add(Iterable<Activity> activities) {
     var days = new WorkingDays(workingDays);
     for (var a : activities) {
       days = days.add(a);

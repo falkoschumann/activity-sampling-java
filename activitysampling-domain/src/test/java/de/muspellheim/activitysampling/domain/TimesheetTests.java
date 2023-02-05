@@ -17,101 +17,101 @@ class TimesheetTests {
   void whenIfNoActivitiesAreAdded_ThenThereAreNoEntries() {
     var sut = new Timesheet();
 
-    assertEquals(List.of(), sut.getEntries(), "entries");
-    assertEquals(Duration.ZERO, sut.getTotal(), "total");
+    assertEquals(List.of(), sut.entries(), "entries");
+    assertEquals(Duration.ZERO, sut.total(), "total");
   }
 
   @Test
   void when1ActivityAdded_ThenThereIs1Entry() {
     var date = LocalDate.of(2022, 12, 18);
-    var sut = new Timesheet();
 
-    sut.add(new Activity(date.atTime(14, 39), Duration.ofMinutes(30), "foo"));
+    var timesheet =
+        new Timesheet().add(new Activity(date.atTime(14, 39), Duration.ofMinutes(30), "foo"));
 
     assertEquals(
-        List.of(new Timesheet.Entry(date, "foo", Duration.ofMinutes(30))),
-        sut.getEntries(),
+        List.of(new TimesheetEntry(date, "foo", Duration.ofMinutes(30))),
+        timesheet.entries(),
         "entries");
-    assertEquals(Duration.ofMinutes(30), sut.getTotal(), "total");
+    assertEquals(Duration.ofMinutes(30), timesheet.total(), "total");
   }
 
   @Test
   void whenMultipleSameActivitiesAdded_ThenThereSummedAs1Entry() {
     var date = LocalDate.of(2022, 12, 18);
-    var sut = new Timesheet();
 
-    sut.addAll(
-        List.of(
-            new Activity(date.atTime(14, 19), Duration.ofMinutes(30), "foo"),
-            new Activity(date.atTime(14, 39), Duration.ofMinutes(20), "foo")));
+    var timesheet =
+        Timesheet.from(
+            List.of(
+                new Activity(date.atTime(14, 19), Duration.ofMinutes(30), "foo"),
+                new Activity(date.atTime(14, 39), Duration.ofMinutes(20), "foo")));
 
     assertEquals(
-        List.of(new Timesheet.Entry(date, "foo", Duration.ofMinutes(50))),
-        sut.getEntries(),
+        List.of(new TimesheetEntry(date, "foo", Duration.ofMinutes(50))),
+        timesheet.entries(),
         "entries");
-    assertEquals(Duration.ofMinutes(50), sut.getTotal(), "total");
+    assertEquals(Duration.ofMinutes(50), timesheet.total(), "total");
   }
 
   @Test
   void whenMultipleDifferentActivitiesAdded_ThenReturns2Entries() {
     var date = LocalDate.of(2022, 12, 18);
-    var sut = new Timesheet();
 
-    sut.addAll(
-        List.of(
-            new Activity(date.atTime(14, 19), Duration.ofMinutes(30), "foo"),
-            new Activity(date.atTime(14, 39), Duration.ofMinutes(20), "bar")));
+    var timesheet =
+        Timesheet.from(
+            List.of(
+                new Activity(date.atTime(14, 19), Duration.ofMinutes(30), "foo"),
+                new Activity(date.atTime(14, 39), Duration.ofMinutes(20), "bar")));
 
     assertEquals(
         List.of(
-            new Timesheet.Entry(date, "bar", Duration.ofMinutes(20)),
-            new Timesheet.Entry(date, "foo", Duration.ofMinutes(30))),
-        sut.getEntries(),
+            new TimesheetEntry(date, "bar", Duration.ofMinutes(20)),
+            new TimesheetEntry(date, "foo", Duration.ofMinutes(30))),
+        timesheet.entries(),
         "entries");
-    assertEquals(Duration.ofMinutes(50), sut.getTotal(), "total");
+    assertEquals(Duration.ofMinutes(50), timesheet.total(), "total");
   }
 
   @Test
   void whenMultipleDifferentActivitiesAddedOnSameDay_ThenEntriesAreSummedPerActivity() {
     var date = LocalDate.of(2022, 12, 18);
-    var sut = new Timesheet();
 
-    sut.addAll(
-        List.of(
-            new Activity(date.atTime(14, 19), Duration.ofMinutes(30), "foo"),
-            new Activity(date.atTime(14, 39), Duration.ofMinutes(20), "bar"),
-            new Activity(date.atTime(15, 19), Duration.ofMinutes(30), "foo"),
-            new Activity(date.atTime(15, 39), Duration.ofMinutes(20), "bar")));
+    var timesheet =
+        Timesheet.from(
+            List.of(
+                new Activity(date.atTime(14, 19), Duration.ofMinutes(30), "foo"),
+                new Activity(date.atTime(14, 39), Duration.ofMinutes(20), "bar"),
+                new Activity(date.atTime(15, 19), Duration.ofMinutes(30), "foo"),
+                new Activity(date.atTime(15, 39), Duration.ofMinutes(20), "bar")));
 
     assertEquals(
         List.of(
-            new Timesheet.Entry(date, "bar", Duration.ofMinutes(40)),
-            new Timesheet.Entry(date, "foo", Duration.ofMinutes(60))),
-        sut.getEntries(),
+            new TimesheetEntry(date, "bar", Duration.ofMinutes(40)),
+            new TimesheetEntry(date, "foo", Duration.ofMinutes(60))),
+        timesheet.entries(),
         "entries");
-    assertEquals(Duration.ofMinutes(100), sut.getTotal(), "total");
+    assertEquals(Duration.ofMinutes(100), timesheet.total(), "total");
   }
 
   @Test
   void whenMultipleDifferentActivitiesAddedOnDifferentDays_ThenEntriesAreSummedPerActivityAndDay() {
     var date1 = LocalDate.of(2022, 12, 17);
     var date2 = LocalDate.of(2022, 12, 18);
-    var sut = new Timesheet();
 
-    sut.addAll(
-        List.of(
-            new Activity(date1.atTime(14, 19), Duration.ofMinutes(30), "foo"),
-            new Activity(date1.atTime(14, 39), Duration.ofMinutes(20), "bar"),
-            new Activity(date2.atTime(15, 19), Duration.ofMinutes(30), "bar"),
-            new Activity(date2.atTime(15, 39), Duration.ofMinutes(30), "bar")));
+    var timesheet =
+        Timesheet.from(
+            List.of(
+                new Activity(date1.atTime(14, 19), Duration.ofMinutes(30), "foo"),
+                new Activity(date1.atTime(14, 39), Duration.ofMinutes(20), "bar"),
+                new Activity(date2.atTime(15, 19), Duration.ofMinutes(30), "bar"),
+                new Activity(date2.atTime(15, 39), Duration.ofMinutes(30), "bar")));
 
     assertEquals(
         List.of(
-            new Timesheet.Entry(date1, "bar", Duration.ofMinutes(20)),
-            new Timesheet.Entry(date1, "foo", Duration.ofMinutes(30)),
-            new Timesheet.Entry(date2, "bar", Duration.ofMinutes(60))),
-        sut.getEntries(),
+            new TimesheetEntry(date1, "bar", Duration.ofMinutes(20)),
+            new TimesheetEntry(date1, "foo", Duration.ofMinutes(30)),
+            new TimesheetEntry(date2, "bar", Duration.ofMinutes(60))),
+        timesheet.entries(),
         "entries");
-    assertEquals(Duration.ofMinutes(110), sut.getTotal(), "total");
+    assertEquals(Duration.ofMinutes(110), timesheet.total(), "total");
   }
 }

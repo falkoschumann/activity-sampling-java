@@ -7,7 +7,6 @@ package de.muspellheim.activitysampling.domain;
 
 import java.time.Duration;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Objects;
 
 public record TimeSummary(
@@ -64,7 +63,7 @@ public record TimeSummary(
     return new TimeSummary(today, hoursToday, hoursYesterday, hoursThisWeek, hoursThisMonth);
   }
 
-  public TimeSummary add(List<Activity> activities) {
+  public TimeSummary add(Iterable<Activity> activities) {
     var summary = this;
     for (var a : activities) {
       summary = summary.add(a);
