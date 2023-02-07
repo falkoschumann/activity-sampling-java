@@ -8,8 +8,6 @@ package de.muspellheim.activitysampling.domain;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import java.time.Clock;
 import java.time.Duration;
@@ -18,17 +16,19 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-@ExtendWith(MockitoExtension.class)
 class ActivitiesServiceTests {
-  @Mock private ActivitiesRepository activitiesRepository;
-  @InjectMocks private ActivitiesServiceImpl sut;
+  private ActivitiesRepositoryStub activitiesRepository;
+  private ActivitiesServiceImpl sut;
+
+  @BeforeEach
+  void init() {
+    activitiesRepository = new ActivitiesRepositoryStub();
+    sut = new ActivitiesServiceImpl(activitiesRepository);
+  }
 
   private void setClock(String timestamp) {
     sut.setClock(Clock.fixed(Instant.parse(timestamp), ZoneId.of("Europe/Berlin")));
@@ -37,56 +37,50 @@ class ActivitiesServiceTests {
   @Test
   void logActivity_RecordsActivityLogged() {
     setClock("2022-11-16T11:26:00Z");
+
     sut.logActivity("Lorem ipsum", Duration.ofMinutes(20));
 
-    verify(activitiesRepository)
-        .append(
+    assertEquals(
+        List.of(
             new Activity(
-                LocalDateTime.parse("2022-11-16T12:26:00"), Duration.ofMinutes(20), "Lorem ipsum"));
+                LocalDateTime.parse("2022-11-16T12:26:00"), Duration.ofMinutes(20), "Lorem ipsum")),
+        activitiesRepository);
   }
 
   @Test
   void logActivity_TrimsDescription() {
     setClock("2022-11-16T11:26:00Z");
+
     sut.logActivity("  Lorem ipsum ", Duration.ofMinutes(30));
 
-    verify(activitiesRepository)
-        .append(
+    assertEquals(
+        List.of(
             new Activity(
-                LocalDateTime.parse("2022-11-16T12:26:00"), Duration.ofMinutes(30), "Lorem ipsum"));
+                LocalDateTime.parse("2022-11-16T12:26:00"), Duration.ofMinutes(30), "Lorem ipsum")),
+        activitiesRepository);
   }
 
   @Test
   void getRecentActivities_MonthWith30Days_ReturnsLast31DaysInDescendentOrder() {
     setClock("2022-09-30T10:00:00Z");
-    when(activitiesRepository.findInPeriod(
-            LocalDate.parse("2022-08-31"), LocalDate.parse("2022-09-30")))
-        .thenReturn(
-            List.of(
-                // Last month
-                new Activity(
-                    LocalDateTime.parse("2022-08-31T17:00:00"), Duration.ofMinutes(20), "A2"),
-                // First day of this month
-                new Activity(
-                    LocalDateTime.parse("2022-09-01T16:00:00"), Duration.ofMinutes(20), "A3"),
-                // This Month
-                new Activity(
-                    LocalDateTime.parse("2022-09-05T15:00:00"), Duration.ofMinutes(20), "A4"),
-                // This Week
-                new Activity(
-                    LocalDateTime.parse("2022-09-26T14:00:00"), Duration.ofMinutes(20), "A5"),
-                new Activity(
-                    LocalDateTime.parse("2022-09-28T13:00:00"), Duration.ofMinutes(20), "A6"),
-                // Yesterday
-                new Activity(
-                    LocalDateTime.parse("2022-09-29T11:00:00"), Duration.ofMinutes(20), "A7"),
-                new Activity(
-                    LocalDateTime.parse("2022-09-29T12:00:00"), Duration.ofMinutes(20), "A8"),
-                // Today
-                new Activity(
-                    LocalDateTime.parse("2022-09-30T09:00:00"), Duration.ofMinutes(20), "A9"),
-                new Activity(
-                    LocalDateTime.parse("2022-09-30T10:00:00"), Duration.ofMinutes(20), "A10")));
+    activitiesRepository.addAll(
+        List.of(
+            // Last month
+            new Activity(LocalDateTime.parse("2022-08-31T17:00:00"), Duration.ofMinutes(20), "A2"),
+            // First day of this month
+            new Activity(LocalDateTime.parse("2022-09-01T16:00:00"), Duration.ofMinutes(20), "A3"),
+            // This Month
+            new Activity(LocalDateTime.parse("2022-09-05T15:00:00"), Duration.ofMinutes(20), "A4"),
+            // This Week
+            new Activity(LocalDateTime.parse("2022-09-26T14:00:00"), Duration.ofMinutes(20), "A5"),
+            new Activity(LocalDateTime.parse("2022-09-28T13:00:00"), Duration.ofMinutes(20), "A6"),
+            // Yesterday
+            new Activity(LocalDateTime.parse("2022-09-29T11:00:00"), Duration.ofMinutes(20), "A7"),
+            new Activity(LocalDateTime.parse("2022-09-29T12:00:00"), Duration.ofMinutes(20), "A8"),
+            // Today
+            new Activity(LocalDateTime.parse("2022-09-30T09:00:00"), Duration.ofMinutes(20), "A9"),
+            new Activity(
+                LocalDateTime.parse("2022-09-30T10:00:00"), Duration.ofMinutes(20), "A10")));
 
     var activities = sut.getRecentActivities();
 
@@ -170,31 +164,22 @@ class ActivitiesServiceTests {
   @Test
   void getRecentActivities_MonthWith31Days_ReturnsLast31DaysInDescendentOrder() {
     setClock("2022-12-31T10:00:00Z");
-    when(activitiesRepository.findInPeriod(
-            LocalDate.parse("2022-12-01"), LocalDate.parse("2022-12-31")))
-        .thenReturn(
-            List.of(
-                // First day of this month
-                new Activity(
-                    LocalDateTime.parse("2022-12-01T15:00:00"), Duration.ofMinutes(20), "A2"),
-                // This Month
-                new Activity(
-                    LocalDateTime.parse("2022-12-05T14:00:00"), Duration.ofMinutes(20), "A3"),
-                // This Week
-                new Activity(
-                    LocalDateTime.parse("2022-12-26T13:00:00"), Duration.ofMinutes(20), "A4"),
-                new Activity(
-                    LocalDateTime.parse("2022-12-28T12:00:00"), Duration.ofMinutes(20), "A5"),
-                // Yesterday
-                new Activity(
-                    LocalDateTime.parse("2022-12-30T10:00:00"), Duration.ofMinutes(20), "A6"),
-                new Activity(
-                    LocalDateTime.parse("2022-12-30T11:00:00"), Duration.ofMinutes(20), "A7"),
-                // Today
-                new Activity(
-                    LocalDateTime.parse("2022-12-31T08:00:00"), Duration.ofMinutes(20), "A8"),
-                new Activity(
-                    LocalDateTime.parse("2022-12-31T09:00:00"), Duration.ofMinutes(20), "A9")));
+    activitiesRepository.addAll(
+        List.of(
+            // First day of this month
+            new Activity(LocalDateTime.parse("2022-12-01T15:00:00"), Duration.ofMinutes(20), "A2"),
+            // This Month
+            new Activity(LocalDateTime.parse("2022-12-05T14:00:00"), Duration.ofMinutes(20), "A3"),
+            // This Week
+            new Activity(LocalDateTime.parse("2022-12-26T13:00:00"), Duration.ofMinutes(20), "A4"),
+            new Activity(LocalDateTime.parse("2022-12-28T12:00:00"), Duration.ofMinutes(20), "A5"),
+            // Yesterday
+            new Activity(LocalDateTime.parse("2022-12-30T10:00:00"), Duration.ofMinutes(20), "A6"),
+            new Activity(LocalDateTime.parse("2022-12-30T11:00:00"), Duration.ofMinutes(20), "A7"),
+            // Today
+            new Activity(LocalDateTime.parse("2022-12-31T08:00:00"), Duration.ofMinutes(20), "A8"),
+            new Activity(
+                LocalDateTime.parse("2022-12-31T09:00:00"), Duration.ofMinutes(20), "A9")));
 
     var activities = sut.getRecentActivities();
 
@@ -270,30 +255,21 @@ class ActivitiesServiceTests {
 
   @Test
   void createTimesheet() {
-    when(activitiesRepository.findInPeriod(
-            LocalDate.parse("2022-11-14"), LocalDate.parse("2022-11-18")))
-        .thenReturn(
-            List.of(
-                // First day in the interval
-                new Activity(
-                    LocalDateTime.parse("2022-11-14T15:00:00"), Duration.ofMinutes(20), "A1"),
-                // A day in the interval
-                new Activity(
-                    LocalDateTime.parse("2022-11-15T12:00:00"), Duration.ofMinutes(20), "A2"),
-                new Activity(
-                    LocalDateTime.parse("2022-11-15T13:00:00"), Duration.ofMinutes(20), "A1"),
-                new Activity(
-                    LocalDateTime.parse("2022-11-15T14:00:00"), Duration.ofMinutes(20), "A2"),
-                // Another day in the interval
-                new Activity(
-                    LocalDateTime.parse("2022-11-17T09:00:00"), Duration.ofMinutes(20), "A1"),
-                new Activity(
-                    LocalDateTime.parse("2022-11-17T10:00:00"), Duration.ofMinutes(20), "A1"),
-                new Activity(
-                    LocalDateTime.parse("2022-11-17T11:00:00"), Duration.ofMinutes(20), "A2"),
-                // Last day of interval
-                new Activity(
-                    LocalDateTime.parse("2022-11-18T08:00:00"), Duration.ofMinutes(20), "A2")));
+    activitiesRepository.addAll(
+        List.of(
+            // First day in the interval
+            new Activity(LocalDateTime.parse("2022-11-14T15:00:00"), Duration.ofMinutes(20), "A1"),
+            // A day in the interval
+            new Activity(LocalDateTime.parse("2022-11-15T12:00:00"), Duration.ofMinutes(20), "A2"),
+            new Activity(LocalDateTime.parse("2022-11-15T13:00:00"), Duration.ofMinutes(20), "A1"),
+            new Activity(LocalDateTime.parse("2022-11-15T14:00:00"), Duration.ofMinutes(20), "A2"),
+            // Another day in the interval
+            new Activity(LocalDateTime.parse("2022-11-17T09:00:00"), Duration.ofMinutes(20), "A1"),
+            new Activity(LocalDateTime.parse("2022-11-17T10:00:00"), Duration.ofMinutes(20), "A1"),
+            new Activity(LocalDateTime.parse("2022-11-17T11:00:00"), Duration.ofMinutes(20), "A2"),
+            // Last day of interval
+            new Activity(
+                LocalDateTime.parse("2022-11-18T08:00:00"), Duration.ofMinutes(20), "A2")));
 
     var timesheet =
         sut.createTimesheet(LocalDate.parse("2022-11-14"), LocalDate.parse("2022-11-18"));
