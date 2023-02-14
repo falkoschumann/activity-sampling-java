@@ -6,7 +6,11 @@
 package de.muspellheim.activitysampling.application.timesheet;
 
 import javafx.geometry.Pos;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableCell;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 
 class TimesheetTableCell<T> extends TableCell<TimesheetItem, T> {
   private final Pos alignment;
@@ -27,10 +31,20 @@ class TimesheetTableCell<T> extends TableCell<TimesheetItem, T> {
       setText(null);
       setGraphic(null);
       setTextAlignment(null);
-      setOnMouseClicked(null);
+      setContextMenu(null);
     } else {
       setText(item.toString());
       setAlignment(alignment);
+
+      var copyMenuItem = new MenuItem("Copy notes");
+      copyMenuItem.setOnAction(
+          event -> {
+            var content = new ClipboardContent();
+            content.putString(item.toString());
+            Clipboard.getSystemClipboard().setContent(content);
+          });
+      var menu = new ContextMenu(copyMenuItem);
+      setContextMenu(menu);
     }
   }
 }
