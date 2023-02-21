@@ -7,6 +7,7 @@ package de.muspellheim.activitysampling.domain;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -47,14 +48,7 @@ public record Timesheet(List<TimesheetEntry> entries, Duration total) {
     }
 
     newEntries.sort(
-        (a1, a2) -> {
-          var result = a1.date().compareTo(a2.date());
-          if (result != 0) {
-            return result;
-          }
-
-          return a1.notes().compareTo(a2.notes());
-        });
+        Comparator.comparing(TimesheetEntry::date).thenComparing(TimesheetEntry::notes));
     var newTotal = total.plus(activity.duration());
     return new Timesheet(newEntries, newTotal);
   }

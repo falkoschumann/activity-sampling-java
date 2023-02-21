@@ -36,7 +36,7 @@ class TimesheetTableCell<T> extends TableCell<TimesheetItem, T> {
       setText(item.toString());
       setAlignment(alignment);
 
-      var copyMenuItem = new MenuItem("Copy notes");
+      var copyMenuItem = new MenuItem("Copy");
       copyMenuItem.setOnAction(
           event -> {
             var content = new ClipboardContent();
