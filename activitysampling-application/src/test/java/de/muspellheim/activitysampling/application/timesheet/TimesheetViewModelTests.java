@@ -24,6 +24,7 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,6 +43,7 @@ class TimesheetViewModelTests {
   @BeforeAll
   static void initAll() {
     Locale.setDefault(Locale.GERMANY);
+    TimeZone.setDefault(TimeZone.getTimeZone("Europe/Berlin"));
   }
 
   @BeforeEach

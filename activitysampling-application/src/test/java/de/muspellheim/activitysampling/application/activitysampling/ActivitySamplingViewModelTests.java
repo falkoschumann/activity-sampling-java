@@ -28,6 +28,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,6 +48,7 @@ class ActivitySamplingViewModelTests {
   @BeforeAll
   static void initAll() {
     Locale.setDefault(Locale.GERMANY);
+    TimeZone.setDefault(TimeZone.getTimeZone("Europe/Berlin"));
   }
 
   @BeforeEach
