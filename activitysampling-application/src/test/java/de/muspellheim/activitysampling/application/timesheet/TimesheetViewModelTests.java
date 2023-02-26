@@ -23,7 +23,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Consumer;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,6 +38,11 @@ class TimesheetViewModelTests {
   @Mock private Consumer<List<String>> onError;
 
   private TimesheetViewModel sut;
+
+  @BeforeAll
+  static void initAll() {
+    Locale.setDefault(Locale.GERMANY);
+  }
 
   @BeforeEach
   void init() {
