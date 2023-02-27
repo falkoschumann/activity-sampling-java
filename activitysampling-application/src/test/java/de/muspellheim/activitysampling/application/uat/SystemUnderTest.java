@@ -12,6 +12,8 @@ import de.muspellheim.activitysampling.domain.ActivitiesService;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.Locale;
 
 class SystemUnderTest {
@@ -32,7 +34,7 @@ class SystemUnderTest {
       throw new RuntimeException(e);
     }
 
-    clock = new TickingClock();
+    clock = new TickingClock(Instant.now(), ZoneId.of("Europe/Berlin"));
 
     Configuration configuration = Configuration.INSTANCE;
     configuration.setClock(clock);
