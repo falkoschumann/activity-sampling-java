@@ -7,14 +7,10 @@ package de.muspellheim.activitysampling.application.timesheet;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-import de.muspellheim.activitysampling.domain.ActivitiesService;
+import de.muspellheim.activitysampling.application.ActivitiesServiceStub;
 import de.muspellheim.activitysampling.domain.Activity;
+import de.muspellheim.activitysampling.domain.ConfigurableResponses;
 import de.muspellheim.activitysampling.domain.Timesheet;
 import java.time.Clock;
 import java.time.Duration;
@@ -22,21 +18,17 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
-import java.util.function.Consumer;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-@ExtendWith(MockitoExtension.class)
 class TimesheetViewModelTests {
-  @Mock private ActivitiesService activitiesService;
-  @Mock private Consumer<List<String>> onError;
+  private ActivitiesServiceStub activitiesService;
+  private List<String> errors;
 
   private TimesheetViewModel sut;
 
@@ -48,6 +40,8 @@ class TimesheetViewModelTests {
 
   @BeforeEach
   void init() {
+    errors = new ArrayList<>();
+
     var timesheet =
         Timesheet.from(
             List.of(
@@ -55,10 +49,12 @@ class TimesheetViewModelTests {
                 new Activity(LocalDateTime.parse("2022-11-20T12:00"), Duration.ofMinutes(5), "A2"),
                 new Activity(
                     LocalDateTime.parse("2022-11-21T12:00"), Duration.ofMinutes(5), "A1")));
-    when(activitiesService.createTimesheet(any(), any())).thenReturn(timesheet);
+    activitiesService = new ActivitiesServiceStub();
+    activitiesService.initTimesheet(new ConfigurableResponses<>(timesheet));
+
     var clock = Clock.fixed(Instant.parse("2022-11-23T20:42:00Z"), ZoneId.systemDefault());
     sut = new TimesheetViewModel(activitiesService, clock);
-    sut.setOnError(onError);
+    sut.setOnError(e -> errors.addAll(e));
     sut.run();
   }
 
@@ -180,13 +176,11 @@ class TimesheetViewModelTests {
 
   @Test
   void load_Failed_NotifyError() {
-    reset(activitiesService);
-    doThrow(new IllegalStateException("Something went wrong."))
-        .when(activitiesService)
-        .createTimesheet(any(), any());
+    activitiesService.initTimesheet(
+        new ConfigurableResponses<>(new IllegalStateException("Something went wrong.")));
 
     sut.back();
 
-    verify(onError).accept(List.of("Failed to load timesheet.", "Something went wrong."));
+    assertEquals(List.of("Failed to load timesheet.", "Something went wrong."), errors);
   }
 }
