@@ -12,6 +12,7 @@ import de.muspellheim.activitysampling.domain.ActivitiesService;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Locale;
 
 class SystemUnderTest {
   static final SystemUnderTest INSTANCE = new SystemUnderTest();
@@ -38,7 +39,7 @@ class SystemUnderTest {
     configuration.setLogFile(logFile);
 
     ActivitiesService activitiesService = Registry.getActivitiesService();
-    activitySamplingViewModel = new ActivitySamplingViewModel(activitiesService);
+    activitySamplingViewModel = new ActivitySamplingViewModel(activitiesService, Locale.GERMANY);
     activitySamplingViewModel.run();
   }
 
