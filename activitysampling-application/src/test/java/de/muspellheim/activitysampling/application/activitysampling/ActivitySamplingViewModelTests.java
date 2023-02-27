@@ -23,8 +23,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.TimeZone;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -33,12 +31,6 @@ class ActivitySamplingViewModelTests {
   private boolean countdownElapsed;
   private List<String> errors;
   private ActivitySamplingViewModel sut;
-
-  @BeforeAll
-  static void initAll() {
-    Locale.setDefault(Locale.GERMANY);
-    TimeZone.setDefault(TimeZone.getTimeZone("Europe/Berlin"));
-  }
 
   @BeforeEach
   void init() {
@@ -84,7 +76,7 @@ class ActivitySamplingViewModelTests {
                 Duration.ofMinutes(20)));
     activitiesService = new ActivitiesServiceStub();
     activitiesService.initRecentActivities(new ConfigurableResponses<>(recentActivities));
-    sut = new ActivitySamplingViewModel(activitiesService);
+    sut = new ActivitySamplingViewModel(activitiesService, Locale.GERMANY);
     sut.addOnCountdownElapsedListener(v -> countdownElapsed = true);
     sut.addOnErrorListener(e -> errors.addAll(e));
     sut.run();

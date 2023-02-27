@@ -21,8 +21,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.TimeZone;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -31,12 +29,6 @@ class TimesheetViewModelTests {
   private List<String> errors;
 
   private TimesheetViewModel sut;
-
-  @BeforeAll
-  static void initAll() {
-    Locale.setDefault(Locale.GERMANY);
-    TimeZone.setDefault(TimeZone.getTimeZone("Europe/Berlin"));
-  }
 
   @BeforeEach
   void init() {
@@ -53,7 +45,7 @@ class TimesheetViewModelTests {
     activitiesService.initTimesheet(new ConfigurableResponses<>(timesheet));
 
     var clock = Clock.fixed(Instant.parse("2022-11-23T20:42:00Z"), ZoneId.systemDefault());
-    sut = new TimesheetViewModel(activitiesService, clock);
+    sut = new TimesheetViewModel(activitiesService, Locale.GERMANY, clock);
     sut.setOnError(e -> errors.addAll(e));
     sut.run();
   }

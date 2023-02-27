@@ -16,6 +16,7 @@ import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Consumer;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringExpression;
@@ -28,6 +29,7 @@ import javafx.collections.ObservableList;
 
 public class TimesheetViewModel {
   private final ActivitiesService activitiesService;
+  private final Locale locale;
 
   // Events
   private Consumer<List<String>> onError;
@@ -44,11 +46,12 @@ public class TimesheetViewModel {
   private final ReadOnlyStringWrapper total;
 
   public TimesheetViewModel(ActivitiesService activitiesService) {
-    this(activitiesService, Clock.systemDefaultZone());
+    this(activitiesService, Locale.getDefault(), Clock.systemDefaultZone());
   }
 
-  public TimesheetViewModel(ActivitiesService activitiesService, Clock clock) {
+  public TimesheetViewModel(ActivitiesService activitiesService, Locale locale, Clock clock) {
     this.activitiesService = activitiesService;
+    this.locale = locale;
 
     var today = LocalDate.now(clock);
     var weekday = today.getDayOfWeek().getValue();
@@ -88,7 +91,7 @@ public class TimesheetViewModel {
     title1 =
         Bindings.createStringBinding(
             () -> "This " + periodConverter.toString(period.get()) + ": ", period);
-    var dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM);
+    var dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale);
     title2 =
         Bindings.createStringBinding(
             () ->
@@ -185,7 +188,7 @@ public class TimesheetViewModel {
       return;
     }
 
-    var dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM);
+    var dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale);
     var timeFormat = "%1$02d:%2$02d";
     var items = new ArrayList<TimesheetItem>();
     for (var entry : timesheet.entries()) {

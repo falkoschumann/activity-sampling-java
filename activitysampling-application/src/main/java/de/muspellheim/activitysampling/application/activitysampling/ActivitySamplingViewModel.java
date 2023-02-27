@@ -16,6 +16,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Consumer;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanExpression;
@@ -32,6 +33,7 @@ import javafx.collections.ObservableList;
 
 public class ActivitySamplingViewModel {
   private final ActivitiesService activitiesService;
+  private final Locale locale;
 
   // Events
   private EventEmitter<Void> onCountdownElapsed = new EventEmitter<>();
@@ -57,7 +59,12 @@ public class ActivitySamplingViewModel {
   private final ReadOnlyStringWrapper hoursThisMonthLabelText;
 
   public ActivitySamplingViewModel(ActivitiesService activitiesService) {
+    this(activitiesService, Locale.getDefault());
+  }
+
+  public ActivitySamplingViewModel(ActivitiesService activitiesService, Locale locale) {
     this.activitiesService = activitiesService;
+    this.locale = locale;
     // TODO Make default interval configurable; use when countdown off
     interval = new ReadOnlyObjectWrapper<>(Duration.ofMinutes(20));
     intervalLogged = new ReadOnlyBooleanWrapper(false);
@@ -75,7 +82,7 @@ public class ActivitySamplingViewModel {
         Bindings.createStringBinding(
             () -> {
               var time = LocalTime.ofSecondOfDay(countdown.get().toSeconds());
-              return DateTimeFormatter.ofPattern("HH:mm:ss").format(time);
+              return DateTimeFormatter.ofPattern("HH:mm:ss").withLocale(locale).format(time);
             },
             interval,
             countdown);
@@ -173,8 +180,8 @@ public class ActivitySamplingViewModel {
     }
 
     var items = new ArrayList<ActivityItem>();
-    var dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL);
-    var timeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
+    var dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).withLocale(locale);
+    var timeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(locale);
     for (var day : recentActivities.workingDays().workingDays()) {
       items.add(new ActivityItem(day.date().format(dateFormatter)));
       for (var activity : day.activities()) {
