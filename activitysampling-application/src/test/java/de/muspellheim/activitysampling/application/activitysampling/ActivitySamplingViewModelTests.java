@@ -9,16 +9,10 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-import de.muspellheim.activitysampling.domain.ActivitiesService;
+import de.muspellheim.activitysampling.application.ActivitiesServiceStub;
 import de.muspellheim.activitysampling.domain.Activity;
+import de.muspellheim.activitysampling.domain.ConfigurableResponses;
 import de.muspellheim.activitysampling.domain.RecentActivities;
 import de.muspellheim.activitysampling.domain.TimeSummary;
 import de.muspellheim.activitysampling.domain.WorkingDay;
@@ -26,24 +20,19 @@ import de.muspellheim.activitysampling.domain.WorkingDays;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
-import java.util.function.Consumer;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-@ExtendWith(MockitoExtension.class)
 class ActivitySamplingViewModelTests {
-  @Mock private ActivitiesService activitiesService;
-  @Mock private Runnable onCountdownElapsed;
-  @Mock private Consumer<List<String>> onError;
-  @InjectMocks private ActivitySamplingViewModel sut;
+  private ActivitiesServiceStub activitiesService;
+  private boolean countdownElapsed;
+  private List<String> errors;
+  private ActivitySamplingViewModel sut;
 
   @BeforeAll
   static void initAll() {
@@ -53,6 +42,8 @@ class ActivitySamplingViewModelTests {
 
   @BeforeEach
   void init() {
+    errors = new ArrayList<>();
+
     var recentActivities =
         new RecentActivities(
             new WorkingDays(
@@ -91,9 +82,11 @@ class ActivitySamplingViewModelTests {
                 Duration.ofMinutes(5),
                 Duration.ofMinutes(15),
                 Duration.ofMinutes(20)));
-    when(activitiesService.getRecentActivities()).thenReturn(recentActivities);
-    sut.addOnCountdownElapsedListener(v -> onCountdownElapsed.run());
-    sut.addOnErrorListener(onError);
+    activitiesService = new ActivitiesServiceStub();
+    activitiesService.initRecentActivities(new ConfigurableResponses<>(recentActivities));
+    sut = new ActivitySamplingViewModel(activitiesService);
+    sut.addOnCountdownElapsedListener(v -> countdownElapsed = true);
+    sut.addOnErrorListener(e -> errors.addAll(e));
     sut.run();
   }
 
@@ -149,13 +142,12 @@ class ActivitySamplingViewModelTests {
 
   @Test
   void load_Failed_NotifyError() {
-    doThrow(new IllegalStateException("Something went wrong."))
-        .when(activitiesService)
-        .getRecentActivities();
+    activitiesService.initRecentActivities(
+        new ConfigurableResponses<>(new IllegalStateException("Something went wrong.")));
 
     sut.load();
 
-    verify(onError).accept(List.of("Failed to load activities.", "Something went wrong."));
+    assertEquals(List.of("Failed to load activities.", "Something went wrong."), errors);
   }
 
   @Test
@@ -181,15 +173,17 @@ class ActivitySamplingViewModelTests {
 
   @Test
   void logActivity_CountdownIsNotActive_LeavesFormEnabled() {
+    var loggedActivitiesTracker = activitiesService.getLoggedActivityTracker();
+
     sut.activityTextProperty().set("foobar");
     sut.logActivity();
 
     assertAll(
-        () -> {
-          var inOrder = inOrder(activitiesService);
-          inOrder.verify(activitiesService).logActivity("foobar", Duration.ofMinutes(20));
-          inOrder.verify(activitiesService).getRecentActivities();
-        },
+        () ->
+            assertEquals(
+                List.of(new ActivitiesServiceStub.ActivityLogged("foobar", Duration.ofMinutes(20))),
+                loggedActivitiesTracker.data(),
+                "Logged activities"),
         () -> assertFalse(sut.formDisableProperty().get(), "Form disable"),
         () -> assertFalse(sut.logButtonDisableProperty().get(), "Log button disable"));
   }
@@ -198,30 +192,30 @@ class ActivitySamplingViewModelTests {
   void logActivity_CountdownActive_DisablesForm() {
     sut.startCountdown(Duration.ofMinutes(1));
     sut.progressCountdown(Duration.ofSeconds(61));
+    var activityLoggedTracker = activitiesService.getLoggedActivityTracker();
 
     sut.activityTextProperty().set("foobar");
     sut.logActivity();
 
     assertAll(
-        () -> {
-          var inOrder = inOrder(activitiesService);
-          inOrder.verify(activitiesService).logActivity("foobar", Duration.ofMinutes(1));
-          inOrder.verify(activitiesService).getRecentActivities();
-        },
+        () ->
+            assertEquals(
+                List.of(new ActivitiesServiceStub.ActivityLogged("foobar", Duration.ofMinutes(1))),
+                activityLoggedTracker.data(),
+                "Logged activities"),
         () -> assertTrue(sut.formDisableProperty().get(), "Form disable"),
         () -> assertTrue(sut.logButtonDisableProperty().get(), "Log button disable"));
   }
 
   @Test
   void logActivity_Failed_NotifyError() {
-    doThrow(new IllegalStateException("Something went wrong."))
-        .when(activitiesService)
-        .logActivity(any(), any());
+    activitiesService.initLogActivity(
+        new ConfigurableResponses<>(new IllegalStateException("Something went wrong.")));
     sut.activityTextProperty().set("foobar");
 
     sut.logActivity();
 
-    verify(onError).accept(List.of("Failed to log activity.", "Something went wrong."));
+    assertEquals(List.of("Failed to log activity.", "Something went wrong."), errors);
   }
 
   @Test
@@ -248,7 +242,7 @@ class ActivitySamplingViewModelTests {
             assertEquals(
                 "00:20:00", sut.countdownLabelTextProperty().get(), "Countdown label text"),
         () -> assertEquals(0.0, sut.countdownProgressProperty().get(), "Countdown progress"),
-        () -> verify(onCountdownElapsed, never()).run());
+        () -> assertFalse(countdownElapsed, "Countdown elapsed"));
   }
 
   @Test
@@ -266,7 +260,7 @@ class ActivitySamplingViewModelTests {
             assertEquals(
                 "00:00:59", sut.countdownLabelTextProperty().get(), "Countdown label text"),
         () -> assertEquals(1.0 / 60.0, sut.countdownProgressProperty().get(), "Countdown progress"),
-        () -> verify(onCountdownElapsed, never()).run());
+        () -> assertFalse(countdownElapsed, "Countdown elapsed"));
   }
 
   @Test
@@ -284,7 +278,7 @@ class ActivitySamplingViewModelTests {
             assertEquals(
                 "00:00:58", sut.countdownLabelTextProperty().get(), "Countdown label text"),
         () -> assertEquals(2.0 / 60.0, sut.countdownProgressProperty().get(), "Countdown progress"),
-        () -> verify(onCountdownElapsed, never()).run());
+        () -> assertFalse(countdownElapsed, "Countdown elapsed"));
   }
 
   @Test
@@ -303,7 +297,7 @@ class ActivitySamplingViewModelTests {
                 "00:00:01", sut.countdownLabelTextProperty().get(), "Countdown label text"),
         () ->
             assertEquals(0.983, sut.countdownProgressProperty().get(), 0.001, "Countdown progress"),
-        () -> verify(onCountdownElapsed, never()).run());
+        () -> assertFalse(countdownElapsed, "Countdown elapsed"));
   }
 
   @Test
@@ -321,7 +315,7 @@ class ActivitySamplingViewModelTests {
             assertEquals(
                 "00:01:00", sut.countdownLabelTextProperty().get(), "Countdown label text"),
         () -> assertEquals(0.0, sut.countdownProgressProperty().get(), "Countdown progress"),
-        () -> verify(onCountdownElapsed, times(1)).run());
+        () -> assertTrue(countdownElapsed, "Countdown elapsed"));
   }
 
   @Test
@@ -340,7 +334,7 @@ class ActivitySamplingViewModelTests {
             assertEquals(
                 "00:01:00", sut.countdownLabelTextProperty().get(), "Countdown label text"),
         () -> assertEquals(0.0, sut.countdownProgressProperty().get(), "Countdown progress"),
-        () -> verify(onCountdownElapsed, never()).run());
+        () -> assertFalse(countdownElapsed, "Countdown elapsed"));
   }
 
   @Test
@@ -359,6 +353,6 @@ class ActivitySamplingViewModelTests {
             assertEquals(
                 "00:00:45", sut.countdownLabelTextProperty().get(), "Countdown label text"),
         () -> assertEquals(0.25, sut.countdownProgressProperty().get(), "Countdown progress"),
-        () -> verify(onCountdownElapsed, never()).run());
+        () -> assertFalse(countdownElapsed, "Countdown elapsed"));
   }
 }
