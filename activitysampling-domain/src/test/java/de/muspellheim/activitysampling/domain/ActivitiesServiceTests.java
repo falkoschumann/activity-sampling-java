@@ -5,7 +5,6 @@
 
 package de.muspellheim.activitysampling.domain;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -13,7 +12,6 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,9 +39,7 @@ class ActivitiesServiceTests {
     sut.logActivity("Lorem ipsum", Duration.ofMinutes(20));
 
     assertEquals(
-        List.of(
-            new Activity(
-                LocalDateTime.parse("2022-11-16T12:26:00"), Duration.ofMinutes(20), "Lorem ipsum")),
+        List.of(Activity.parse("2022-11-16T12:26:00", "PT20M", "Lorem ipsum")),
         activitiesRepository);
   }
 
@@ -54,9 +50,7 @@ class ActivitiesServiceTests {
     sut.logActivity("  Lorem ipsum ", Duration.ofMinutes(30));
 
     assertEquals(
-        List.of(
-            new Activity(
-                LocalDateTime.parse("2022-11-16T12:26:00"), Duration.ofMinutes(30), "Lorem ipsum")),
+        List.of(Activity.parse("2022-11-16T12:26:00", "PT30M", "Lorem ipsum")),
         activitiesRepository);
   }
 
@@ -66,99 +60,53 @@ class ActivitiesServiceTests {
     activitiesRepository.addAll(
         List.of(
             // Last month
-            new Activity(LocalDateTime.parse("2022-08-31T17:00:00"), Duration.ofMinutes(20), "A2"),
+            Activity.parse("2022-08-31T17:00:00", "PT20M", "A2"),
             // First day of this month
-            new Activity(LocalDateTime.parse("2022-09-01T16:00:00"), Duration.ofMinutes(20), "A3"),
+            Activity.parse("2022-09-01T16:00:00", "PT20M", "A3"),
             // This Month
-            new Activity(LocalDateTime.parse("2022-09-05T15:00:00"), Duration.ofMinutes(20), "A4"),
+            Activity.parse("2022-09-05T15:00:00", "PT20M", "A4"),
             // This Week
-            new Activity(LocalDateTime.parse("2022-09-26T14:00:00"), Duration.ofMinutes(20), "A5"),
-            new Activity(LocalDateTime.parse("2022-09-28T13:00:00"), Duration.ofMinutes(20), "A6"),
+            Activity.parse("2022-09-26T14:00:00", "PT20M", "A5"),
+            Activity.parse("2022-09-28T13:00:00", "PT20M", "A6"),
             // Yesterday
-            new Activity(LocalDateTime.parse("2022-09-29T11:00:00"), Duration.ofMinutes(20), "A7"),
-            new Activity(LocalDateTime.parse("2022-09-29T12:00:00"), Duration.ofMinutes(20), "A8"),
+            Activity.parse("2022-09-29T11:00:00", "PT20M", "A7"),
+            Activity.parse("2022-09-29T12:00:00", "PT20M", "A8"),
             // Today
-            new Activity(LocalDateTime.parse("2022-09-30T09:00:00"), Duration.ofMinutes(20), "A9"),
-            new Activity(
-                LocalDateTime.parse("2022-09-30T10:00:00"), Duration.ofMinutes(20), "A10")));
+            Activity.parse("2022-09-30T09:00:00", "PT20M", "A9"),
+            Activity.parse("2022-09-30T10:00:00", "PT20M", "A10")));
 
-    var activities = sut.getRecentActivities();
+    var recentActivities = sut.getRecentActivities();
 
-    assertAll(
-        "Recent activities",
-        () ->
-            assertEquals(
-                new WorkingDays(
+    assertEquals(
+        new RecentActivities(
+            List.of(
+                new WorkingDay(
+                    LocalDate.parse("2022-09-30"),
                     List.of(
-                        new WorkingDay(
-                            LocalDate.parse("2022-09-30"),
-                            List.of(
-                                new Activity(
-                                    LocalDateTime.parse("2022-09-30T10:00"),
-                                    Duration.ofMinutes(20),
-                                    "A10"),
-                                new Activity(
-                                    LocalDateTime.parse("2022-09-30T09:00"),
-                                    Duration.ofMinutes(20),
-                                    "A9"))),
-                        new WorkingDay(
-                            LocalDate.parse("2022-09-29"),
-                            List.of(
-                                new Activity(
-                                    LocalDateTime.parse("2022-09-29T12:00"),
-                                    Duration.ofMinutes(20),
-                                    "A8"),
-                                new Activity(
-                                    LocalDateTime.parse("2022-09-29T11:00"),
-                                    Duration.ofMinutes(20),
-                                    "A7"))),
-                        new WorkingDay(
-                            LocalDate.parse("2022-09-28"),
-                            List.of(
-                                new Activity(
-                                    LocalDateTime.parse("2022-09-28T13:00"),
-                                    Duration.ofMinutes(20),
-                                    "A6"))),
-                        new WorkingDay(
-                            LocalDate.parse("2022-09-26"),
-                            List.of(
-                                new Activity(
-                                    LocalDateTime.parse("2022-09-26T14:00"),
-                                    Duration.ofMinutes(20),
-                                    "A5"))),
-                        new WorkingDay(
-                            LocalDate.parse("2022-09-05"),
-                            List.of(
-                                new Activity(
-                                    LocalDateTime.parse("2022-09-05T15:00"),
-                                    Duration.ofMinutes(20),
-                                    "A4"))),
-                        new WorkingDay(
-                            LocalDate.parse("2022-09-01"),
-                            List.of(
-                                new Activity(
-                                    LocalDateTime.parse("2022-09-01T16:00"),
-                                    Duration.ofMinutes(20),
-                                    "A3"))),
-                        new WorkingDay(
-                            LocalDate.parse("2022-08-31"),
-                            List.of(
-                                new Activity(
-                                    LocalDateTime.parse("2022-08-31T17:00"),
-                                    Duration.ofMinutes(20),
-                                    "A2"))))),
-                activities.workingDays(),
-                "Working days"),
-        () ->
-            assertEquals(
-                new TimeSummary(
-                    LocalDate.of(2022, 9, 30),
-                    Duration.ofMinutes(40),
-                    Duration.ofMinutes(40),
-                    Duration.ofMinutes(120),
-                    Duration.ofMinutes(160)),
-                activities.timeSummary(),
-                "Time summary"));
+                        Activity.parse("2022-09-30T10:00", "PT20M", "A10"),
+                        Activity.parse("2022-09-30T09:00", "PT20M", "A9"))),
+                new WorkingDay(
+                    LocalDate.parse("2022-09-29"),
+                    List.of(
+                        Activity.parse("2022-09-29T12:00", "PT20M", "A8"),
+                        Activity.parse("2022-09-29T11:00", "PT20M", "A7"))),
+                new WorkingDay(
+                    LocalDate.parse("2022-09-28"),
+                    List.of(Activity.parse("2022-09-28T13:00", "PT20M", "A6"))),
+                new WorkingDay(
+                    LocalDate.parse("2022-09-26"),
+                    List.of(Activity.parse("2022-09-26T14:00", "PT20M", "A5"))),
+                new WorkingDay(
+                    LocalDate.parse("2022-09-05"),
+                    List.of(Activity.parse("2022-09-05T15:00", "PT20M", "A4"))),
+                new WorkingDay(
+                    LocalDate.parse("2022-09-01"),
+                    List.of(Activity.parse("2022-09-01T16:00", "PT20M", "A3"))),
+                new WorkingDay(
+                    LocalDate.parse("2022-08-31"),
+                    List.of(Activity.parse("2022-08-31T17:00", "PT20M", "A2")))),
+            TimeSummary.parse("PT40M", "PT40M", "PT120M", "PT160M")),
+        recentActivities);
   }
 
   @Test
@@ -167,90 +115,48 @@ class ActivitiesServiceTests {
     activitiesRepository.addAll(
         List.of(
             // First day of this month
-            new Activity(LocalDateTime.parse("2022-12-01T15:00:00"), Duration.ofMinutes(20), "A2"),
+            Activity.parse("2022-12-01T15:00:00", "PT20M", "A2"),
             // This Month
-            new Activity(LocalDateTime.parse("2022-12-05T14:00:00"), Duration.ofMinutes(20), "A3"),
+            Activity.parse("2022-12-05T14:00:00", "PT20M", "A3"),
             // This Week
-            new Activity(LocalDateTime.parse("2022-12-26T13:00:00"), Duration.ofMinutes(20), "A4"),
-            new Activity(LocalDateTime.parse("2022-12-28T12:00:00"), Duration.ofMinutes(20), "A5"),
+            Activity.parse("2022-12-26T13:00:00", "PT20M", "A4"),
+            Activity.parse("2022-12-28T12:00:00", "PT20M", "A5"),
             // Yesterday
-            new Activity(LocalDateTime.parse("2022-12-30T10:00:00"), Duration.ofMinutes(20), "A6"),
-            new Activity(LocalDateTime.parse("2022-12-30T11:00:00"), Duration.ofMinutes(20), "A7"),
+            Activity.parse("2022-12-30T10:00:00", "PT20M", "A6"),
+            Activity.parse("2022-12-30T11:00:00", "PT20M", "A7"),
             // Today
-            new Activity(LocalDateTime.parse("2022-12-31T08:00:00"), Duration.ofMinutes(20), "A8"),
-            new Activity(
-                LocalDateTime.parse("2022-12-31T09:00:00"), Duration.ofMinutes(20), "A9")));
+            Activity.parse("2022-12-31T08:00:00", "PT20M", "A8"),
+            Activity.parse("2022-12-31T09:00:00", "PT20M", "A9")));
 
-    var activities = sut.getRecentActivities();
+    var recentActivities = sut.getRecentActivities();
 
-    assertAll(
-        "Recent activities",
-        () ->
-            assertEquals(
-                new WorkingDays(
+    assertEquals(
+        new RecentActivities(
+            List.of(
+                new WorkingDay(
+                    LocalDate.parse("2022-12-31"),
                     List.of(
-                        new WorkingDay(
-                            LocalDate.parse("2022-12-31"),
-                            List.of(
-                                new Activity(
-                                    LocalDateTime.parse("2022-12-31T09:00"),
-                                    Duration.ofMinutes(20),
-                                    "A9"),
-                                new Activity(
-                                    LocalDateTime.parse("2022-12-31T08:00"),
-                                    Duration.ofMinutes(20),
-                                    "A8"))),
-                        new WorkingDay(
-                            LocalDate.parse("2022-12-30"),
-                            List.of(
-                                new Activity(
-                                    LocalDateTime.parse("2022-12-30T11:00"),
-                                    Duration.ofMinutes(20),
-                                    "A7"),
-                                new Activity(
-                                    LocalDateTime.parse("2022-12-30T10:00"),
-                                    Duration.ofMinutes(20),
-                                    "A6"))),
-                        new WorkingDay(
-                            LocalDate.parse("2022-12-28"),
-                            List.of(
-                                new Activity(
-                                    LocalDateTime.parse("2022-12-28T12:00"),
-                                    Duration.ofMinutes(20),
-                                    "A5"))),
-                        new WorkingDay(
-                            LocalDate.parse("2022-12-26"),
-                            List.of(
-                                new Activity(
-                                    LocalDateTime.parse("2022-12-26T13:00"),
-                                    Duration.ofMinutes(20),
-                                    "A4"))),
-                        new WorkingDay(
-                            LocalDate.parse("2022-12-05"),
-                            List.of(
-                                new Activity(
-                                    LocalDateTime.parse("2022-12-05T14:00"),
-                                    Duration.ofMinutes(20),
-                                    "A3"))),
-                        new WorkingDay(
-                            LocalDate.parse("2022-12-01"),
-                            List.of(
-                                new Activity(
-                                    LocalDateTime.parse("2022-12-01T15:00"),
-                                    Duration.ofMinutes(20),
-                                    "A2"))))),
-                activities.workingDays(),
-                "Working days"),
-        () ->
-            assertEquals(
-                new TimeSummary(
-                    LocalDate.of(2022, 12, 31),
-                    Duration.ofMinutes(40),
-                    Duration.ofMinutes(40),
-                    Duration.ofMinutes(120),
-                    Duration.ofMinutes(160)),
-                activities.timeSummary(),
-                "Time summary"));
+                        Activity.parse("2022-12-31T09:00", "PT20M", "A9"),
+                        Activity.parse("2022-12-31T08:00", "PT20M", "A8"))),
+                new WorkingDay(
+                    LocalDate.parse("2022-12-30"),
+                    List.of(
+                        Activity.parse("2022-12-30T11:00", "PT20M", "A7"),
+                        Activity.parse("2022-12-30T10:00", "PT20M", "A6"))),
+                new WorkingDay(
+                    LocalDate.parse("2022-12-28"),
+                    List.of(Activity.parse("2022-12-28T12:00", "PT20M", "A5"))),
+                new WorkingDay(
+                    LocalDate.parse("2022-12-26"),
+                    List.of(Activity.parse("2022-12-26T13:00", "PT20M", "A4"))),
+                new WorkingDay(
+                    LocalDate.parse("2022-12-05"),
+                    List.of(Activity.parse("2022-12-05T14:00", "PT20M", "A3"))),
+                new WorkingDay(
+                    LocalDate.parse("2022-12-01"),
+                    List.of(Activity.parse("2022-12-01T15:00", "PT20M", "A2")))),
+            TimeSummary.parse("PT40M", "PT40M", "PT120M", "PT160M")),
+        recentActivities);
   }
 
   @Test

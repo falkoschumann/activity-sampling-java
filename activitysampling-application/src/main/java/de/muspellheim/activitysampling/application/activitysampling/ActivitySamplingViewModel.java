@@ -182,7 +182,7 @@ public class ActivitySamplingViewModel {
     var items = new ArrayList<ActivityItem>();
     var dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).withLocale(locale);
     var timeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(locale);
-    for (var day : recentActivities.workingDays().workingDays()) {
+    for (var day : recentActivities.workingDays()) {
       items.add(new ActivityItem(day.date().format(dateFormatter)));
       for (var activity : day.activities()) {
         items.add(

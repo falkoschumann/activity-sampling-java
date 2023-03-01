@@ -16,10 +16,8 @@ import de.muspellheim.activitysampling.domain.ConfigurableResponses;
 import de.muspellheim.activitysampling.domain.RecentActivities;
 import de.muspellheim.activitysampling.domain.TimeSummary;
 import de.muspellheim.activitysampling.domain.WorkingDay;
-import de.muspellheim.activitysampling.domain.WorkingDays;
 import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -38,42 +36,20 @@ class ActivitySamplingViewModelTests {
 
     var recentActivities =
         new RecentActivities(
-            new WorkingDays(
-                List.of(
-                    new WorkingDay(
-                        LocalDate.of(2022, 11, 16),
-                        List.of(
-                            new Activity(
-                                LocalDateTime.of(2022, 11, 16, 16, 16),
-                                Duration.ofMinutes(5),
-                                "Lorem ipsum"))),
-                    new WorkingDay(
-                        LocalDate.of(2022, 11, 15),
-                        List.of(
-                            new Activity(
-                                LocalDateTime.of(2022, 11, 15, 15, 15),
-                                Duration.ofMinutes(5),
-                                "Lorem ipsum"))),
-                    new WorkingDay(
-                        LocalDate.of(2022, 11, 14),
-                        List.of(
-                            new Activity(
-                                LocalDateTime.of(2022, 11, 14, 14, 14),
-                                Duration.ofMinutes(5),
-                                "Lorem ipsum"))),
-                    new WorkingDay(
-                        LocalDate.of(2022, 11, 7),
-                        List.of(
-                            new Activity(
-                                LocalDateTime.of(2022, 11, 7, 7, 7),
-                                Duration.ofMinutes(5),
-                                "Lorem ipsum"))))),
-            new TimeSummary(
-                LocalDate.of(2022, 11, 16),
-                Duration.ofMinutes(5),
-                Duration.ofMinutes(5),
-                Duration.ofMinutes(15),
-                Duration.ofMinutes(20)));
+            List.of(
+                new WorkingDay(
+                    LocalDate.of(2022, 11, 16),
+                    List.of(Activity.parse("2022-11-16T16:16", "PT5M", "Lorem ipsum"))),
+                new WorkingDay(
+                    LocalDate.of(2022, 11, 15),
+                    List.of(Activity.parse("2022-11-15T15:15", "PT5M", "Lorem ipsum"))),
+                new WorkingDay(
+                    LocalDate.of(2022, 11, 14),
+                    List.of(Activity.parse("2022-11-14T14:14", "PT5M", "Lorem ipsum"))),
+                new WorkingDay(
+                    LocalDate.of(2022, 11, 7),
+                    List.of(Activity.parse("2022-11-07T07:07", "PT5M", "Lorem ipsum")))),
+            TimeSummary.parse("PT5M", "PT5M", "PT15M", "PT20M"));
     activitiesService = new ActivitiesServiceStub();
     activitiesService.initRecentActivities(new ConfigurableResponses<>(recentActivities));
     sut = new ActivitySamplingViewModel(activitiesService, Locale.GERMANY);
@@ -99,31 +75,19 @@ class ActivitySamplingViewModelTests {
                     new ActivityItem("Mittwoch, 16. November 2022"),
                     new ActivityItem(
                         "16:16 - Lorem ipsum",
-                        new Activity(
-                            LocalDateTime.parse("2022-11-16T16:16"),
-                            Duration.ofMinutes(5),
-                            "Lorem ipsum")),
+                        Activity.parse("2022-11-16T16:16", "PT5M", "Lorem ipsum")),
                     new ActivityItem("Dienstag, 15. November 2022"),
                     new ActivityItem(
                         "15:15 - Lorem ipsum",
-                        new Activity(
-                            LocalDateTime.parse("2022-11-15T15:15"),
-                            Duration.ofMinutes(5),
-                            "Lorem ipsum")),
+                        Activity.parse("2022-11-15T15:15", "PT5M", "Lorem ipsum")),
                     new ActivityItem("Montag, 14. November 2022"),
                     new ActivityItem(
                         "14:14 - Lorem ipsum",
-                        new Activity(
-                            LocalDateTime.parse("2022-11-14T14:14"),
-                            Duration.ofMinutes(5),
-                            "Lorem ipsum")),
+                        Activity.parse("2022-11-14T14:14", "PT5M", "Lorem ipsum")),
                     new ActivityItem("Montag, 7. November 2022"),
                     new ActivityItem(
                         "07:07 - Lorem ipsum",
-                        new Activity(
-                            LocalDateTime.parse("2022-11-07T07:07"),
-                            Duration.ofMinutes(5),
-                            "Lorem ipsum"))),
+                        Activity.parse("2022-11-07T07:07", "PT5M", "Lorem ipsum"))),
                 sut.getRecentActivities(),
                 "Recent activities"),
         () -> assertEquals("00:05", sut.hoursTodayLabelTextProperty().get()),
@@ -212,8 +176,7 @@ class ActivitySamplingViewModelTests {
 
   @Test
   void setActivity_UpdatesForm() {
-    var activity =
-        new Activity(LocalDateTime.of(2022, 11, 26, 16, 16), Duration.ofMinutes(20), "Lorem ipsum");
+    var activity = Activity.parse("2022-11-26T16:16", "PT20M", "Lorem ipsum");
     sut.setActivity(activity);
 
     assertAll(
