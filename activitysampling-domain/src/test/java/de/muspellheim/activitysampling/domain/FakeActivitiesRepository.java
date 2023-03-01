@@ -10,18 +10,16 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-class ActivitiesRepositoryStub extends ArrayList<Activity> implements ActivitiesRepository {
+class FakeActivitiesRepository extends ArrayList<Activity> implements ActivitiesRepository {
   @Serial private static final long serialVersionUID = 0;
 
   @Override
   public List<Activity> findInPeriod(LocalDate from, LocalDate to) {
-    return stream()
-        .filter(
-            a -> {
-              var date = a.timestamp().toLocalDate();
-              return !date.isBefore(from) && !date.isAfter(to);
-            })
-        .toList();
+    return stream().filter(a -> isBetween(a.timestamp().toLocalDate(), from, to)).toList();
+  }
+
+  private static boolean isBetween(LocalDate date, LocalDate from, LocalDate to) {
+    return !date.isBefore(from) && !date.isAfter(to);
   }
 
   @Override

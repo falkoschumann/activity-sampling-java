@@ -181,7 +181,7 @@ public class TimesheetViewModel {
   private void load() {
     Timesheet timesheet;
     try {
-      timesheet = activitiesService.createTimesheet(from.get(), to.get());
+      timesheet = activitiesService.getTimesheet(from.get(), to.get());
     } catch (Exception e) {
       var messages = Exceptions.collectExceptionMessages("Failed to load timesheet.", e);
       onError.accept(messages);

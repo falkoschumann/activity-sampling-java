@@ -17,6 +17,10 @@ public record Activity(LocalDateTime timestamp, Duration duration, String descri
     Objects.requireNonNull(description, "description");
   }
 
+  public static Activity parse(String timestamp, String duration, String description) {
+    return new Activity(LocalDateTime.parse(timestamp), Duration.parse(duration), description);
+  }
+
   @Override
   public int compareTo(Activity o) {
     return timestamp.compareTo(o.timestamp);

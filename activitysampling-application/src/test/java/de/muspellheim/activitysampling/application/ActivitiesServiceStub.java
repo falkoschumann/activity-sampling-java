@@ -53,7 +53,7 @@ public class ActivitiesServiceStub implements ActivitiesService {
   }
 
   @Override
-  public Timesheet createTimesheet(LocalDate from, LocalDate to) {
+  public Timesheet getTimesheet(LocalDate from, LocalDate to) {
     return timesheet.next();
   }
 }

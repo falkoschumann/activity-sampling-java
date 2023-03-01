@@ -16,9 +16,7 @@ public record TimesheetEntry(LocalDate date, String notes, Duration hours) {
     Objects.requireNonNull(hours, "hours");
   }
 
-  public TimesheetEntry add(Activity activity) {
-    // TODO validate date and notes
-    var newHours = hours.plus(activity.duration());
-    return new TimesheetEntry(date, notes, newHours);
+  public static TimesheetEntry parse(String date, String notes, String hours) {
+    return new TimesheetEntry(LocalDate.parse(date), notes, Duration.parse(hours));
   }
 }

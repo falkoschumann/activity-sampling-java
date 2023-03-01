@@ -21,12 +21,12 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class ActivitiesServiceTests {
-  private ActivitiesRepositoryStub activitiesRepository;
+  private FakeActivitiesRepository activitiesRepository;
   private ActivitiesServiceImpl sut;
 
   @BeforeEach
   void init() {
-    activitiesRepository = new ActivitiesRepositoryStub();
+    activitiesRepository = new FakeActivitiesRepository();
     sut = new ActivitiesServiceImpl(activitiesRepository);
   }
 
@@ -254,41 +254,35 @@ class ActivitiesServiceTests {
   }
 
   @Test
-  void createTimesheet() {
+  void getTimesheet() {
     activitiesRepository.addAll(
         List.of(
             // First day in the interval
-            new Activity(LocalDateTime.parse("2022-11-14T15:00:00"), Duration.ofMinutes(20), "A1"),
+            Activity.parse("2022-11-14T15:00:00", "PT20M", "A1"),
             // A day in the interval
-            new Activity(LocalDateTime.parse("2022-11-15T12:00:00"), Duration.ofMinutes(20), "A2"),
-            new Activity(LocalDateTime.parse("2022-11-15T13:00:00"), Duration.ofMinutes(20), "A1"),
-            new Activity(LocalDateTime.parse("2022-11-15T14:00:00"), Duration.ofMinutes(20), "A2"),
+            Activity.parse("2022-11-15T13:00:00", "PT20M", "A1"),
+            Activity.parse("2022-11-15T12:00:00", "PT20M", "A2"),
+            Activity.parse("2022-11-15T14:00:00", "PT20M", "A2"),
             // Another day in the interval
-            new Activity(LocalDateTime.parse("2022-11-17T09:00:00"), Duration.ofMinutes(20), "A1"),
-            new Activity(LocalDateTime.parse("2022-11-17T10:00:00"), Duration.ofMinutes(20), "A1"),
-            new Activity(LocalDateTime.parse("2022-11-17T11:00:00"), Duration.ofMinutes(20), "A2"),
+            Activity.parse("2022-11-17T09:00:00", "PT20M", "A1"),
+            Activity.parse("2022-11-17T10:00:00", "PT20M", "A1"),
+            Activity.parse("2022-11-17T11:00:00", "PT20M", "A2"),
             // Last day of interval
-            new Activity(
-                LocalDateTime.parse("2022-11-18T08:00:00"), Duration.ofMinutes(20), "A2")));
+            Activity.parse("2022-11-18T08:00:00", "PT20M", "A2")));
 
-    var timesheet =
-        sut.createTimesheet(LocalDate.parse("2022-11-14"), LocalDate.parse("2022-11-18"));
+    var timesheet = sut.getTimesheet(LocalDate.parse("2022-11-14"), LocalDate.parse("2022-11-18"));
 
-    assertAll(
-        "Timesheet",
-        () ->
-            assertEquals(
-                List.of(
-                    new TimesheetEntry(LocalDate.parse("2022-11-14"), "A1", Duration.ofMinutes(20)),
-                    new TimesheetEntry(LocalDate.parse("2022-11-15"), "A1", Duration.ofMinutes(20)),
-                    new TimesheetEntry(LocalDate.parse("2022-11-15"), "A2", Duration.ofMinutes(40)),
-                    new TimesheetEntry(LocalDate.parse("2022-11-17"), "A1", Duration.ofMinutes(40)),
-                    new TimesheetEntry(LocalDate.parse("2022-11-17"), "A2", Duration.ofMinutes(20)),
-                    new TimesheetEntry(
-                        LocalDate.parse("2022-11-18"), "A2", Duration.ofMinutes(20))),
-                timesheet.entries(),
-                "entries"),
-        () -> assertEquals(Duration.ofMinutes(160), timesheet.total(), "total"));
+    assertEquals(
+        new Timesheet(
+            List.of(
+                TimesheetEntry.parse("2022-11-14", "A1", "PT20M"),
+                TimesheetEntry.parse("2022-11-15", "A1", "PT20M"),
+                TimesheetEntry.parse("2022-11-15", "A2", "PT40M"),
+                TimesheetEntry.parse("2022-11-17", "A1", "PT40M"),
+                TimesheetEntry.parse("2022-11-17", "A2", "PT20M"),
+                TimesheetEntry.parse("2022-11-18", "A2", "PT20M")),
+            Duration.ofMinutes(160)),
+        timesheet);
   }
 
   @Test

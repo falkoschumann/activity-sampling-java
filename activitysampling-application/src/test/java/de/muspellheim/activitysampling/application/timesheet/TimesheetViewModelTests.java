@@ -9,13 +9,12 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import de.muspellheim.activitysampling.application.ActivitiesServiceStub;
-import de.muspellheim.activitysampling.domain.Activity;
 import de.muspellheim.activitysampling.domain.ConfigurableResponses;
 import de.muspellheim.activitysampling.domain.Timesheet;
+import de.muspellheim.activitysampling.domain.TimesheetEntry;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -35,12 +34,12 @@ class TimesheetViewModelTests {
     errors = new ArrayList<>();
 
     var timesheet =
-        Timesheet.from(
+        new Timesheet(
             List.of(
-                new Activity(LocalDateTime.parse("2022-11-20T12:00"), Duration.ofMinutes(10), "A1"),
-                new Activity(LocalDateTime.parse("2022-11-20T12:00"), Duration.ofMinutes(5), "A2"),
-                new Activity(
-                    LocalDateTime.parse("2022-11-21T12:00"), Duration.ofMinutes(5), "A1")));
+                TimesheetEntry.parse("2022-11-20", "A1", "PT10M"),
+                TimesheetEntry.parse("2022-11-20", "A2", "PT5M"),
+                TimesheetEntry.parse("2022-11-21", "A1", "PT5M")),
+            Duration.ofMinutes(20));
     activitiesService = new ActivitiesServiceStub();
     activitiesService.initTimesheet(new ConfigurableResponses<>(timesheet));
 
