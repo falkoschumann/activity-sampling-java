@@ -5,33 +5,29 @@
 
 package de.muspellheim.activitysampling.domain;
 
-import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import lombok.Getter;
-import lombok.Setter;
+import java.time.Period;
 
 public class ActivitiesServiceImpl implements ActivitiesService {
   private final ActivitiesRepository activitiesRepository;
-  @Getter @Setter private Clock clock = Clock.systemDefaultZone();
 
   public ActivitiesServiceImpl(ActivitiesRepository activitiesRepository) {
     this.activitiesRepository = activitiesRepository;
   }
 
   @Override
-  public void logActivity(String description, Duration duration) {
-    var activity = new Activity(LocalDateTime.now(clock), duration, description.trim());
+  public void logActivity(LocalDateTime timestamp, Duration duration, String description) {
+    var activity = new Activity(timestamp, duration, description.trim());
     activitiesRepository.append(activity);
   }
 
   @Override
-  public RecentActivities getRecentActivities() {
-    var today = LocalDate.now(clock);
-    var from = today.minusDays(30);
-    var builder = new RecentActivitiesBuilder(today);
-    activitiesRepository.findInPeriod(from, today).forEach(builder::add);
+  public RecentActivities getRecentActivities(LocalDate date, Period period) {
+    var from = date.minus(period);
+    var builder = new RecentActivitiesBuilder(date);
+    activitiesRepository.findInPeriod(from, date).forEach(builder::add);
     return builder.build();
   }
 

@@ -10,8 +10,12 @@ import de.muspellheim.activitysampling.domain.ActivitiesService;
 import de.muspellheim.activitysampling.domain.Activity;
 import de.muspellheim.activitysampling.domain.EventEmitter;
 import de.muspellheim.activitysampling.domain.RecentActivities;
+import java.time.Clock;
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
@@ -34,10 +38,11 @@ import javafx.collections.ObservableList;
 public class ActivitySamplingViewModel {
   private final ActivitiesService activitiesService;
   private final Locale locale;
+  private final Clock clock;
 
   // Events
-  private EventEmitter<Void> onCountdownElapsed = new EventEmitter<>();
-  private EventEmitter<List<String>> onError = new EventEmitter<>();
+  private final EventEmitter<Void> onCountdownElapsed = new EventEmitter<>();
+  private final EventEmitter<List<String>> onError = new EventEmitter<>();
 
   // State
   private final ReadOnlyObjectWrapper<Duration> interval;
@@ -59,12 +64,14 @@ public class ActivitySamplingViewModel {
   private final ReadOnlyStringWrapper hoursThisMonthLabelText;
 
   public ActivitySamplingViewModel(ActivitiesService activitiesService) {
-    this(activitiesService, Locale.getDefault());
+    this(activitiesService, Locale.getDefault(), Clock.systemDefaultZone());
   }
 
-  public ActivitySamplingViewModel(ActivitiesService activitiesService, Locale locale) {
+  public ActivitySamplingViewModel(
+      ActivitiesService activitiesService, Locale locale, Clock clock) {
     this.activitiesService = activitiesService;
     this.locale = locale;
+    this.clock = clock;
     // TODO Make default interval configurable; use when countdown off
     interval = new ReadOnlyObjectWrapper<>(Duration.ofMinutes(20));
     intervalLogged = new ReadOnlyBooleanWrapper(false);
@@ -172,7 +179,8 @@ public class ActivitySamplingViewModel {
   public void load() {
     RecentActivities recentActivities;
     try {
-      recentActivities = activitiesService.getRecentActivities();
+      recentActivities =
+          activitiesService.getRecentActivities(LocalDate.now(clock), Period.ofDays(10));
     } catch (Exception e) {
       var messages = Exceptions.collectExceptionMessages("Failed to load activities.", e);
       onError.emit(messages);
@@ -211,7 +219,7 @@ public class ActivitySamplingViewModel {
 
   public void logActivity() {
     try {
-      activitiesService.logActivity(activityText.get(), interval.get());
+      activitiesService.logActivity(LocalDateTime.now(clock), interval.get(), activityText.get());
       intervalLogged.set(true);
     } catch (Exception e) {
       var messages = Exceptions.collectExceptionMessages("Failed to log activity.", e);

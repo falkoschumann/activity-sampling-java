@@ -16,8 +16,12 @@ import de.muspellheim.activitysampling.domain.ConfigurableResponses;
 import de.muspellheim.activitysampling.domain.RecentActivities;
 import de.muspellheim.activitysampling.domain.TimeSummary;
 import de.muspellheim.activitysampling.domain.WorkingDay;
+import java.time.Clock;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -28,6 +32,7 @@ class ActivitySamplingViewModelTests {
   private ActivitiesServiceStub activitiesService;
   private boolean countdownElapsed;
   private List<String> errors;
+  private Clock clock;
   private ActivitySamplingViewModel sut;
 
   @BeforeEach
@@ -52,7 +57,8 @@ class ActivitySamplingViewModelTests {
             TimeSummary.parse("PT5M", "PT5M", "PT15M", "PT20M"));
     activitiesService = new ActivitiesServiceStub();
     activitiesService.initRecentActivities(new ConfigurableResponses<>(recentActivities));
-    sut = new ActivitySamplingViewModel(activitiesService, Locale.GERMANY);
+    clock = Clock.fixed(Instant.parse("2022-11-16T17:17:17Z"), ZoneId.of("Europe/Berlin"));
+    sut = new ActivitySamplingViewModel(activitiesService, Locale.GERMANY, clock);
     sut.addOnCountdownElapsedListener(v -> countdownElapsed = true);
     sut.addOnErrorListener(e -> errors.addAll(e));
     sut.run();
@@ -137,7 +143,7 @@ class ActivitySamplingViewModelTests {
     assertAll(
         () ->
             assertEquals(
-                List.of(new ActivitiesServiceStub.ActivityLogged("foobar", Duration.ofMinutes(20))),
+                List.of(new Activity(LocalDateTime.now(clock), Duration.ofMinutes(20), "foobar")),
                 loggedActivitiesTracker.data(),
                 "Logged activities"),
         () -> assertFalse(sut.formDisableProperty().get(), "Form disable"),
@@ -156,7 +162,7 @@ class ActivitySamplingViewModelTests {
     assertAll(
         () ->
             assertEquals(
-                List.of(new ActivitiesServiceStub.ActivityLogged("foobar", Duration.ofMinutes(1))),
+                List.of(new Activity(LocalDateTime.now(clock), Duration.ofMinutes(1), "foobar")),
                 activityLoggedTracker.data(),
                 "Logged activities"),
         () -> assertTrue(sut.formDisableProperty().get(), "Form disable"),

@@ -6,6 +6,7 @@
 package de.muspellheim.activitysampling.application;
 
 import de.muspellheim.activitysampling.domain.ActivitiesService;
+import de.muspellheim.activitysampling.domain.Activity;
 import de.muspellheim.activitysampling.domain.ConfigurableResponses;
 import de.muspellheim.activitysampling.domain.EventEmitter;
 import de.muspellheim.activitysampling.domain.OutputTracker;
@@ -13,14 +14,13 @@ import de.muspellheim.activitysampling.domain.RecentActivities;
 import de.muspellheim.activitysampling.domain.Timesheet;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.List;
 
 public class ActivitiesServiceStub implements ActivitiesService {
-
-  public record ActivityLogged(String description, Duration duration) {}
-
   private ConfigurableResponses<Object> logActivities = new ConfigurableResponses<>(true);
-  private final EventEmitter<ActivityLogged> onActivityLogged = new EventEmitter<>();
+  private final EventEmitter<Activity> onActivityLogged = new EventEmitter<>();
   private ConfigurableResponses<RecentActivities> recentActivities =
       new ConfigurableResponses<>(List.of());
   private ConfigurableResponses<Timesheet> timesheet = new ConfigurableResponses<>(List.of());
@@ -29,14 +29,14 @@ public class ActivitiesServiceStub implements ActivitiesService {
     this.logActivities = logActivities;
   }
 
-  public OutputTracker<ActivityLogged> getLoggedActivityTracker() {
+  public OutputTracker<Activity> getLoggedActivityTracker() {
     return new OutputTracker<>(onActivityLogged);
   }
 
   @Override
-  public void logActivity(String description, Duration duration) {
+  public void logActivity(LocalDateTime timestamp, Duration duration, String description) {
     logActivities.next();
-    onActivityLogged.emit(new ActivityLogged(description, duration));
+    onActivityLogged.emit(new Activity(timestamp, duration, description));
   }
 
   public void initRecentActivities(ConfigurableResponses<RecentActivities> recentActivities) {
@@ -44,7 +44,7 @@ public class ActivitiesServiceStub implements ActivitiesService {
   }
 
   @Override
-  public RecentActivities getRecentActivities() {
+  public RecentActivities getRecentActivities(LocalDate date, Period period) {
     return recentActivities.next();
   }
 

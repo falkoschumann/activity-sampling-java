@@ -8,11 +8,10 @@ package de.muspellheim.activitysampling.domain;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.time.Clock;
 import java.time.Duration;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
+import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -28,15 +27,10 @@ class ActivitiesServiceTests {
     sut = new ActivitiesServiceImpl(activitiesRepository);
   }
 
-  private void setClock(String timestamp) {
-    sut.setClock(Clock.fixed(Instant.parse(timestamp), ZoneId.of("Europe/Berlin")));
-  }
-
   @Test
   void logActivity_RecordsActivityLogged() {
-    setClock("2022-11-16T11:26:00Z");
-
-    sut.logActivity("Lorem ipsum", Duration.ofMinutes(20));
+    sut.logActivity(
+        LocalDateTime.parse("2022-11-16T12:26:00"), Duration.ofMinutes(20), "Lorem ipsum");
 
     assertEquals(
         List.of(Activity.parse("2022-11-16T12:26:00", "PT20M", "Lorem ipsum")),
@@ -45,9 +39,8 @@ class ActivitiesServiceTests {
 
   @Test
   void logActivity_TrimsDescription() {
-    setClock("2022-11-16T11:26:00Z");
-
-    sut.logActivity("  Lorem ipsum ", Duration.ofMinutes(30));
+    sut.logActivity(
+        LocalDateTime.parse("2022-11-16T12:26:00"), Duration.ofMinutes(30), "  Lorem ipsum ");
 
     assertEquals(
         List.of(Activity.parse("2022-11-16T12:26:00", "PT30M", "Lorem ipsum")),
@@ -56,7 +49,6 @@ class ActivitiesServiceTests {
 
   @Test
   void getRecentActivities_MonthWith30Days_ReturnsLast31DaysInDescendentOrder() {
-    setClock("2022-09-30T10:00:00Z");
     activitiesRepository.addAll(
         List.of(
             // Last month
@@ -75,7 +67,8 @@ class ActivitiesServiceTests {
             Activity.parse("2022-09-30T09:00:00", "PT20M", "A9"),
             Activity.parse("2022-09-30T10:00:00", "PT20M", "A10")));
 
-    var recentActivities = sut.getRecentActivities();
+    var recentActivities =
+        sut.getRecentActivities(LocalDate.parse("2022-09-30"), Period.ofDays(30));
 
     assertEquals(
         new RecentActivities(
@@ -111,7 +104,6 @@ class ActivitiesServiceTests {
 
   @Test
   void getRecentActivities_MonthWith31Days_ReturnsLast31DaysInDescendentOrder() {
-    setClock("2022-12-31T10:00:00Z");
     activitiesRepository.addAll(
         List.of(
             // First day of this month
@@ -128,7 +120,8 @@ class ActivitiesServiceTests {
             Activity.parse("2022-12-31T08:00:00", "PT20M", "A8"),
             Activity.parse("2022-12-31T09:00:00", "PT20M", "A9")));
 
-    var recentActivities = sut.getRecentActivities();
+    var recentActivities =
+        sut.getRecentActivities(LocalDate.parse("2022-12-31"), Period.ofDays(30));
 
     assertEquals(
         new RecentActivities(

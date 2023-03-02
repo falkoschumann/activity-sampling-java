@@ -10,6 +10,7 @@ import de.muspellheim.activitysampling.application.shared.Configuration;
 import de.muspellheim.activitysampling.application.shared.Registry;
 import de.muspellheim.activitysampling.domain.ActivitiesService;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
@@ -31,17 +32,16 @@ class SystemUnderTest {
     try {
       Files.deleteIfExists(logFile);
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new UncheckedIOException(e);
     }
 
-    clock = new TickingClock(Instant.now(), ZoneId.of("Europe/Berlin"));
-
     Configuration configuration = Configuration.INSTANCE;
-    configuration.setClock(clock);
     configuration.setLogFile(logFile);
 
     ActivitiesService activitiesService = Registry.getActivitiesService();
-    activitySamplingViewModel = new ActivitySamplingViewModel(activitiesService, Locale.GERMANY);
+    clock = new TickingClock(Instant.now(), ZoneId.of("Europe/Berlin"));
+    activitySamplingViewModel =
+        new ActivitySamplingViewModel(activitiesService, Locale.GERMANY, clock);
     activitySamplingViewModel.run();
   }
 

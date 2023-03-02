@@ -18,10 +18,7 @@ public class Registry {
   public static ActivitiesService getActivitiesService() {
     Configuration configuration = Configuration.INSTANCE;
     var file = configuration.getLogFile();
-    var clock = configuration.getClock();
     var activities = new CsvActivitiesRepository(file);
-    var service = new ActivitiesServiceImpl(activities);
-    service.setClock(clock);
-    return service;
+    return new ActivitiesServiceImpl(activities);
   }
 }
