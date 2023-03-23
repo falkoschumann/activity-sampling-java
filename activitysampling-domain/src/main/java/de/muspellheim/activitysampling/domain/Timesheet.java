@@ -11,7 +11,7 @@ import java.util.Objects;
 
 public record Timesheet(List<TimesheetEntry> entries, Duration total) {
   public Timesheet {
-    Objects.requireNonNull(entries, "entries");
+    entries = List.copyOf(Objects.requireNonNull(entries, "entries"));
     Objects.requireNonNull(total, "total");
   }
 }

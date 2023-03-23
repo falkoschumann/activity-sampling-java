@@ -12,10 +12,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import de.muspellheim.activitysampling.application.ActivitiesServiceStub;
 import de.muspellheim.activitysampling.domain.Activity;
-import de.muspellheim.activitysampling.domain.ConfigurableResponses;
 import de.muspellheim.activitysampling.domain.RecentActivities;
 import de.muspellheim.activitysampling.domain.TimeSummary;
 import de.muspellheim.activitysampling.domain.WorkingDay;
+import de.muspellheim.activitysampling.domain.util.ConfigurableResponses;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;

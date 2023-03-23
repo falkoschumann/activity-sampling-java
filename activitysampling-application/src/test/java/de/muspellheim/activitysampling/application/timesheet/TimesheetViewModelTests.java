@@ -9,9 +9,9 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import de.muspellheim.activitysampling.application.ActivitiesServiceStub;
-import de.muspellheim.activitysampling.domain.ConfigurableResponses;
 import de.muspellheim.activitysampling.domain.Timesheet;
 import de.muspellheim.activitysampling.domain.TimesheetEntry;
+import de.muspellheim.activitysampling.domain.util.ConfigurableResponses;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;

@@ -10,7 +10,7 @@ import java.util.Objects;
 
 public record RecentActivities(List<WorkingDay> workingDays, TimeSummary timeSummary) {
   public RecentActivities {
-    Objects.requireNonNull(workingDays, "workingDays");
+    workingDays = List.copyOf(Objects.requireNonNull(workingDays, "workingDays"));
     Objects.requireNonNull(timeSummary, "timeSummary");
   }
 }

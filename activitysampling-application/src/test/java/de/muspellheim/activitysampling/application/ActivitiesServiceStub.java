@@ -7,11 +7,11 @@ package de.muspellheim.activitysampling.application;
 
 import de.muspellheim.activitysampling.domain.ActivitiesService;
 import de.muspellheim.activitysampling.domain.Activity;
-import de.muspellheim.activitysampling.domain.ConfigurableResponses;
-import de.muspellheim.activitysampling.domain.EventEmitter;
-import de.muspellheim.activitysampling.domain.OutputTracker;
 import de.muspellheim.activitysampling.domain.RecentActivities;
 import de.muspellheim.activitysampling.domain.Timesheet;
+import de.muspellheim.activitysampling.domain.util.ConfigurableResponses;
+import de.muspellheim.activitysampling.domain.util.EventEmitter;
+import de.muspellheim.activitysampling.domain.util.OutputTracker;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
