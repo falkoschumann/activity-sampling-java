@@ -49,7 +49,7 @@ public class ActivitySamplingFixture {
             .filter(a -> a.text().equals(text))
             .findFirst()
             .orElseThrow()
-            .activity();
+            .description();
     viewModel.setActivity(activity);
   }
 

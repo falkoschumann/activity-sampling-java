@@ -79,21 +79,13 @@ class ActivitySamplingViewModelTests {
             assertEquals(
                 List.of(
                     new ActivityItem("Mittwoch, 16. November 2022"),
-                    new ActivityItem(
-                        "16:16 - Lorem ipsum",
-                        Activity.parse("2022-11-16T16:16", "PT5M", "Lorem ipsum")),
+                    new ActivityItem("16:16 - Lorem ipsum", "Lorem ipsum"),
                     new ActivityItem("Dienstag, 15. November 2022"),
-                    new ActivityItem(
-                        "15:15 - Lorem ipsum",
-                        Activity.parse("2022-11-15T15:15", "PT5M", "Lorem ipsum")),
+                    new ActivityItem("15:15 - Lorem ipsum", "Lorem ipsum"),
                     new ActivityItem("Montag, 14. November 2022"),
-                    new ActivityItem(
-                        "14:14 - Lorem ipsum",
-                        Activity.parse("2022-11-14T14:14", "PT5M", "Lorem ipsum")),
+                    new ActivityItem("14:14 - Lorem ipsum", "Lorem ipsum"),
                     new ActivityItem("Montag, 7. November 2022"),
-                    new ActivityItem(
-                        "07:07 - Lorem ipsum",
-                        Activity.parse("2022-11-07T07:07", "PT5M", "Lorem ipsum"))),
+                    new ActivityItem("07:07 - Lorem ipsum", "Lorem ipsum")),
                 sut.getRecentActivities(),
                 "Recent activities"),
         () -> assertEquals("00:05", sut.hoursTodayLabelTextProperty().get()),
@@ -182,8 +174,7 @@ class ActivitySamplingViewModelTests {
 
   @Test
   void setActivity_UpdatesForm() {
-    var activity = Activity.parse("2022-11-26T16:16", "PT20M", "Lorem ipsum");
-    sut.setActivity(activity);
+    sut.setActivity("Lorem ipsum");
 
     assertAll(
         () -> assertEquals("Lorem ipsum", sut.activityTextProperty().get(), "Activity text"),

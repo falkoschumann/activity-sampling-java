@@ -7,7 +7,6 @@ package de.muspellheim.activitysampling.application.activitysampling;
 
 import de.muspellheim.activitysampling.application.shared.Exceptions;
 import de.muspellheim.activitysampling.domain.ActivitiesService;
-import de.muspellheim.activitysampling.domain.Activity;
 import de.muspellheim.activitysampling.domain.RecentActivities;
 import de.muspellheim.activitysampling.domain.util.EventEmitter;
 import java.time.Clock;
@@ -196,7 +195,7 @@ public class ActivitySamplingViewModel {
         items.add(
             new ActivityItem(
                 activity.timestamp().format(timeFormatter) + " - " + activity.description(),
-                activity));
+                activity.description()));
       }
     }
 
@@ -230,8 +229,8 @@ public class ActivitySamplingViewModel {
     load();
   }
 
-  public void setActivity(Activity activity) {
-    activityText.set(activity.description());
+  public void setActivity(String description) {
+    activityText.set(description);
   }
 
   public void startCountdown(Duration interval) {

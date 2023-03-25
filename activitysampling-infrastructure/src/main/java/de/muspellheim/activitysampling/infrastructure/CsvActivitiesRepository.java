@@ -20,6 +20,7 @@ import java.util.List;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.CSVRecord;
 
 public class CsvActivitiesRepository implements ActivitiesRepository {
   private static final String COLUMN_TIMESTAMP = "Timestamp";
@@ -35,24 +36,24 @@ public class CsvActivitiesRepository implements ActivitiesRepository {
   @Override
   public List<Activity> findInPeriod(LocalDate from, LocalDate to) {
     try (var parser = newParser()) {
-      return parser.stream()
-          .map(
-              it ->
-                  new Activity(
-                      LocalDateTime.parse(it.get(COLUMN_TIMESTAMP)),
-                      Duration.parse(it.get(COLUMN_DURATION)),
-                      it.get(COLUMN_DESCRIPTION)))
-          .filter(
-              a -> {
-                var date = a.timestamp().toLocalDate();
-                return !date.isBefore(from) && !date.isAfter(to);
-              })
-          .toList();
+      return parser.stream().map(this::parseActivity).filter(a -> isBetween(a, from, to)).toList();
     } catch (NoSuchFileException e) {
       return List.of();
     } catch (Exception e) {
       throw new IllegalStateException("Failed to find all activities from file " + file, e);
     }
+  }
+
+  private Activity parseActivity(CSVRecord record) {
+    return new Activity(
+        LocalDateTime.parse(record.get(COLUMN_TIMESTAMP)),
+        Duration.parse(record.get(COLUMN_DURATION)),
+        record.get(COLUMN_DESCRIPTION));
+  }
+
+  private boolean isBetween(Activity activity, LocalDate from, LocalDate to) {
+    var date = activity.timestamp().toLocalDate();
+    return !date.isBefore(from) && !date.isAfter(to);
   }
 
   private CSVParser newParser() throws IOException {
