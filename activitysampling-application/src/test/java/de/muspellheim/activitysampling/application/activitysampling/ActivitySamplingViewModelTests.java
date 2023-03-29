@@ -15,7 +15,7 @@ import de.muspellheim.activitysampling.domain.Activity;
 import de.muspellheim.activitysampling.domain.RecentActivities;
 import de.muspellheim.activitysampling.domain.TimeSummary;
 import de.muspellheim.activitysampling.domain.WorkingDay;
-import de.muspellheim.activitysampling.domain.util.ConfigurableResponses;
+import de.muspellheim.activitysampling.util.ConfigurableResponses;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
@@ -86,7 +86,7 @@ class ActivitySamplingViewModelTests {
                     new ActivityItem("14:14 - Lorem ipsum", "Lorem ipsum"),
                     new ActivityItem("Montag, 7. November 2022"),
                     new ActivityItem("07:07 - Lorem ipsum", "Lorem ipsum")),
-                sut.getRecentActivities(),
+                sut.getActivityItems(),
                 "Recent activities"),
         () -> assertEquals("00:05", sut.hoursTodayLabelTextProperty().get()),
         () -> assertEquals("00:05", sut.hoursYesterdayLabelTextProperty().get()),

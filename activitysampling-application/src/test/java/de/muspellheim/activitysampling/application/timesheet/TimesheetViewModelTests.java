@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import de.muspellheim.activitysampling.application.ActivitiesServiceStub;
 import de.muspellheim.activitysampling.domain.Timesheet;
 import de.muspellheim.activitysampling.domain.TimesheetEntry;
-import de.muspellheim.activitysampling.domain.util.ConfigurableResponses;
+import de.muspellheim.activitysampling.util.ConfigurableResponses;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
@@ -45,7 +45,7 @@ class TimesheetViewModelTests {
 
     var clock = Clock.fixed(Instant.parse("2022-11-23T20:42:00Z"), ZoneId.systemDefault());
     sut = new TimesheetViewModel(activitiesService, Locale.GERMANY, clock);
-    sut.setOnError(e -> errors.addAll(e));
+    sut.addOnErrorListener(e -> errors.addAll(e));
     sut.run();
   }
 

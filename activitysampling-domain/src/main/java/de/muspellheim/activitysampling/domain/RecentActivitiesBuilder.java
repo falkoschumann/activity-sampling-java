@@ -8,7 +8,7 @@ package de.muspellheim.activitysampling.domain;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.List;
 
 class RecentActivitiesBuilder {
@@ -43,7 +43,7 @@ class RecentActivitiesBuilder {
 
       var activities = new ArrayList<>(day.activities());
       activities.add(activity);
-      activities.sort(Comparator.comparing(Activity::timestamp).reversed());
+      Collections.sort(activities);
 
       day = new WorkingDay(day.date(), activities);
       workingDays.set(index, day);
@@ -52,7 +52,7 @@ class RecentActivitiesBuilder {
       workingDays.add(day);
     }
 
-    workingDays.sort(Comparator.comparing(WorkingDay::date).reversed());
+    Collections.sort(workingDays);
   }
 
   private void addToTimeSummary(Activity activity) {

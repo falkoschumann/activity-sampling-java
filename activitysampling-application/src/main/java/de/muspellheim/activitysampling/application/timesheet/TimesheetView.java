@@ -49,7 +49,7 @@ public class TimesheetView {
 
   @FXML
   void initialize() {
-    viewModel.setOnError(ErrorView::handleError);
+    viewModel.addOnErrorListener(ErrorView::handleError);
     period.setConverter(new ChronoUnitStringConverter());
     period.getItems().addAll(ChronoUnit.DAYS, ChronoUnit.WEEKS, ChronoUnit.MONTHS);
     period.valueProperty().bindBidirectional(viewModel.periodProperty());

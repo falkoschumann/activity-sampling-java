@@ -8,6 +8,7 @@ package de.muspellheim.activitysampling.application.timesheet;
 import de.muspellheim.activitysampling.application.shared.Exceptions;
 import de.muspellheim.activitysampling.domain.ActivitiesService;
 import de.muspellheim.activitysampling.domain.Timesheet;
+import de.muspellheim.activitysampling.util.EventEmitter;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -19,31 +20,26 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.StringExpression;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableStringValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class TimesheetViewModel {
   private final ActivitiesService activitiesService;
-  private final Locale locale;
-
-  // Events
-  private Consumer<List<String>> onError;
+  private DateTimeFormatter dateFormatter;
 
   // State
-  private final ObjectProperty<LocalDate> from;
-  private final ObjectProperty<LocalDate> to;
+  private final ObjectProperty<LocalDate> from = new SimpleObjectProperty<>();
+  private final ObjectProperty<LocalDate> to = new SimpleObjectProperty<>();
 
-  // Properties
-  private final StringExpression title1;
-  private final StringExpression title2;
-  private final ObjectProperty<ChronoUnit> period;
-  private final ObservableList<TimesheetItem> timesheetItems;
-  private final ReadOnlyStringWrapper total;
+  /* *************************************************************************
+   *                                                                         *
+   * Constructors                                                            *
+   *                                                                         *
+   **************************************************************************/
 
   public TimesheetViewModel(ActivitiesService activitiesService) {
     this(activitiesService, Locale.getDefault(), Clock.systemDefaultZone());
@@ -51,72 +47,83 @@ public class TimesheetViewModel {
 
   public TimesheetViewModel(ActivitiesService activitiesService, Locale locale, Clock clock) {
     this.activitiesService = activitiesService;
-    this.locale = locale;
+    dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale);
 
     var today = LocalDate.now(clock);
     var weekday = today.getDayOfWeek().getValue();
-    from = new SimpleObjectProperty<>(today.minusDays(weekday - 1));
-    to = new SimpleObjectProperty<>(today.plusDays(7 - weekday));
-    period =
-        new SimpleObjectProperty<>(ChronoUnit.WEEKS) {
-          @Override
-          protected void invalidated() {
-            switch (get()) {
-              case DAYS -> to.set(from.get());
-              case WEEKS -> {
-                var first = from.get().with(ChronoField.DAY_OF_WEEK, 1);
-                from.set(first);
-                to.set(from.get().plusWeeks(1).minusDays(1));
+    from.set(today.minusDays(weekday - 1));
+    to.set(today.plusDays(7 - weekday));
+  }
 
-                /*
-                var weekday = from.get().getDayOfWeek().getValue();
-                from.set(from.get().minusDays(weekday - 1));
-                to.set(from.get().plusDays(7 - weekday + 1));
-                */
-              }
-              case MONTHS -> {
-                var first = from.get().withDayOfMonth(1);
-                from.set(first);
-                var last = first.plusMonths(1).minusDays(1);
-                to.set(last);
-              }
-              default -> throw new IllegalStateException("Unreachable code");
+  /* *************************************************************************
+   *                                                                         *
+   * Events                                                                  *
+   *                                                                         *
+   **************************************************************************/
+
+  private final EventEmitter<List<String>> onError = new EventEmitter<>();
+
+  public void addOnErrorListener(Consumer<List<String>> listener) {
+    onError.addListener(listener);
+  }
+
+  public void removeOnErrorListener(Consumer<List<String>> listener) {
+    onError.removeListener(listener);
+  }
+
+  /* *************************************************************************
+   *                                                                         *
+   * Properties                                                              *
+   *                                                                         *
+   **************************************************************************/
+
+  // --- period
+
+  private final ObjectProperty<ChronoUnit> period =
+      new SimpleObjectProperty<>(ChronoUnit.WEEKS) {
+        @Override
+        protected void invalidated() {
+          switch (get()) {
+            case DAYS -> to.set(from.get());
+            case WEEKS -> {
+              var first = from.get().with(ChronoField.DAY_OF_WEEK, 1);
+              from.set(first);
+              to.set(from.get().plusWeeks(1).minusDays(1));
             }
-            load();
+            case MONTHS -> {
+              var first = from.get().withDayOfMonth(1);
+              from.set(first);
+              var last = first.plusMonths(1).minusDays(1);
+              to.set(last);
+            }
+            default -> throw new IllegalStateException("Unreachable code");
           }
-        };
-    timesheetItems = FXCollections.observableArrayList();
-    total = new ReadOnlyStringWrapper("00:00");
-    var periodConverter = new ChronoUnitStringConverter();
-    title1 =
-        Bindings.createStringBinding(
-            () -> "This " + periodConverter.toString(period.get()) + ": ", period);
-    var dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale);
-    title2 =
-        Bindings.createStringBinding(
-            () ->
-                dateFormatter.format(from.get())
-                    + (period.get() == ChronoUnit.DAYS
-                        ? ""
-                        : " - " + dateFormatter.format(to.get())),
-            from,
-            to,
-            period);
-  }
+          load();
+        }
+      };
 
-  public Consumer<List<String>> getOnError() {
-    return onError;
-  }
+  // --- title1
 
-  public void setOnError(Consumer<List<String>> onError) {
-    this.onError = onError;
-  }
+  private final ObservableStringValue title1 =
+      Bindings.createStringBinding(
+          () -> "This " + new ChronoUnitStringConverter().toString(period.get()) + ": ", period);
 
-  public StringExpression title1Property() {
+  public ObservableStringValue title1Property() {
     return title1;
   }
 
-  public StringExpression title2Property() {
+  // --- title2
+
+  private final ObservableStringValue title2 =
+      Bindings.createStringBinding(
+          () ->
+              dateFormatter.format(from.get())
+                  + (period.get() == ChronoUnit.DAYS ? "" : " - " + dateFormatter.format(to.get())),
+          from,
+          to,
+          period);
+
+  public ObservableStringValue title2Property() {
     return title2;
   }
 
@@ -124,13 +131,27 @@ public class TimesheetViewModel {
     return period;
   }
 
+  // --- timesheetItems
+
+  private final ObservableList<TimesheetItem> timesheetItems = FXCollections.observableArrayList();
+
   public ObservableList<TimesheetItem> getTimesheetItems() {
     return timesheetItems;
   }
 
-  public ReadOnlyStringProperty totalProperty() {
+  // --- total
+
+  private final ReadOnlyStringWrapper total = new ReadOnlyStringWrapper("00:00");
+
+  public ObservableStringValue totalProperty() {
     return total.getReadOnlyProperty();
   }
+
+  /* *************************************************************************
+   *                                                                         *
+   * Public API                                                              *
+   *                                                                         *
+   **************************************************************************/
 
   public void run() {
     load();
@@ -184,11 +205,10 @@ public class TimesheetViewModel {
       timesheet = activitiesService.getTimesheet(from.get(), to.get());
     } catch (Exception e) {
       var messages = Exceptions.collectExceptionMessages("Failed to load timesheet.", e);
-      onError.accept(messages);
+      onError.emit(messages);
       return;
     }
 
-    var dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale);
     var timeFormat = "%1$02d:%2$02d";
     var items = new ArrayList<TimesheetItem>();
     for (var entry : timesheet.entries()) {

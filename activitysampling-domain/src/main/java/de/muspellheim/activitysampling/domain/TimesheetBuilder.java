@@ -7,7 +7,7 @@ package de.muspellheim.activitysampling.domain;
 
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.List;
 
 class TimesheetBuilder {
@@ -36,7 +36,7 @@ class TimesheetBuilder {
       entries.add(entry);
     }
 
-    entries.sort(Comparator.comparing(TimesheetEntry::date).thenComparing(TimesheetEntry::notes));
+    Collections.sort(entries);
     total = total.plus(activity.duration());
   }
 

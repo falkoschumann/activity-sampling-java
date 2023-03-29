@@ -8,7 +8,7 @@ package de.muspellheim.activitysampling.application.activitysampling;
 import de.muspellheim.activitysampling.application.shared.Exceptions;
 import de.muspellheim.activitysampling.domain.ActivitiesService;
 import de.muspellheim.activitysampling.domain.RecentActivities;
-import de.muspellheim.activitysampling.domain.util.EventEmitter;
+import de.muspellheim.activitysampling.util.EventEmitter;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -22,45 +22,29 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.BooleanExpression;
-import javafx.beans.binding.DoubleExpression;
-import javafx.beans.binding.StringExpression;
-import javafx.beans.property.ReadOnlyBooleanWrapper;
-import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ObservableBooleanValue;
+import javafx.beans.value.ObservableDoubleValue;
+import javafx.beans.value.ObservableStringValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class ActivitySamplingViewModel {
   private final ActivitiesService activitiesService;
-  private final Locale locale;
+  private Locale locale;
   private final Clock clock;
 
-  // Events
-  private final EventEmitter<Void> onCountdownElapsed = new EventEmitter<>();
-  private final EventEmitter<List<String>> onError = new EventEmitter<>();
-
   // State
-  private final ReadOnlyObjectWrapper<Duration> interval;
-  private final ReadOnlyBooleanWrapper intervalLogged;
-  private final ReadOnlyBooleanWrapper countdownActive;
-  private final ReadOnlyObjectWrapper<Duration> countdown;
-
-  // Properties
-  private final BooleanExpression stopMenuItemDisable;
-  private final StringProperty activityText;
-  private final BooleanExpression formDisable;
-  private final BooleanExpression logButtonDisable;
-  private final StringExpression countdownLabelText;
-  private final DoubleExpression countdownProgress;
-  private final ObservableList<ActivityItem> recentActivities;
-  private final ReadOnlyStringWrapper hoursTodayLabelText;
-  private final ReadOnlyStringWrapper hoursYesterdayLabelText;
-  private final ReadOnlyStringWrapper hoursThisWeekLabelText;
-  private final ReadOnlyStringWrapper hoursThisMonthLabelText;
+  private Duration interval = Duration.ofMinutes(20);
+  private final ObjectProperty<Duration> countdown = new SimpleObjectProperty<>(interval);
+  private final BooleanProperty countdownActive = new SimpleBooleanProperty(false);
+  private final BooleanProperty intervalLogged = new SimpleBooleanProperty(false);
 
   public ActivitySamplingViewModel(ActivitiesService activitiesService) {
     this(activitiesService, Locale.getDefault(), Clock.systemDefaultZone());
@@ -72,44 +56,15 @@ public class ActivitySamplingViewModel {
     this.locale = locale;
     this.clock = clock;
     // TODO Make default interval configurable; use when countdown off
-    interval = new ReadOnlyObjectWrapper<>(Duration.ofMinutes(20));
-    intervalLogged = new ReadOnlyBooleanWrapper(false);
-    countdownActive = new ReadOnlyBooleanWrapper(false);
-    countdown = new ReadOnlyObjectWrapper<>(interval.get());
-
-    stopMenuItemDisable =
-        Bindings.createBooleanBinding(() -> countdownActive.not().get(), countdownActive);
-    activityText = new SimpleStringProperty("");
-    formDisable = countdownActive.and(intervalLogged);
-    logButtonDisable =
-        Bindings.createBooleanBinding(() -> activityText.get().isBlank(), activityText)
-            .or(countdownActive.and(intervalLogged));
-    countdownLabelText =
-        Bindings.createStringBinding(
-            () -> {
-              var time = LocalTime.ofSecondOfDay(countdown.get().toSeconds());
-              return DateTimeFormatter.ofPattern("HH:mm:ss").withLocale(locale).format(time);
-            },
-            interval,
-            countdown);
-    countdownProgress =
-        Bindings.createDoubleBinding(
-            () -> {
-              if (interval.get().isZero()) {
-                return 0.0;
-              }
-
-              var elapsedSeconds = (double) interval.get().minus(countdown.get()).getSeconds();
-              return elapsedSeconds / interval.get().toSeconds();
-            },
-            interval,
-            countdown);
-    recentActivities = FXCollections.observableArrayList();
-    hoursTodayLabelText = new ReadOnlyStringWrapper("00:00");
-    hoursYesterdayLabelText = new ReadOnlyStringWrapper("00:00");
-    hoursThisWeekLabelText = new ReadOnlyStringWrapper("00:00");
-    hoursThisMonthLabelText = new ReadOnlyStringWrapper("00:00");
   }
+
+  /* *************************************************************************
+   *                                                                         *
+   * Events                                                                  *
+   *                                                                         *
+   **************************************************************************/
+
+  private final EventEmitter<Void> onCountdownElapsed = new EventEmitter<>();
 
   public void addOnCountdownElapsedListener(Consumer<Void> listener) {
     onCountdownElapsed.addListener(listener);
@@ -119,6 +74,8 @@ public class ActivitySamplingViewModel {
     onCountdownElapsed.removeListener(listener);
   }
 
+  private final EventEmitter<List<String>> onError = new EventEmitter<>();
+
   public void addOnErrorListener(Consumer<List<String>> listener) {
     onError.addListener(listener);
   }
@@ -127,49 +84,125 @@ public class ActivitySamplingViewModel {
     onError.removeListener(listener);
   }
 
-  public BooleanExpression stopMenuItemDisableProperty() {
+  /* *************************************************************************
+   *                                                                         *
+   * Properties                                                              *
+   *                                                                         *
+   **************************************************************************/
+
+  // --- stopMenuItemDisable
+
+  private final ObservableBooleanValue stopMenuItemDisable =
+      Bindings.createBooleanBinding(() -> countdownActive.not().get(), countdownActive);
+
+  public ObservableBooleanValue stopMenuItemDisableProperty() {
     return stopMenuItemDisable;
   }
+
+  // --- formDisable
+
+  private final ObservableBooleanValue formDisable = countdownActive.and(intervalLogged);
+
+  public ObservableBooleanValue formDisableProperty() {
+    return formDisable;
+  }
+
+  // --- activityText
+
+  private final StringProperty activityText = new SimpleStringProperty("");
 
   public StringProperty activityTextProperty() {
     return activityText;
   }
 
-  public BooleanExpression formDisableProperty() {
-    return formDisable;
-  }
+  // --- logButtonDisable
 
-  public BooleanExpression logButtonDisableProperty() {
+  private final ObservableBooleanValue logButtonDisable =
+      Bindings.createBooleanBinding(() -> activityText.get().isBlank(), activityText)
+          .or(countdownActive.and(intervalLogged));
+
+  public ObservableBooleanValue logButtonDisableProperty() {
     return logButtonDisable;
   }
 
-  public StringExpression countdownLabelTextProperty() {
+  // --- countdownLabelText
+
+  private final ObservableStringValue countdownLabelText =
+      Bindings.createStringBinding(
+          () -> {
+            var time = LocalTime.ofSecondOfDay(countdown.get().toSeconds());
+            return DateTimeFormatter.ofPattern("HH:mm:ss").withLocale(locale).format(time);
+          },
+          countdown);
+
+  public ObservableStringValue countdownLabelTextProperty() {
     return countdownLabelText;
   }
 
-  public DoubleExpression countdownProgressProperty() {
+  // --- countdownProgress
+
+  private final ObservableDoubleValue countdownProgress =
+      Bindings.createDoubleBinding(
+          () -> {
+            if (interval.isZero()) {
+              return 0.0;
+            }
+
+            var elapsedSeconds = (double) interval.minus(countdown.get()).getSeconds();
+            return elapsedSeconds / interval.toSeconds();
+          },
+          countdown);
+
+  public ObservableDoubleValue countdownProgressProperty() {
     return countdownProgress;
   }
 
-  public ObservableList<ActivityItem> getRecentActivities() {
-    return recentActivities;
+  // --- recentActivityItems
+
+  private final ObservableList<ActivityItem> recentActivityItems =
+      FXCollections.observableArrayList();
+
+  public ObservableList<ActivityItem> getActivityItems() {
+    return recentActivityItems;
   }
 
-  public ReadOnlyStringProperty hoursTodayLabelTextProperty() {
+  // --- hoursTodayLabelText
+
+  private final ReadOnlyStringWrapper hoursTodayLabelText = new ReadOnlyStringWrapper("00:00");
+
+  public ObservableStringValue hoursTodayLabelTextProperty() {
     return hoursTodayLabelText.getReadOnlyProperty();
   }
 
-  public ReadOnlyStringProperty hoursYesterdayLabelTextProperty() {
+  // --- hoursYesterdayLabelText
+
+  private final ReadOnlyStringWrapper hoursYesterdayLabelText = new ReadOnlyStringWrapper("00:00");
+
+  public ObservableStringValue hoursYesterdayLabelTextProperty() {
     return hoursYesterdayLabelText.getReadOnlyProperty();
   }
 
-  public ReadOnlyStringProperty hoursThisWeekLabelTextProperty() {
+  // --- hoursThisWeekLabelText
+
+  private final ReadOnlyStringWrapper hoursThisWeekLabelText = new ReadOnlyStringWrapper("00:00");
+
+  public ObservableStringValue hoursThisWeekLabelTextProperty() {
     return hoursThisWeekLabelText.getReadOnlyProperty();
   }
 
-  public ReadOnlyStringProperty hoursThisMonthLabelTextProperty() {
+  // --- hoursThisMonthLabelText
+
+  private final ReadOnlyStringWrapper hoursThisMonthLabelText = new ReadOnlyStringWrapper("00:00");
+
+  public ObservableStringValue hoursThisMonthLabelTextProperty() {
     return hoursThisMonthLabelText.getReadOnlyProperty();
   }
+
+  /* *************************************************************************
+   *                                                                         *
+   * Public API                                                              *
+   *                                                                         *
+   **************************************************************************/
 
   public void run() {
     load();
@@ -213,12 +246,12 @@ public class ActivitySamplingViewModel {
     hoursThisMonthLabelText.set(
         timeFormat.formatted(
             timeSummary.hoursThisMonth().toHours(), timeSummary.hoursThisMonth().toMinutesPart()));
-    this.recentActivities.setAll(items);
+    this.recentActivityItems.setAll(items);
   }
 
   public void logActivity() {
     try {
-      activitiesService.logActivity(LocalDateTime.now(clock), interval.get(), activityText.get());
+      activitiesService.logActivity(LocalDateTime.now(clock), interval, activityText.get());
       intervalLogged.set(true);
     } catch (Exception e) {
       var messages = Exceptions.collectExceptionMessages("Failed to log activity.", e);
@@ -234,7 +267,7 @@ public class ActivitySamplingViewModel {
   }
 
   public void startCountdown(Duration interval) {
-    this.interval.set(interval);
+    this.interval = interval;
     countdown.set(interval);
     countdownActive.set(true);
     intervalLogged.set(true);
@@ -249,7 +282,7 @@ public class ActivitySamplingViewModel {
     if (countdown.get().isZero()) {
       intervalLogged.set(false);
       onCountdownElapsed.emit(null);
-      countdown.set(interval.get());
+      countdown.set(interval);
     }
   }
 

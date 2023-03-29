@@ -45,7 +45,7 @@ public class ActivitySamplingFixture {
 
   void enterSelectActivity(String text) {
     var activity =
-        viewModel.getRecentActivities().stream()
+        viewModel.getActivityItems().stream()
             .filter(a -> a.text().equals(text))
             .findFirst()
             .orElseThrow()

@@ -68,7 +68,7 @@ public class ActivitySamplingView {
     countdownLabel.textProperty().bind(viewModel.countdownLabelTextProperty());
     countdown.progressProperty().bind(viewModel.countdownProgressProperty());
     recentActivities.setCellFactory(view -> new ActivityListCell(viewModel::setActivity));
-    recentActivities.setItems(viewModel.getRecentActivities());
+    recentActivities.setItems(viewModel.getActivityItems());
     hoursTodayLabel.textProperty().bind(viewModel.hoursTodayLabelTextProperty());
     hoursYesterdayLabel.textProperty().bind(viewModel.hoursYesterdayLabelTextProperty());
     hoursThisWeekLabel.textProperty().bind(viewModel.hoursThisWeekLabelTextProperty());

@@ -7,6 +7,7 @@ package de.muspellheim.activitysampling.domain;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.Objects;
 
 public record Activity(LocalDateTime timestamp, Duration duration, String description)
@@ -22,7 +23,7 @@ public record Activity(LocalDateTime timestamp, Duration duration, String descri
   }
 
   @Override
-  public int compareTo(Activity o) {
-    return timestamp.compareTo(o.timestamp);
+  public int compareTo(Activity other) {
+    return Comparator.comparing(Activity::timestamp).reversed().compare(this, other);
   }
 }

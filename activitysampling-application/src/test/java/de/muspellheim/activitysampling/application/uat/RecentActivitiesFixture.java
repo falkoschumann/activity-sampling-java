@@ -14,6 +14,6 @@ class RecentActivitiesFixture {
       SystemUnderTest.INSTANCE.getActivitySamplingViewModel();
 
   List<String> query() {
-    return viewModel.getRecentActivities().stream().map(ActivityItem::text).toList();
+    return viewModel.getActivityItems().stream().map(ActivityItem::text).toList();
   }
 }
