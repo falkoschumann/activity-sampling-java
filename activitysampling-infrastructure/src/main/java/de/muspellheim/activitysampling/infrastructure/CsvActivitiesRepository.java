@@ -44,11 +44,11 @@ public class CsvActivitiesRepository implements ActivitiesRepository {
     }
   }
 
-  private Activity parseActivity(CSVRecord record) {
+  private Activity parseActivity(CSVRecord csvRecord) {
     return new Activity(
-        LocalDateTime.parse(record.get(COLUMN_TIMESTAMP)),
-        Duration.parse(record.get(COLUMN_DURATION)),
-        record.get(COLUMN_DESCRIPTION));
+        LocalDateTime.parse(csvRecord.get(COLUMN_TIMESTAMP)),
+        Duration.parse(csvRecord.get(COLUMN_DURATION)),
+        csvRecord.get(COLUMN_DESCRIPTION));
   }
 
   private boolean isBetween(Activity activity, LocalDate from, LocalDate to) {
