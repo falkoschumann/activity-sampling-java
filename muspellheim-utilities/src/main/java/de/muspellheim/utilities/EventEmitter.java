@@ -13,6 +13,10 @@ import java.util.function.Consumer;
 public class EventEmitter<T> {
   private final List<Consumer<T>> listeners = new CopyOnWriteArrayList<>();
 
+  public EventEmitter() {
+    // public ctor
+  }
+
   public void addListener(Consumer<T> listener) {
     Objects.requireNonNull(listener, "listener");
     listeners.add(listener);
