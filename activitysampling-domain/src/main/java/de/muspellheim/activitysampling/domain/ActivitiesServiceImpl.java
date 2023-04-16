@@ -19,22 +19,21 @@ public class ActivitiesServiceImpl implements ActivitiesService {
 
   @Override
   public void logActivity(LocalDateTime timestamp, Duration duration, String description) {
-    var activity = new Activity(timestamp, duration, description.trim());
+    var activity = new Activity(timestamp, duration, description);
     activitiesRepository.append(activity);
   }
 
   @Override
-  public RecentActivities getRecentActivities(LocalDate date, Period period) {
-    var from = date.minus(period);
-    var builder = new RecentActivitiesBuilder(date);
-    activitiesRepository.findInPeriod(from, date).forEach(builder::add);
-    return builder.build();
+  public RecentActivities getRecentActivities() {
+    var today = LocalDate.now();
+    var start = today.minus(Period.ofDays(31));
+    var activities = activitiesRepository.findInPeriod(start, today);
+    return RecentActivities.of(activities);
   }
 
   @Override
   public Timesheet getTimesheet(LocalDate from, LocalDate to) {
-    var builder = new TimesheetBuilder();
-    activitiesRepository.findInPeriod(from, to).forEach(builder::add);
-    return builder.build();
+    var activities = activitiesRepository.findInPeriod(from, to);
+    return Timesheet.of(activities);
   }
 }

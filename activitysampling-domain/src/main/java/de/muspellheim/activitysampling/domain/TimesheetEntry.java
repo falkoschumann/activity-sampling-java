@@ -13,13 +13,9 @@ import java.util.Objects;
 public record TimesheetEntry(LocalDate date, String notes, Duration hours)
     implements Comparable<TimesheetEntry> {
   public TimesheetEntry {
-    Objects.requireNonNull(date, "date");
-    Objects.requireNonNull(notes, "notes");
-    Objects.requireNonNull(hours, "hours");
-  }
-
-  public static TimesheetEntry parse(String date, String notes, String hours) {
-    return new TimesheetEntry(LocalDate.parse(date), notes, Duration.parse(hours));
+    Objects.requireNonNull(date, "The date must not be null.");
+    Objects.requireNonNull(notes, "The notes must not be null.");
+    Objects.requireNonNull(hours, "The hours must not be null.");
   }
 
   @Override

@@ -1,15 +1,17 @@
 /*
- * Activity Sampling - Application
+ * Muspellheim - Utilities
  * Copyright (c) 2022 Falko Schumann <falko.schumann@muspellheim.de>
  */
 
-package de.muspellheim.activitysampling.application.shared;
+package de.muspellheim.utilities;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Exceptions {
-  public String summarizeMessages(String errorMessage, Throwable cause) {
+  private Exceptions() {}
+
+  public static String summarizeMessages(String errorMessage, Throwable cause) {
     List<String> messages = collectExceptionMessages(errorMessage, cause);
     return String.join(" ", messages);
   }
@@ -23,6 +25,6 @@ public class Exceptions {
     messages.add(errorMessage);
     var causeMessages = collectExceptionMessages(cause.getMessage(), cause.getCause());
     messages.addAll(causeMessages);
-    return messages;
+    return List.copyOf(messages);
   }
 }

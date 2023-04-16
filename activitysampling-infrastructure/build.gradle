@@ -4,8 +4,8 @@
  */
 
 plugins {
-  id 'activitysampling.java-library-conventions'
-  id 'activitysampling.java-module-conventions'
+  id 'muspellheim.java-library-conventions'
+  id 'muspellheim.java-module-conventions'
 }
 
 dependencies {

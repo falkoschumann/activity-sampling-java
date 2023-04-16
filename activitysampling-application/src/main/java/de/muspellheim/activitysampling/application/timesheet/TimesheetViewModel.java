@@ -5,10 +5,10 @@
 
 package de.muspellheim.activitysampling.application.timesheet;
 
-import de.muspellheim.activitysampling.application.shared.Exceptions;
 import de.muspellheim.activitysampling.domain.ActivitiesService;
 import de.muspellheim.activitysampling.domain.Timesheet;
-import de.muspellheim.activitysampling.util.EventEmitter;
+import de.muspellheim.utilities.EventEmitter;
+import de.muspellheim.utilities.Exceptions;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -27,7 +27,7 @@ import javafx.beans.value.ObservableStringValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public class TimesheetViewModel {
+class TimesheetViewModel {
   private final ActivitiesService activitiesService;
   private DateTimeFormatter dateFormatter;
 
@@ -41,11 +41,11 @@ public class TimesheetViewModel {
    *                                                                         *
    **************************************************************************/
 
-  public TimesheetViewModel(ActivitiesService activitiesService) {
+  TimesheetViewModel(ActivitiesService activitiesService) {
     this(activitiesService, Locale.getDefault(), Clock.systemDefaultZone());
   }
 
-  public TimesheetViewModel(ActivitiesService activitiesService, Locale locale, Clock clock) {
+  TimesheetViewModel(ActivitiesService activitiesService, Locale locale, Clock clock) {
     this.activitiesService = activitiesService;
     dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale);
 
@@ -63,11 +63,11 @@ public class TimesheetViewModel {
 
   private final EventEmitter<List<String>> onError = new EventEmitter<>();
 
-  public void addOnErrorListener(Consumer<List<String>> listener) {
+  void addOnErrorListener(Consumer<List<String>> listener) {
     onError.addListener(listener);
   }
 
-  public void removeOnErrorListener(Consumer<List<String>> listener) {
+  void removeOnErrorListener(Consumer<List<String>> listener) {
     onError.removeListener(listener);
   }
 
@@ -96,11 +96,16 @@ public class TimesheetViewModel {
               var last = first.plusMonths(1).minusDays(1);
               to.set(last);
             }
-            default -> throw new IllegalStateException("Unreachable code");
+            default -> throw new IllegalArgumentException(
+                "Unsupported period: %s.".formatted(get()));
           }
           load();
         }
       };
+
+  ObjectProperty<ChronoUnit> periodProperty() {
+    return period;
+  }
 
   // --- title1
 
@@ -108,7 +113,7 @@ public class TimesheetViewModel {
       Bindings.createStringBinding(
           () -> "This " + new ChronoUnitStringConverter().toString(period.get()) + ": ", period);
 
-  public ObservableStringValue title1Property() {
+  ObservableStringValue title1Property() {
     return title1;
   }
 
@@ -123,19 +128,15 @@ public class TimesheetViewModel {
           to,
           period);
 
-  public ObservableStringValue title2Property() {
+  ObservableStringValue title2Property() {
     return title2;
-  }
-
-  public ObjectProperty<ChronoUnit> periodProperty() {
-    return period;
   }
 
   // --- timesheetItems
 
   private final ObservableList<TimesheetItem> timesheetItems = FXCollections.observableArrayList();
 
-  public ObservableList<TimesheetItem> getTimesheetItems() {
+  ObservableList<TimesheetItem> getTimesheetItems() {
     return timesheetItems;
   }
 
@@ -143,7 +144,7 @@ public class TimesheetViewModel {
 
   private final ReadOnlyStringWrapper total = new ReadOnlyStringWrapper("00:00");
 
-  public ObservableStringValue totalProperty() {
+  ObservableStringValue totalProperty() {
     return total.getReadOnlyProperty();
   }
 
@@ -153,53 +154,11 @@ public class TimesheetViewModel {
    *                                                                         *
    **************************************************************************/
 
-  public void run() {
+  void run() {
     load();
   }
 
-  public void back() {
-    switch (period.get()) {
-      case DAYS -> {
-        from.set(from.get().minusDays(1));
-        to.set(to.get().minusDays(1));
-      }
-      case WEEKS -> {
-        from.set(from.get().minusWeeks(1));
-        to.set(to.get().minusWeeks(1));
-      }
-      case MONTHS -> {
-        var first = from.get().minusMonths(1);
-        from.set(first);
-        var last = first.plusMonths(1).minusDays(1);
-        to.set(last);
-      }
-      default -> throw new IllegalStateException("Unreachable code");
-    }
-    load();
-  }
-
-  public void forward() {
-    switch (period.get()) {
-      case DAYS -> {
-        from.set(from.get().plusDays(1));
-        to.set(to.get().plusDays(1));
-      }
-      case WEEKS -> {
-        from.set(from.get().plusWeeks(1));
-        to.set(to.get().plusWeeks(1));
-      }
-      case MONTHS -> {
-        var first = from.get().plusMonths(1);
-        from.set(first);
-        var last = first.plusMonths(1).minusDays(1);
-        to.set(last);
-      }
-      default -> throw new IllegalStateException("Unreachable code");
-    }
-    load();
-  }
-
-  private void load() {
+  void load() {
     Timesheet timesheet;
     try {
       timesheet = activitiesService.getTimesheet(from.get(), to.get());
@@ -220,5 +179,49 @@ public class TimesheetViewModel {
     }
     timesheetItems.setAll(items);
     total.set(timeFormat.formatted(timesheet.total().toHours(), timesheet.total().toMinutesPart()));
+  }
+
+  void back() {
+    switch (period.get()) {
+      case DAYS -> {
+        from.set(from.get().minusDays(1));
+        to.set(to.get().minusDays(1));
+      }
+      case WEEKS -> {
+        from.set(from.get().minusWeeks(1));
+        to.set(to.get().minusWeeks(1));
+      }
+      case MONTHS -> {
+        var first = from.get().minusMonths(1);
+        from.set(first);
+        var last = first.plusMonths(1).minusDays(1);
+        to.set(last);
+      }
+      default -> throw new IllegalArgumentException(
+          "Unsupported period: %s.".formatted(period.get()));
+    }
+    load();
+  }
+
+  void forward() {
+    switch (period.get()) {
+      case DAYS -> {
+        from.set(from.get().plusDays(1));
+        to.set(to.get().plusDays(1));
+      }
+      case WEEKS -> {
+        from.set(from.get().plusWeeks(1));
+        to.set(to.get().plusWeeks(1));
+      }
+      case MONTHS -> {
+        var first = from.get().plusMonths(1);
+        from.set(first);
+        var last = first.plusMonths(1).minusDays(1);
+        to.set(last);
+      }
+      default -> throw new IllegalArgumentException(
+          "Unsupported period: %s.".formatted(period.get()));
+    }
+    load();
   }
 }

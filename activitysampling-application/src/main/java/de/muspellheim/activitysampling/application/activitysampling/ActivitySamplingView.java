@@ -67,8 +67,9 @@ public class ActivitySamplingView {
     logButton.disableProperty().bind(viewModel.logButtonDisableProperty());
     countdownLabel.textProperty().bind(viewModel.countdownLabelTextProperty());
     countdown.progressProperty().bind(viewModel.countdownProgressProperty());
-    recentActivities.setCellFactory(view -> new ActivityListCell(viewModel::setActivity));
-    recentActivities.setItems(viewModel.getActivityItems());
+    recentActivities.setCellFactory(
+        ActivityListCell.newCellFactory(t -> viewModel.activityTextProperty().set(t)));
+    recentActivities.setItems(viewModel.getRecentActivities());
     hoursTodayLabel.textProperty().bind(viewModel.hoursTodayLabelTextProperty());
     hoursYesterdayLabel.textProperty().bind(viewModel.hoursYesterdayLabelTextProperty());
     hoursThisWeekLabel.textProperty().bind(viewModel.hoursThisWeekLabelTextProperty());

@@ -5,22 +5,34 @@
 
 package de.muspellheim.activitysampling.application.timesheet;
 
+import java.util.function.Function;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.util.Callback;
 
 class TimesheetTableCell<T> extends TableCell<TimesheetItem, T> {
   private final Pos alignment;
 
-  TimesheetTableCell() {
-    this(Pos.BASELINE_LEFT);
+  private TimesheetTableCell(Pos alignment) {
+    this.alignment = alignment;
   }
 
-  TimesheetTableCell(Pos alignment) {
-    this.alignment = alignment;
+  static <T> Callback<TableColumn<TimesheetItem, T>, TableCell<TimesheetItem, T>> newCellFactory(
+      Pos alignment) {
+    return column -> new TimesheetTableCell<>(alignment);
+  }
+
+  static <T>
+      Callback<TableColumn.CellDataFeatures<TimesheetItem, T>, ObservableValue<T>>
+          newCellValueFactory(Function<TimesheetItem, T> valueProvider) {
+    return param -> new SimpleObjectProperty<>(valueProvider.apply(param.getValue()));
   }
 
   @Override

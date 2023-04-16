@@ -8,12 +8,11 @@ package de.muspellheim.activitysampling.domain;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Period;
 
 public interface ActivitiesService {
   void logActivity(LocalDateTime timestamp, Duration duration, String description);
 
-  RecentActivities getRecentActivities(LocalDate date, Period period);
+  RecentActivities getRecentActivities();
 
   Timesheet getTimesheet(LocalDate from, LocalDate to);
 }

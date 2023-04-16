@@ -40,7 +40,7 @@ public class CsvActivitiesRepository implements ActivitiesRepository {
     } catch (NoSuchFileException e) {
       return List.of();
     } catch (Exception e) {
-      throw new IllegalStateException("Failed to find all activities from file " + file, e);
+      throw new IllegalStateException("Failed to find activities in period from file " + file, e);
     }
   }
 

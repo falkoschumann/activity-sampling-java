@@ -4,7 +4,7 @@
  */
 
 plugins {
-  id 'activitysampling.groovy-gradle-conventions'
+  id 'muspellheim.groovy-gradle-conventions'
   id 'base'
   id 'jacoco-report-aggregation'
   id 'test-report-aggregation'
@@ -20,9 +20,11 @@ dependencies {
   testReportAggregation project(':activitysampling-application')
   testReportAggregation project(':activitysampling-domain')
   testReportAggregation project(':activitysampling-infrastructure')
+  testReportAggregation project(':muspellheim-utilities')
   jacocoAggregation project(':activitysampling-application')
   jacocoAggregation project(':activitysampling-domain')
   jacocoAggregation project(':activitysampling-infrastructure')
+  jacocoAggregation project(':muspellheim-utilities')
 }
 
 reporting {

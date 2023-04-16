@@ -1,5 +1,5 @@
 plugins {
-  id 'activitysampling.groovy-gradle-conventions'
+  id 'muspellheim.groovy-gradle-conventions'
   id 'extra-java-module-info'
 }
 

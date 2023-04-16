@@ -7,16 +7,16 @@ package de.muspellheim.activitysampling.application.activitysampling;
 
 import java.util.Objects;
 
-public record ActivityItem(String text, String description) {
+record ActivityItem(String text, String description) {
   public ActivityItem {
-    Objects.requireNonNull(text, "text");
+    Objects.requireNonNull(text, "The text must not be null.");
   }
 
-  public ActivityItem(String text) {
+  ActivityItem(String text) {
     this(text, null);
   }
 
-  public boolean isActivity() {
+  boolean isActivity() {
     return description != null;
   }
 }

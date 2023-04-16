@@ -13,13 +13,17 @@ import java.util.Objects;
 public record Activity(LocalDateTime timestamp, Duration duration, String description)
     implements Comparable<Activity> {
   public Activity {
-    Objects.requireNonNull(timestamp, "timestamp");
-    Objects.requireNonNull(duration, "duration");
-    Objects.requireNonNull(description, "description");
-  }
+    Objects.requireNonNull(timestamp, "The timestamp must not be null.");
+    Objects.requireNonNull(duration, "The duration must not be null.");
+    Objects.requireNonNull(description, "The description must be null.");
 
-  public static Activity parse(String timestamp, String duration, String description) {
-    return new Activity(LocalDateTime.parse(timestamp), Duration.parse(duration), description);
+    if (duration.isNegative()) {
+      throw new IllegalArgumentException(
+          "The duration cannot be negative: %s.".formatted(duration));
+    }
+    if (description.isBlank()) {
+      throw new IllegalArgumentException("The description cannot be empty.");
+    }
   }
 
   @Override

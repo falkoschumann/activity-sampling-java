@@ -1,9 +1,9 @@
 /*
- * Activity Sampling - Domain
+ * Muspellheim - Utilities
  * Copyright (c) 2023 Falko Schumann <falko.schumann@muspellheim.de>
  */
 
-package de.muspellheim.activitysampling.util;
+package de.muspellheim.utilities;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -24,16 +24,20 @@ public class ConfigurableResponses<T> {
     response = new LinkedList<>(responses);
   }
 
+  public static <T> ConfigurableResponses<T> empty() {
+    return new ConfigurableResponses<>(List.of());
+  }
+
   @SuppressWarnings("unchecked")
   public T next() {
     if (response instanceof Queue<?> q) {
       var v = q.poll();
       if (v == null) {
         throw new IllegalStateException("No more values configured.");
-      } else if (response instanceof RuntimeException e) {
+      } else if (v instanceof RuntimeException e) {
         throw e;
       } else {
-        return (T) response;
+        return (T) v;
       }
     } else if (response instanceof RuntimeException e) {
       throw e;
@@ -48,10 +52,10 @@ public class ConfigurableResponses<T> {
       var v = q.poll();
       if (v == null) {
         throw new IllegalStateException("No more values configured.");
-      } else if (response instanceof Exception e) {
+      } else if (v instanceof Exception e) {
         throw e;
       } else {
-        return (T) response;
+        return (T) v;
       }
     } else if (response instanceof Exception e) {
       throw e;

@@ -9,52 +9,52 @@ import de.muspellheim.activitysampling.domain.ActivitiesService;
 import de.muspellheim.activitysampling.domain.Activity;
 import de.muspellheim.activitysampling.domain.RecentActivities;
 import de.muspellheim.activitysampling.domain.Timesheet;
-import de.muspellheim.activitysampling.util.ConfigurableResponses;
-import de.muspellheim.activitysampling.util.EventEmitter;
-import de.muspellheim.activitysampling.util.OutputTracker;
+import de.muspellheim.utilities.ConfigurableResponses;
+import de.muspellheim.utilities.EventEmitter;
+import de.muspellheim.utilities.OutputTracker;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.util.List;
 
 public class ActivitiesServiceStub implements ActivitiesService {
   private final EventEmitter<Activity> onActivityLogged = new EventEmitter<>();
 
-  private ConfigurableResponses<Object> logActivities = new ConfigurableResponses<>(true);
-  private ConfigurableResponses<RecentActivities> recentActivities =
+  private ConfigurableResponses<?> logActivityResponses = new ConfigurableResponses<>(List.of());
+  private ConfigurableResponses<RecentActivities> recentActivitiesResponses =
       new ConfigurableResponses<>(List.of());
-  private ConfigurableResponses<Timesheet> timesheet = new ConfigurableResponses<>(List.of());
+  private ConfigurableResponses<Timesheet> timesheetResponses =
+      new ConfigurableResponses<>(List.of());
 
-  public void initLogActivity(ConfigurableResponses<Object> logActivities) {
-    this.logActivities = logActivities;
+  public void initLogActivityResponses(ConfigurableResponses<?> responses) {
+    this.logActivityResponses = responses;
   }
 
-  public void initRecentActivities(ConfigurableResponses<RecentActivities> recentActivities) {
-    this.recentActivities = recentActivities;
-  }
-
-  public void initTimesheet(ConfigurableResponses<Timesheet> timesheet) {
-    this.timesheet = timesheet;
+  @Override
+  public void logActivity(LocalDateTime timestamp, Duration duration, String description) {
+    logActivityResponses.next();
+    onActivityLogged.emit(new Activity(timestamp, duration, description));
   }
 
   public OutputTracker<Activity> getLoggedActivityTracker() {
     return new OutputTracker<>(onActivityLogged);
   }
 
-  @Override
-  public void logActivity(LocalDateTime timestamp, Duration duration, String description) {
-    logActivities.next();
-    onActivityLogged.emit(new Activity(timestamp, duration, description));
+  public void initRecentActivitiesResponses(ConfigurableResponses<RecentActivities> responses) {
+    this.recentActivitiesResponses = responses;
   }
 
   @Override
-  public RecentActivities getRecentActivities(LocalDate date, Period period) {
-    return recentActivities.next();
+  public RecentActivities getRecentActivities() {
+    return recentActivitiesResponses.next();
+  }
+
+  public void initTimesheetResponses(ConfigurableResponses<Timesheet> responses) {
+    this.timesheetResponses = responses;
   }
 
   @Override
   public Timesheet getTimesheet(LocalDate from, LocalDate to) {
-    return timesheet.next();
+    return timesheetResponses.next();
   }
 }

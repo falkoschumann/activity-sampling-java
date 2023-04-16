@@ -8,14 +8,14 @@ package de.muspellheim.activitysampling.application.timesheet;
 import java.time.temporal.ChronoUnit;
 import javafx.util.StringConverter;
 
-public class ChronoUnitStringConverter extends StringConverter<ChronoUnit> {
+class ChronoUnitStringConverter extends StringConverter<ChronoUnit> {
   @Override
   public String toString(ChronoUnit object) {
     return switch (object) {
       case DAYS -> "Day";
       case WEEKS -> "Week";
       case MONTHS -> "Month";
-      default -> throw new IllegalArgumentException("Not handled: " + object);
+      default -> throw new IllegalArgumentException("Unsupported period: %s.".formatted(object));
     };
   }
 

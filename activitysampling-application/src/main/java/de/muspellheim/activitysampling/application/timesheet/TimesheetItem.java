@@ -7,10 +7,10 @@ package de.muspellheim.activitysampling.application.timesheet;
 
 import java.util.Objects;
 
-public record TimesheetItem(String date, String activity, String duration) {
-  public TimesheetItem {
-    Objects.requireNonNull(date, "date");
-    Objects.requireNonNull(activity, "activity");
-    Objects.requireNonNull(duration, "duration");
+record TimesheetItem(String date, String activity, String duration) {
+  TimesheetItem {
+    Objects.requireNonNull(date, "The date must not be null.");
+    Objects.requireNonNull(activity, "The activity must not be null.");
+    Objects.requireNonNull(duration, "The duration must not be null.");
   }
 }

@@ -1,7 +1,7 @@
 import java.time.LocalDate
 
 plugins {
-  id 'activitysampling.groovy-gradle-conventions'
+  id 'muspellheim.groovy-gradle-conventions'
   id 'checkstyle'
   id 'jacoco'
   id 'java'
@@ -71,6 +71,7 @@ pitest {
 }
 
 checkstyle {
+  toolVersion = '10.9.3'
   var archive = configurations.checkstyle.filter {
     it.name.startsWith("checkstyle")
   }

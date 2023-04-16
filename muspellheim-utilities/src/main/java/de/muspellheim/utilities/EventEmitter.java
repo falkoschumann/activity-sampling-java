@@ -1,9 +1,9 @@
 /*
- * Activity Sampling - Domain
+ * Muspellheim - Utilities
  * Copyright (c) 2022 Falko Schumann <falko.schumann@muspellheim.de>
  */
 
-package de.muspellheim.activitysampling.util;
+package de.muspellheim.utilities;
 
 import java.util.List;
 import java.util.Objects;

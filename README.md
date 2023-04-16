@@ -7,4 +7,7 @@ Periodically ask the user about their current activity and log it for analysis.
 
 ## Install
 
+    ./gradlew run --args=--log-file=test.csv
+    -DactivitySampling.logFile=test.csv
+
 ## Usage
