@@ -1,0 +1,96 @@
+import java.time.LocalDate
+
+plugins {
+  id 'muspellheim.groovy-gradle-conventions'
+  id 'checkstyle'
+  id 'jacoco'
+  id 'java'
+  id 'jvm-test-suite'
+  id 'com.diffplug.spotless'
+  id 'info.solidsoft.pitest'
+  id 'io.freefair.lombok'
+  id 'org.sonarqube'
+}
+
+group = 'de.muspellheim'
+version = rootProject.version
+
+ext {
+  copyrightYear = LocalDate.now().year
+}
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
+}
+
+java {
+  compileJava {
+    options.release = 17
+    options.encoding = 'utf-8'
+    options.compilerArgs.addAll(['-Xlint:all', '-Werror', '-implicit:class'])
+  }
+  compileTestJava {
+    options.release = 17
+    options.encoding = 'utf-8'
+    options.compilerArgs.addAll(['-Xlint:all', '-Werror', '-implicit:class'])
+  }
+}
+
+tasks {
+  processResources {
+    filesMatching('**/*.properties') {
+      expand([version: version, copyrightYear: copyrightYear])
+    }
+  }
+}
+
+test {
+  useJUnitPlatform()
+  testLogging {
+    events 'passed', 'skipped', 'failed'
+    showExceptions = true
+    exceptionFormat = 'full'
+  }
+  finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+  dependsOn test
+  reports {
+    xml.required = true
+  }
+}
+
+pitest {
+  junit5PluginVersion = '1.1.2'
+  timestampedReports = false
+}
+
+checkstyle {
+  toolVersion = '10.9.3'
+  var archive = configurations.checkstyle.filter {
+    it.name.startsWith("checkstyle")
+  }
+  config = resources.text.fromArchiveEntry(archive, "google_checks.xml")
+  configProperties 'org.checkstyle.google.suppressionfilter.config': file("${project.rootDir}/config/checkstyle/suppressions.xml")
+  maxWarnings = 0
+}
+
+spotless {
+  java {
+    googleJavaFormat()
+    licenseHeaderFile 'config/LicenseHeader.txt'
+  }
+}
+
+sonarqube {
+  properties {
+    property "sonar.projectKey", "falkoschumann_activity-sampling-java"
+    property "sonar.organization", "falkoschumann"
+    property "sonar.host.url", "https://sonarcloud.io"
+  }
+}

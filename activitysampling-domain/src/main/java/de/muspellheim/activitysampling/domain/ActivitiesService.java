@@ -1,7 +1,18 @@
+/*
+ * Activity Sampling - Domain
+ * Copyright (c) 2022 Falko Schumann <falko.schumann@muspellheim.de>
+ */
+
 package de.muspellheim.activitysampling.domain;
 
-public interface ActivitiesService {
-  void logActivity(String description);
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-  RecentActivities selectRecentActivities();
+public interface ActivitiesService {
+  void logActivity(LocalDateTime timestamp, Duration duration, String description);
+
+  RecentActivities getRecentActivities();
+
+  Timesheet getTimesheet(LocalDate from, LocalDate to);
 }

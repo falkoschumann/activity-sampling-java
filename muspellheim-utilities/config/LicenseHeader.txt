@@ -1,0 +1,5 @@
+/*
+ * Muspellheim - Utilities
+ * Copyright (c) $YEAR Falko Schumann <falko.schumann@muspellheim.de>
+ */
+
