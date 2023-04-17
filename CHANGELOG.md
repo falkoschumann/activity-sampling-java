@@ -8,11 +8,27 @@ and this project adheres to
 
 ## [Unreleased]
 
+## Added
+
+- Create timesheet with date, notes and hours.
+
+### Changed
+
+- Save timestamp with local timezone instead of UTC.
+
+### Fixed
+
+- Duration was always logged with 20 minutes. 
+
 ## [1.1.0] - 2022-11-17
 
 ### Added
 
 - Show time summary for today, yesterday, this week and this month.
+
+### Changed
+
+- Add column Duration to log file.
 
 ## [1.0.0] - 2022-11-16
 

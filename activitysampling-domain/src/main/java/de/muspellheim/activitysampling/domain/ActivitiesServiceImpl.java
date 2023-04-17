@@ -1,38 +1,39 @@
+/*
+ * Activity Sampling - Domain
+ * Copyright (c) 2022 Falko Schumann <falko.schumann@muspellheim.de>
+ */
+
 package de.muspellheim.activitysampling.domain;
 
-import java.time.*;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Period;
 
 public class ActivitiesServiceImpl implements ActivitiesService {
-  private final EventStore eventStore;
-  private final Clock clock;
+  private final ActivitiesRepository activitiesRepository;
 
-  public ActivitiesServiceImpl(EventStore eventStore) {
-    this(eventStore, Clock.systemUTC());
-  }
-
-  public ActivitiesServiceImpl(EventStore eventStore, Clock clock) {
-    this.eventStore = eventStore;
-    this.clock = clock;
+  public ActivitiesServiceImpl(ActivitiesRepository activitiesRepository) {
+    this.activitiesRepository = activitiesRepository;
   }
 
   @Override
-  public void logActivity(String description) {
-    eventStore.record(
-        new ActivityLoggedEvent(clock.instant(), Duration.ofMinutes(20), description));
+  public void logActivity(LocalDateTime timestamp, Duration duration, String description) {
+    var activity = new Activity(timestamp, duration, description);
+    activitiesRepository.append(activity);
   }
 
   @Override
-  public RecentActivities selectRecentActivities() {
-    var today = LocalDate.ofInstant(clock.instant(), ZoneId.systemDefault());
-    var workingDaysProjection = new WorkingDaysProjection(today);
-    var timeSummaryProjection = new TimeSummaryProjection(today);
-    eventStore
-        .replay()
-        .forEach(
-            e -> {
-              workingDaysProjection.apply(e);
-              timeSummaryProjection.apply(e);
-            });
-    return new RecentActivities(workingDaysProjection.get(), timeSummaryProjection.get());
+  public RecentActivities getRecentActivities() {
+    var today = LocalDate.now();
+    var start = today.minus(Period.ofDays(31));
+    var activities = activitiesRepository.findInPeriod(start, today);
+    return RecentActivities.of(activities);
+  }
+
+  @Override
+  public Timesheet getTimesheet(LocalDate from, LocalDate to) {
+    var activities = activitiesRepository.findInPeriod(from, to);
+    return Timesheet.of(activities);
   }
 }

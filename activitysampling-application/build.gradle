@@ -1,20 +1,26 @@
+/*
+ * Activity Sampling - Application
+ * Copyright (c) 2022 Falko Schumann <falko.schumann@muspellheim.de>
+ */
+
 import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
-  id 'de.muspellheim.java-application-conventions'
-  id 'de.muspellheim.java-module-conventions'
-  id 'de.muspellheim.java-self-contained-application-conventions'
+  id 'muspellheim.java-application-conventions'
+  id 'muspellheim.java-module-conventions'
+  id 'muspellheim.java-self-contained-application-conventions'
   id 'org.openjfx.javafxplugin' version '0.0.13'
 }
 
 dependencies {
   implementation project(':activitysampling-domain')
   implementation project(':activitysampling-infrastructure')
+  implementation project(':muspellheim-utilities')
 }
 
 application {
   mainModule = 'de.muspellheim.activitysampling.application'
-  mainClass = 'de.muspellheim.activitysampling.application.App'
+  mainClass = 'de.muspellheim.activitysampling.application.ActivitySamplingApplication'
 }
 
 javafx {
