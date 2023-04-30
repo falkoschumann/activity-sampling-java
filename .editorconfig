@@ -1,5 +1,12 @@
 # EditorConfig is awesome: https://EditorConfig.org
 
+# Based on following Google Style Guides:
+# - HTML/CSS: https://google.github.io/styleguide/htmlcssguide.html
+# - JavaScript: https://google.github.io/styleguide/jsguide.html
+# - Java: https://google.github.io/styleguide/javaguide.html
+# - Python: https://google.github.io/styleguide/pyguide.html
+# - Shell: https://google.github.io/styleguide/shellguide.html
+
 root = true
 
 [*]
@@ -11,7 +18,7 @@ trim_trailing_whitespace = true
 insert_final_newline = true
 max_line_length = 80
 
-[*.{md, py}]
+[*.{md,py}]
 indent_size = 4
 
 [*.java]
@@ -23,3 +30,7 @@ charset = latin1
 
 [*.xml]
 max_line_length = 250
+
+[Makefile]
+indent_style = tab
+indent_size = 4
