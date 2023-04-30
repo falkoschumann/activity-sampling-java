@@ -8,5 +8,5 @@ include(
   'activitysampling-application',
   'activitysampling-domain',
   'activitysampling-infrastructure',
-  'muspellheim-utilities',
+  'muspellheim-common',
 )

@@ -13,7 +13,7 @@ import de.muspellheim.activitysampling.domain.Activity;
 import de.muspellheim.activitysampling.domain.RecentActivities;
 import de.muspellheim.activitysampling.domain.TimeSummary;
 import de.muspellheim.activitysampling.domain.WorkingDay;
-import de.muspellheim.utilities.ConfigurableResponses;
+import de.muspellheim.common.util.ConfigurableResponses;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;

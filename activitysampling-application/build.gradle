@@ -15,7 +15,7 @@ plugins {
 dependencies {
   implementation project(':activitysampling-domain')
   implementation project(':activitysampling-infrastructure')
-  implementation project(':muspellheim-utilities')
+  implementation project(':muspellheim-common')
 }
 
 application {

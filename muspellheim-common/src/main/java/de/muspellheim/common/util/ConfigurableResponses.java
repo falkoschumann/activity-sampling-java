@@ -1,9 +1,9 @@
 /*
- * Muspellheim - Utilities
+ * Muspellheim - Common
  * Copyright (c) 2023 Falko Schumann <falko.schumann@muspellheim.de>
  */
 
-package de.muspellheim.utilities;
+package de.muspellheim.common.util;
 
 import java.util.LinkedList;
 import java.util.List;

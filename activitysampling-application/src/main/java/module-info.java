@@ -1,7 +1,7 @@
 module de.muspellheim.activitysampling.application {
   requires de.muspellheim.activitysampling.domain;
   requires de.muspellheim.activitysampling.infrastructure;
-  requires de.muspellheim.utilities;
+  requires de.muspellheim.common;
   requires java.desktop;
   requires javafx.controls;
   requires javafx.fxml;

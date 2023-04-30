@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import de.muspellheim.activitysampling.application.ActivitiesServiceStub;
 import de.muspellheim.activitysampling.domain.Timesheet;
 import de.muspellheim.activitysampling.domain.TimesheetEntry;
-import de.muspellheim.utilities.ConfigurableResponses;
+import de.muspellheim.common.util.ConfigurableResponses;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;

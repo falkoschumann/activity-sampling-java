@@ -1,9 +1,9 @@
 /*
- * Muspellheim - Utilities
+ * Muspellheim - Common
  * Copyright (c) 2022 Falko Schumann <falko.schumann@muspellheim.de>
  */
 
-package de.muspellheim.utilities;
+package de.muspellheim.common.util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,8 @@ public class Exceptions {
 
     var messages = new ArrayList<String>();
     messages.add(errorMessage);
-    var causeMessages = collectExceptionMessages(cause.getMessage(), cause.getCause());
+    var message = "%s: %s".formatted(cause.getClass().getSimpleName(), cause.getMessage());
+    var causeMessages = collectExceptionMessages(message, cause.getCause());
     messages.addAll(causeMessages);
     return List.copyOf(messages);
   }

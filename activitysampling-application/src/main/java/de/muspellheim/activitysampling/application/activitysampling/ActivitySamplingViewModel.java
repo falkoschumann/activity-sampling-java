@@ -7,8 +7,8 @@ package de.muspellheim.activitysampling.application.activitysampling;
 
 import de.muspellheim.activitysampling.domain.ActivitiesService;
 import de.muspellheim.activitysampling.domain.RecentActivities;
-import de.muspellheim.utilities.EventEmitter;
-import de.muspellheim.utilities.Exceptions;
+import de.muspellheim.common.util.EventEmitter;
+import de.muspellheim.common.util.Exceptions;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDateTime;

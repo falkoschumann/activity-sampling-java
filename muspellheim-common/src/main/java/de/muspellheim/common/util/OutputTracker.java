@@ -1,9 +1,9 @@
 /*
- * Muspellheim - Utilities
+ * Muspellheim - Common
  * Copyright (c) 2023 Falko Schumann <falko.schumann@muspellheim.de>
  */
 
-package de.muspellheim.utilities;
+package de.muspellheim.common.util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,6 @@ public class OutputTracker<T> {
 
   public OutputTracker(EventEmitter<T> emitter) {
     this.emitter = emitter;
-
     emitter.addListener(tracker);
   }
 

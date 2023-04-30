@@ -6,3 +6,7 @@
 plugins {
   id 'muspellheim.java-library-conventions'
 }
+
+dependencies {
+    implementation project(':muspellheim-common')
+}

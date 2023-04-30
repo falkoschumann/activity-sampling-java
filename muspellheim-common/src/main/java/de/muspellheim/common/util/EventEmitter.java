@@ -1,9 +1,9 @@
 /*
- * Muspellheim - Utilities
+ * Muspellheim - Common
  * Copyright (c) 2022 Falko Schumann <falko.schumann@muspellheim.de>
  */
 
-package de.muspellheim.utilities;
+package de.muspellheim.common.util;
 
 import java.util.List;
 import java.util.Objects;
@@ -25,10 +25,6 @@ public class EventEmitter<T> {
   public void removeListener(Consumer<T> listener) {
     Objects.requireNonNull(listener, "listener");
     listeners.remove(listener);
-  }
-
-  public int listenerCount() {
-    return listeners.size();
   }
 
   public void emit(T value) {

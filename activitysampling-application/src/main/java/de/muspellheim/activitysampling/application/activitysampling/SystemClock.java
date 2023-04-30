@@ -5,7 +5,7 @@
 
 package de.muspellheim.activitysampling.application.activitysampling;
 
-import de.muspellheim.utilities.EventEmitter;
+import de.muspellheim.common.util.EventEmitter;
 import java.time.Duration;
 import java.util.Timer;
 import java.util.TimerTask;
