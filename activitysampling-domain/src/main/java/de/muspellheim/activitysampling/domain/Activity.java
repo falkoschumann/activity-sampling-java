@@ -5,29 +5,18 @@
 
 package de.muspellheim.activitysampling.domain;
 
+import de.muspellheim.common.util.Durations;
+import de.muspellheim.common.util.Strings;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.Objects;
 
-public record Activity(LocalDateTime timestamp, Duration duration, String description)
-    implements Comparable<Activity> {
+public record Activity(LocalDateTime timestamp, Duration duration, String description) {
   public Activity {
-    Objects.requireNonNull(timestamp, "The timestamp must not be null.");
-    Objects.requireNonNull(duration, "The duration must not be null.");
-    Objects.requireNonNull(description, "The description must be null.");
-
-    if (duration.isNegative()) {
-      throw new IllegalArgumentException(
-          "The duration cannot be negative: %s.".formatted(duration));
-    }
-    if (description.isBlank()) {
-      throw new IllegalArgumentException("The description cannot be empty.");
-    }
-  }
-
-  @Override
-  public int compareTo(Activity other) {
-    return Comparator.comparing(Activity::timestamp).reversed().compare(this, other);
+    Objects.requireNonNull(timestamp, "The timestamp is null.");
+    Objects.requireNonNull(duration, "The duration is null.");
+    Durations.requireNonNegative(duration, "The duration is negative: %s.".formatted(duration));
+    Objects.requireNonNull(description, "The description is null.");
+    Strings.requireNonBlank(description, "The description is blank.");
   }
 }

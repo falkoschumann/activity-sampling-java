@@ -6,12 +6,14 @@
 package de.muspellheim.activitysampling.domain;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-public record Timesheet(List<TimesheetEntry> entries, Duration total) {
+public record Timesheet(List<Entry> entries, Duration total) {
   public static final Timesheet EMPTY = new Timesheet(List.of(), Duration.ZERO);
 
   public Timesheet {
@@ -20,7 +22,7 @@ public record Timesheet(List<TimesheetEntry> entries, Duration total) {
   }
 
   static Timesheet of(List<Activity> activities) {
-    var entries = new ArrayList<TimesheetEntry>();
+    var entries = new ArrayList<Entry>();
     var total = Duration.ZERO;
     for (var activity : activities) {
       var date = activity.timestamp().toLocalDate();
@@ -37,10 +39,10 @@ public record Timesheet(List<TimesheetEntry> entries, Duration total) {
       if (index != -1) {
         var entry = entries.get(index);
         var hours = entry.hours().plus(activity.duration());
-        entry = new TimesheetEntry(entry.date(), entry.notes(), hours);
+        entry = new Entry(entry.date(), entry.notes(), hours);
         entries.set(index, entry);
       } else {
-        var entry = new TimesheetEntry(date, activity.description(), activity.duration());
+        var entry = new Entry(date, activity.description(), activity.duration());
         entries.add(entry);
       }
 
@@ -48,5 +50,18 @@ public record Timesheet(List<TimesheetEntry> entries, Duration total) {
       total = total.plus(activity.duration());
     }
     return new Timesheet(entries, total);
+  }
+
+  public record Entry(LocalDate date, String notes, Duration hours) implements Comparable<Entry> {
+    public Entry {
+      Objects.requireNonNull(date, "The date must not be null.");
+      Objects.requireNonNull(notes, "The notes must not be null.");
+      Objects.requireNonNull(hours, "The hours must not be null.");
+    }
+
+    @Override
+    public int compareTo(Entry other) {
+      return Comparator.comparing(Entry::date).thenComparing(Entry::notes).compare(this, other);
+    }
   }
 }

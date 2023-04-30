@@ -7,13 +7,11 @@ package de.muspellheim.activitysampling.domain;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-public record WorkingDay(LocalDate date, List<Activity> activities)
-    implements Comparable<WorkingDay> {
+public record WorkingDay(LocalDate date, List<Activity> activities) {
   public WorkingDay {
     Objects.requireNonNull(date, "The date must not be null.");
     activities =
@@ -37,7 +35,7 @@ public record WorkingDay(LocalDate date, List<Activity> activities)
 
         var list = new ArrayList<>(day.activities());
         list.add(activity);
-        Collections.sort(list);
+        list.sort(Comparator.comparing(Activity::timestamp).reversed());
 
         day = new WorkingDay(day.date(), list);
         workingDays.set(index, day);
@@ -46,12 +44,7 @@ public record WorkingDay(LocalDate date, List<Activity> activities)
         workingDays.add(day);
       }
     }
-    Collections.sort(workingDays);
+    workingDays.sort(Comparator.comparing(WorkingDay::date).reversed());
     return workingDays;
-  }
-
-  @Override
-  public int compareTo(WorkingDay other) {
-    return Comparator.comparing(WorkingDay::date).reversed().compare(this, other);
   }
 }

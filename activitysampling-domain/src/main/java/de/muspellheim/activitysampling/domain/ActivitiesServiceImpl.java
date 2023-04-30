@@ -11,29 +11,37 @@ import java.time.LocalDateTime;
 import java.time.Period;
 
 public class ActivitiesServiceImpl implements ActivitiesService {
-  private final ActivitiesRepository activitiesRepository;
+  private final Activities activities;
 
-  public ActivitiesServiceImpl(ActivitiesRepository activitiesRepository) {
-    this.activitiesRepository = activitiesRepository;
+  public ActivitiesServiceImpl(Activities activities) {
+    this.activities = activities;
   }
 
   @Override
   public void logActivity(LocalDateTime timestamp, Duration duration, String description) {
     var activity = new Activity(timestamp, duration, description);
-    activitiesRepository.append(activity);
+    activities.append(activity);
   }
 
   @Override
   public RecentActivities getRecentActivities() {
     var today = LocalDate.now();
     var start = today.minus(Period.ofDays(31));
-    var activities = activitiesRepository.findInPeriod(start, today);
+    var activities = this.activities.findInPeriod(start, today);
     return RecentActivities.of(activities);
   }
 
   @Override
+  public TimeSummary getTimeSummary() {
+    var today = LocalDate.now();
+    var start = today.minus(Period.ofDays(31));
+    var activities = this.activities.findInPeriod(start, today);
+    return TimeSummary.of(today, activities);
+  }
+
+  @Override
   public Timesheet getTimesheet(LocalDate from, LocalDate to) {
-    var activities = activitiesRepository.findInPeriod(from, to);
+    var activities = this.activities.findInPeriod(from, to);
     return Timesheet.of(activities);
   }
 }

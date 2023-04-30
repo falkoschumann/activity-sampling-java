@@ -31,7 +31,7 @@ class TimesheetTests {
 
     assertEquals(
         new Timesheet(
-            List.of(new TimesheetEntry(today, "a", Duration.ofMinutes(20))),
+            List.of(new Timesheet.Entry(today, "a", Duration.ofMinutes(20))),
             Duration.ofMinutes(20)),
         timesheet);
   }
@@ -48,7 +48,7 @@ class TimesheetTests {
 
     assertEquals(
         new Timesheet(
-            List.of(new TimesheetEntry(today, "a", Duration.ofMinutes(50))),
+            List.of(new Timesheet.Entry(today, "a", Duration.ofMinutes(50))),
             Duration.ofMinutes(50)),
         timesheet);
   }
@@ -71,10 +71,10 @@ class TimesheetTests {
     assertEquals(
         new Timesheet(
             List.of(
-                new TimesheetEntry(yesterday, "a", Duration.ofMinutes(30)),
-                new TimesheetEntry(today, "a", Duration.ofMinutes(30)),
-                new TimesheetEntry(today, "b", Duration.ofMinutes(30)),
-                new TimesheetEntry(today, "c", Duration.ofMinutes(30))),
+                new Timesheet.Entry(yesterday, "a", Duration.ofMinutes(30)),
+                new Timesheet.Entry(today, "a", Duration.ofMinutes(30)),
+                new Timesheet.Entry(today, "b", Duration.ofMinutes(30)),
+                new Timesheet.Entry(today, "c", Duration.ofMinutes(30))),
             Duration.ofMinutes(120)),
         timesheet);
   }

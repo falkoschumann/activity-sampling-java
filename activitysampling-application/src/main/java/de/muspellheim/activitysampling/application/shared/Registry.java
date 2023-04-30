@@ -7,7 +7,7 @@ package de.muspellheim.activitysampling.application.shared;
 
 import de.muspellheim.activitysampling.domain.ActivitiesService;
 import de.muspellheim.activitysampling.domain.ActivitiesServiceImpl;
-import de.muspellheim.activitysampling.infrastructure.CsvActivitiesRepository;
+import de.muspellheim.activitysampling.infrastructure.CsvActivities;
 
 public class Registry {
 
@@ -18,7 +18,7 @@ public class Registry {
   public static ActivitiesService getActivitiesService() {
     Configuration configuration = Configuration.INSTANCE;
     var file = configuration.getLogFile();
-    var activities = new CsvActivitiesRepository(file);
+    var activities = new CsvActivities(file);
     return new ActivitiesServiceImpl(activities);
   }
 }

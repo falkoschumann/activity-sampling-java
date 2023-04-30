@@ -14,5 +14,7 @@ public interface ActivitiesService {
 
   RecentActivities getRecentActivities();
 
+  TimeSummary getTimeSummary();
+
   Timesheet getTimesheet(LocalDate from, LocalDate to);
 }

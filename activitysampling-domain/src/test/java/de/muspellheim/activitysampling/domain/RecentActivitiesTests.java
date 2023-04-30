@@ -14,15 +14,17 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-class WorkingDaysTests {
+class RecentActivitiesTests {
   @Test
   void oneDayAndOneActivity() {
     var now = LocalDateTime.now();
     var activity = new Activity(now, Duration.ofMinutes(15), "a");
 
-    var workingDays = WorkingDay.of(List.of(activity));
+    var activities = RecentActivities.of(List.of(activity));
 
-    assertEquals(workingDays, List.of(new WorkingDay(now.toLocalDate(), List.of(activity))));
+    assertEquals(
+        activities,
+        new RecentActivities(List.of(new WorkingDay(now.toLocalDate(), List.of(activity)))));
   }
 
   @Test
@@ -31,9 +33,9 @@ class WorkingDaysTests {
     var a = new Activity(LocalDateTime.of(today, LocalTime.of(11, 0)), Duration.ofMinutes(20), "a");
     var b = new Activity(LocalDateTime.of(today, LocalTime.of(12, 0)), Duration.ofMinutes(20), "a");
 
-    var workingDays = WorkingDay.of(List.of(a, b));
+    var activities = RecentActivities.of(List.of(a, b));
 
-    assertEquals(workingDays, List.of(new WorkingDay(today, List.of(b, a))));
+    assertEquals(activities, new RecentActivities(List.of(new WorkingDay(today, List.of(b, a)))));
   }
 
   @Test
@@ -44,10 +46,11 @@ class WorkingDaysTests {
         new Activity(LocalDateTime.of(yesterday, LocalTime.of(12, 0)), Duration.ofMinutes(20), "a");
     var b = new Activity(LocalDateTime.of(today, LocalTime.of(12, 0)), Duration.ofMinutes(20), "a");
 
-    var workingDays = WorkingDay.of(List.of(a, b));
+    var activities = RecentActivities.of(List.of(a, b));
 
     assertEquals(
-        workingDays,
-        List.of(new WorkingDay(today, List.of(b)), new WorkingDay(yesterday, List.of(a))));
+        activities,
+        new RecentActivities(
+            List.of(new WorkingDay(today, List.of(b)), new WorkingDay(yesterday, List.of(a)))));
   }
 }

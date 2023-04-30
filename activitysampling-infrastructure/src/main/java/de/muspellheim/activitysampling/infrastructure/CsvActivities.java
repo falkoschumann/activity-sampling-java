@@ -5,7 +5,7 @@
 
 package de.muspellheim.activitysampling.infrastructure;
 
-import de.muspellheim.activitysampling.domain.ActivitiesRepository;
+import de.muspellheim.activitysampling.domain.Activities;
 import de.muspellheim.activitysampling.domain.Activity;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,14 +22,14 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 
-public class CsvActivitiesRepository implements ActivitiesRepository {
+public class CsvActivities implements Activities {
   private static final String COLUMN_TIMESTAMP = "Timestamp";
   private static final String COLUMN_DURATION = "Duration";
   private static final String COLUMN_DESCRIPTION = "Description";
 
   private final Path file;
 
-  public CsvActivitiesRepository(Path file) {
+  public CsvActivities(Path file) {
     this.file = file;
   }
 

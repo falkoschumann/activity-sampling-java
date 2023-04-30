@@ -15,12 +15,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class ActivitiesServiceTests {
-  private FakeActivitiesRepository activitiesRepository;
+  private FakeActivities activitiesRepository;
   private ActivitiesServiceImpl sut;
 
   @BeforeEach
   void init() {
-    activitiesRepository = new FakeActivitiesRepository();
+    activitiesRepository = new FakeActivities();
     sut = new ActivitiesServiceImpl(activitiesRepository);
   }
 
@@ -40,14 +40,24 @@ class ActivitiesServiceTests {
     var duration = Duration.ofMinutes(5);
     activitiesRepository.add(new Activity(now, duration, "xyz"));
 
-    var recentActivities = sut.getRecentActivities();
+    var activities = sut.getRecentActivities();
 
     assertEquals(
-        List.of(new WorkingDay(now.toLocalDate(), List.of(new Activity(now, duration, "xyz")))),
-        recentActivities.workingDays());
-    assertEquals(
-        new TimeSummary(duration, Duration.ZERO, duration, duration),
-        recentActivities.timeSummary());
+        new RecentActivities(
+            List.of(
+                new WorkingDay(now.toLocalDate(), List.of(new Activity(now, duration, "xyz"))))),
+        activities);
+  }
+
+  @Test
+  void getTimeSummary() {
+    var now = LocalDateTime.now();
+    var duration = Duration.ofMinutes(5);
+    activitiesRepository.add(new Activity(now, duration, "xyz"));
+
+    var summary = sut.getTimeSummary();
+
+    assertEquals(new TimeSummary(duration, Duration.ZERO, duration, duration), summary);
   }
 
   @Test
@@ -63,9 +73,9 @@ class ActivitiesServiceTests {
     assertEquals(
         new Timesheet(
             List.of(
-                new TimesheetEntry(LocalDate.of(2022, 11, 14), "b", Duration.ofMinutes(20)),
-                new TimesheetEntry(LocalDate.of(2022, 11, 14), "c", Duration.ofMinutes(20)),
-                new TimesheetEntry(LocalDate.of(2022, 11, 18), "a", Duration.ofMinutes(20))),
+                new Timesheet.Entry(LocalDate.of(2022, 11, 14), "b", Duration.ofMinutes(20)),
+                new Timesheet.Entry(LocalDate.of(2022, 11, 14), "c", Duration.ofMinutes(20)),
+                new Timesheet.Entry(LocalDate.of(2022, 11, 18), "a", Duration.ofMinutes(20))),
             Duration.ofMinutes(60)),
         timesheet);
   }

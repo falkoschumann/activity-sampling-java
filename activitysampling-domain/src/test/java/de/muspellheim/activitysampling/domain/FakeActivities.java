@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-class FakeActivitiesRepository extends ArrayList<Activity> implements ActivitiesRepository {
+class FakeActivities extends ArrayList<Activity> implements Activities {
   @Serial private static final long serialVersionUID = 0;
 
   @Override
