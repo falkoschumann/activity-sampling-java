@@ -11,7 +11,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import de.muspellheim.activitysampling.application.ActivitiesServiceStub;
 import de.muspellheim.activitysampling.domain.Activity;
 import de.muspellheim.activitysampling.domain.RecentActivities;
-import de.muspellheim.activitysampling.domain.TimeSummary;
 import de.muspellheim.activitysampling.domain.WorkingDay;
 import de.muspellheim.common.util.ConfigurableResponses;
 import java.time.Clock;
@@ -35,9 +34,9 @@ class ActivitySamplingViewModelTests {
   @BeforeEach
   void init() {
     activitiesService = new ActivitiesServiceStub();
-    activitiesService.initLogActivityResponses(new ConfigurableResponses<>(true));
+    activitiesService.initLogActivityResponses(ConfigurableResponses.always(true));
     activitiesService.initRecentActivitiesResponses(
-        new ConfigurableResponses<>(newRecentActivities()));
+        ConfigurableResponses.always(newRecentActivities()));
     clock = Clock.fixed(Instant.parse("2022-11-16T17:17:17Z"), ZoneId.of("Europe/Berlin"));
     sut = new ActivitySamplingViewModel(activitiesService, Locale.GERMANY, clock);
     countdownElapsed = false;
@@ -52,12 +51,7 @@ class ActivitySamplingViewModelTests {
             newWorkingDay(LocalDateTime.of(2022, 11, 16, 16, 16)),
             newWorkingDay(LocalDateTime.of(2022, 11, 15, 15, 15)),
             newWorkingDay(LocalDateTime.of(2022, 11, 14, 14, 14)),
-            newWorkingDay(LocalDateTime.of(2022, 11, 7, 7, 7))),
-        new TimeSummary(
-            Duration.ofMinutes(5),
-            Duration.ofMinutes(5),
-            Duration.ofMinutes(15),
-            Duration.ofMinutes(20)));
+            newWorkingDay(LocalDateTime.of(2022, 11, 7, 7, 7))));
   }
 
   private static WorkingDay newWorkingDay(LocalDateTime activityTimestamp) {
@@ -90,7 +84,7 @@ class ActivitySamplingViewModelTests {
   @Test
   void load_Failed_NotifyErrors() {
     activitiesService.initRecentActivitiesResponses(
-        new ConfigurableResponses<>(
+        ConfigurableResponses.sequence(
             List.of(RecentActivities.EMPTY, new IllegalStateException("Something went wrong."))));
     sut.run();
 
@@ -163,7 +157,7 @@ class ActivitySamplingViewModelTests {
   @Test
   void logActivity_Failed_NotifyError() {
     activitiesService.initLogActivityResponses(
-        new ConfigurableResponses<>(new IllegalStateException("Something went wrong.")));
+        ConfigurableResponses.always(new IllegalStateException("Something went wrong.")));
     sut.run();
 
     sut.activityTextProperty().set("foobar");

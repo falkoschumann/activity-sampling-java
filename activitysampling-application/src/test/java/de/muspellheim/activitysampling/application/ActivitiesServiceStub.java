@@ -8,6 +8,7 @@ package de.muspellheim.activitysampling.application;
 import de.muspellheim.activitysampling.domain.ActivitiesService;
 import de.muspellheim.activitysampling.domain.Activity;
 import de.muspellheim.activitysampling.domain.RecentActivities;
+import de.muspellheim.activitysampling.domain.TimeSummary;
 import de.muspellheim.activitysampling.domain.Timesheet;
 import de.muspellheim.common.util.ConfigurableResponses;
 import de.muspellheim.common.util.EventEmitter;
@@ -15,16 +16,15 @@ import de.muspellheim.common.util.OutputTracker;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 public class ActivitiesServiceStub implements ActivitiesService {
   private final EventEmitter<Activity> onActivityLogged = new EventEmitter<>();
 
-  private ConfigurableResponses<?> logActivityResponses = new ConfigurableResponses<>(List.of());
+  private ConfigurableResponses<?> logActivityResponses = ConfigurableResponses.empty();
   private ConfigurableResponses<RecentActivities> recentActivitiesResponses =
-      new ConfigurableResponses<>(List.of());
-  private ConfigurableResponses<Timesheet> timesheetResponses =
-      new ConfigurableResponses<>(List.of());
+      ConfigurableResponses.empty();
+  private ConfigurableResponses<TimeSummary> timeSummaryResponses = ConfigurableResponses.empty();
+  private ConfigurableResponses<Timesheet> timesheetResponses = ConfigurableResponses.empty();
 
   public void initLogActivityResponses(ConfigurableResponses<?> responses) {
     this.logActivityResponses = responses;
@@ -47,6 +47,15 @@ public class ActivitiesServiceStub implements ActivitiesService {
   @Override
   public RecentActivities getRecentActivities() {
     return recentActivitiesResponses.next();
+  }
+
+  public void initTimeSummary(ConfigurableResponses<TimeSummary> responses) {
+    timeSummaryResponses = responses;
+  }
+
+  @Override
+  public TimeSummary getTimeSummary() {
+    return timeSummaryResponses.next();
   }
 
   public void initTimesheetResponses(ConfigurableResponses<Timesheet> responses) {

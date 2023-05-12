@@ -7,6 +7,7 @@ package de.muspellheim.activitysampling.application.activitysampling;
 
 import de.muspellheim.activitysampling.domain.ActivitiesService;
 import de.muspellheim.activitysampling.domain.RecentActivities;
+import de.muspellheim.activitysampling.domain.TimeSummary;
 import de.muspellheim.common.util.EventEmitter;
 import de.muspellheim.common.util.Exceptions;
 import java.time.Clock;
@@ -213,8 +214,10 @@ class ActivitySamplingViewModel {
 
   public void load() {
     RecentActivities recentActivities;
+    TimeSummary timeSummary;
     try {
       recentActivities = activitiesService.getRecentActivities();
+      timeSummary = activitiesService.getTimeSummary();
     } catch (Exception e) {
       var messages = Exceptions.collectExceptionMessages("Failed to load activities.", e);
       onError.emit(messages);
@@ -235,7 +238,6 @@ class ActivitySamplingViewModel {
     }
 
     var timeFormat = "%1$02d:%2$02d";
-    var timeSummary = recentActivities.timeSummary();
     hoursTodayLabelText.set(
         timeFormat.formatted(
             timeSummary.hoursToday().toHours(), timeSummary.hoursToday().toMinutesPart()));

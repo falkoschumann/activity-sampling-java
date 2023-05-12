@@ -11,7 +11,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import de.muspellheim.activitysampling.application.ActivitiesServiceStub;
 import de.muspellheim.activitysampling.domain.Timesheet;
-import de.muspellheim.activitysampling.domain.TimesheetEntry;
 import de.muspellheim.common.util.ConfigurableResponses;
 import java.time.Clock;
 import java.time.Duration;
@@ -33,7 +32,7 @@ class TimesheetViewModelTests {
   @BeforeEach
   void init() {
     activitiesService = new ActivitiesServiceStub();
-    activitiesService.initTimesheetResponses(new ConfigurableResponses<>(newTimesheet()));
+    activitiesService.initTimesheetResponses(ConfigurableResponses.always(newTimesheet()));
     var clock = Clock.fixed(Instant.parse("2023-04-16T14:05:00Z"), ZoneId.systemDefault());
     sut = new TimesheetViewModel(activitiesService, Locale.GERMANY, clock);
     errors = new ArrayList<>();
@@ -45,8 +44,8 @@ class TimesheetViewModelTests {
         List.of(newTimesheetEntry(LocalDate.of(2023, 4, 14))), Duration.ofMinutes(20));
   }
 
-  private static TimesheetEntry newTimesheetEntry(LocalDate date) {
-    return new TimesheetEntry(date, "Lorem ipsum", Duration.ofMinutes(20));
+  private static Timesheet.Entry newTimesheetEntry(LocalDate date) {
+    return new Timesheet.Entry(date, "Lorem ipsum", Duration.ofMinutes(20));
   }
 
   @Test
@@ -67,8 +66,8 @@ class TimesheetViewModelTests {
   @Test
   void load_Failed_NotifyErrors() {
     activitiesService.initTimesheetResponses(
-        new ConfigurableResponses<>(
-            List.of(Timesheet.EMPTY, new IllegalStateException("Something went wrong."))));
+        ConfigurableResponses.sequence(
+            Timesheet.EMPTY, new IllegalStateException("Something went wrong.")));
     sut.run();
 
     sut.load();

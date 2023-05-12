@@ -42,7 +42,7 @@ public class ActivitySamplingView {
   private final Notifier notifier = new Notifier(viewModel);
 
   public static ActivitySamplingView newInstance(Stage stage) {
-    String file = "/ActivitySamplingView.fxml";
+    var file = "/ActivitySamplingView.fxml";
     try {
       var url = ActivitySamplingView.class.getResource(file);
       var loader = new FXMLLoader(url);

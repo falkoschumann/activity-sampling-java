@@ -12,20 +12,28 @@ import java.util.Queue;
 public class ConfigurableResponses<T> {
   private final Object response;
 
-  public ConfigurableResponses(T value) {
+  private ConfigurableResponses(Object value) {
     response = value;
   }
 
-  public ConfigurableResponses(Exception throwing) {
-    response = throwing;
-  }
-
-  public ConfigurableResponses(List<?> responses) {
-    response = new LinkedList<>(responses);
-  }
-
   public static <T> ConfigurableResponses<T> empty() {
-    return new ConfigurableResponses<>(List.of());
+    return sequence(List.of());
+  }
+
+  public static <T> ConfigurableResponses<T> always(T value) {
+    return new ConfigurableResponses<>(value);
+  }
+
+  public static ConfigurableResponses<?> always(Exception exception) {
+    return new ConfigurableResponses<>(exception);
+  }
+
+  public static <T> ConfigurableResponses<T> sequence(List<?> values) {
+    return new ConfigurableResponses<>(new LinkedList<>(values));
+  }
+
+  public static <T> ConfigurableResponses<T> sequence(Object... values) {
+    return sequence(List.of(values));
   }
 
   @SuppressWarnings("unchecked")
