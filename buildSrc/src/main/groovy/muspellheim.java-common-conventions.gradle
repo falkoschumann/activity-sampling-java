@@ -71,12 +71,7 @@ pitest {
 }
 
 checkstyle {
-  toolVersion = '10.9.3'
-  var archive = configurations.checkstyle.filter {
-    it.name.startsWith("checkstyle")
-  }
-  config = resources.text.fromArchiveEntry(archive, "google_checks.xml")
-  configProperties 'org.checkstyle.google.suppressionfilter.config': file("${project.rootDir}/config/checkstyle/suppressions.xml")
+  toolVersion = '10.11.0'
   maxWarnings = 0
 }
 
