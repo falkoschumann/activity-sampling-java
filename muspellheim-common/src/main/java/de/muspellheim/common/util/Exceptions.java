@@ -7,25 +7,25 @@ package de.muspellheim.common.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Exceptions {
   private Exceptions() {}
 
-  public static String summarizeMessages(String errorMessage, Throwable cause) {
-    List<String> messages = collectExceptionMessages(errorMessage, cause);
-    return String.join(" ", messages);
-  }
-
-  public static List<String> collectExceptionMessages(String errorMessage, Throwable cause) {
-    if (cause == null) {
-      return List.of(errorMessage);
+  public static List<Throwable> collect(Throwable exception) {
+    if (exception == null) {
+      return List.of();
     }
 
-    var messages = new ArrayList<String>();
-    messages.add(errorMessage);
-    var message = "%s: %s".formatted(cause.getClass().getSimpleName(), cause.getMessage());
-    var causeMessages = collectExceptionMessages(message, cause.getCause());
-    messages.addAll(causeMessages);
-    return List.copyOf(messages);
+    var exceptions = new ArrayList<Throwable>();
+    exceptions.add(exception);
+    exceptions.addAll(collect(exception.getCause()));
+    return List.copyOf(exceptions);
+  }
+
+  public static String summarizeMessages(Throwable exception) {
+    var messages =
+        collect(exception).stream().map(Throwable::getMessage).filter(Objects::nonNull).toList();
+    return String.join(" ", messages);
   }
 }

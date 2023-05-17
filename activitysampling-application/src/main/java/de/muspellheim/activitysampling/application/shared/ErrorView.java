@@ -5,7 +5,7 @@
 
 package de.muspellheim.activitysampling.application.shared;
 
-import java.util.List;
+import de.muspellheim.common.util.Exceptions;
 import javafx.scene.control.Alert;
 
 public class ErrorView {
@@ -13,13 +13,16 @@ public class ErrorView {
     // Do not instantiate static class.
   }
 
-  public static void handleError(List<String> messages) {
+  public static void show(Throwable exception) {
+    show(exception.getMessage(), exception.getCause());
+  }
+
+  public static void show(String errorMessage, Throwable exception) {
     var alert = new Alert(Alert.AlertType.ERROR);
     alert.setTitle("Error");
-    var header = messages.get(0);
-    alert.setHeaderText(header);
-    var content = messages.stream().skip(1).toList();
-    alert.setContentText(String.join("\n\n", content));
+    alert.setHeaderText(errorMessage);
+    var messages = Exceptions.collect(exception).stream().map(Throwable::toString).toList();
+    alert.setContentText(String.join("\n", messages));
     alert.show();
   }
 }

@@ -8,7 +8,6 @@ package de.muspellheim.activitysampling.application.timesheet;
 import de.muspellheim.activitysampling.domain.ActivitiesService;
 import de.muspellheim.activitysampling.domain.Timesheet;
 import de.muspellheim.common.util.EventEmitter;
-import de.muspellheim.common.util.Exceptions;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -16,7 +15,6 @@ import java.time.format.FormatStyle;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
 import javafx.beans.binding.Bindings;
@@ -61,13 +59,13 @@ class TimesheetViewModel {
    *                                                                         *
    **************************************************************************/
 
-  private final EventEmitter<List<String>> onError = new EventEmitter<>();
+  private final EventEmitter<Throwable> onError = new EventEmitter<>();
 
-  void addOnErrorListener(Consumer<List<String>> listener) {
+  void addOnErrorListener(Consumer<Throwable> listener) {
     onError.addListener(listener);
   }
 
-  void removeOnErrorListener(Consumer<List<String>> listener) {
+  void removeOnErrorListener(Consumer<Throwable> listener) {
     onError.removeListener(listener);
   }
 
@@ -163,8 +161,7 @@ class TimesheetViewModel {
     try {
       timesheet = activitiesService.getTimesheet(from.get(), to.get());
     } catch (Exception e) {
-      var messages = Exceptions.collectExceptionMessages("Failed to load timesheet.", e);
-      onError.emit(messages);
+      onError.emit(new Exception("Failed to load timesheet.", e));
       return;
     }
 

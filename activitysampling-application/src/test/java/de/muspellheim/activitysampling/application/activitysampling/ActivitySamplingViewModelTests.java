@@ -29,7 +29,7 @@ class ActivitySamplingViewModelTests {
   private Clock clock;
   private ActivitySamplingViewModel sut;
   private boolean countdownElapsed;
-  private List<String> errors;
+  private List<Throwable> errors;
 
   @BeforeEach
   void init() {
@@ -42,7 +42,7 @@ class ActivitySamplingViewModelTests {
     countdownElapsed = false;
     sut.addOnCountdownElapsedListener(x -> countdownElapsed = true);
     errors = new ArrayList<>();
-    sut.addOnErrorListener(errors::addAll);
+    sut.addOnErrorListener(errors::add);
   }
 
   private static RecentActivities newRecentActivities() {

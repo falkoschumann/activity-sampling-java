@@ -9,7 +9,6 @@ import de.muspellheim.activitysampling.domain.ActivitiesService;
 import de.muspellheim.activitysampling.domain.RecentActivities;
 import de.muspellheim.activitysampling.domain.TimeSummary;
 import de.muspellheim.common.util.EventEmitter;
-import de.muspellheim.common.util.Exceptions;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -17,7 +16,6 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
 import javafx.beans.binding.Bindings;
@@ -78,13 +76,13 @@ class ActivitySamplingViewModel {
     onCountdownElapsed.removeListener(listener);
   }
 
-  private final EventEmitter<List<String>> onError = new EventEmitter<>();
+  private final EventEmitter<Throwable> onError = new EventEmitter<>();
 
-  public void addOnErrorListener(Consumer<List<String>> listener) {
+  public void addOnErrorListener(Consumer<Throwable> listener) {
     onError.addListener(listener);
   }
 
-  public void removeOnErrorListener(Consumer<List<String>> listener) {
+  public void removeOnErrorListener(Consumer<Throwable> listener) {
     onError.removeListener(listener);
   }
 
@@ -117,6 +115,10 @@ class ActivitySamplingViewModel {
 
   public StringProperty activityTextProperty() {
     return activityText;
+  }
+
+  public void setActivityText(String value) {
+    activityTextProperty().set(value);
   }
 
   // --- logButtonDisable
@@ -219,8 +221,7 @@ class ActivitySamplingViewModel {
       recentActivities = activitiesService.getRecentActivities();
       timeSummary = activitiesService.getTimeSummary();
     } catch (Exception e) {
-      var messages = Exceptions.collectExceptionMessages("Failed to load activities.", e);
-      onError.emit(messages);
+      onError.emit(new Exception("Failed to load activities.", e));
       return;
     }
 
@@ -258,8 +259,7 @@ class ActivitySamplingViewModel {
       activitiesService.logActivity(LocalDateTime.now(clock), interval, activityText.get());
       intervalLogged.set(true);
     } catch (Exception e) {
-      var messages = Exceptions.collectExceptionMessages("Failed to log activity.", e);
-      onError.emit(messages);
+      onError.emit(new Exception("Failed to log activity.", e));
       return;
     }
 

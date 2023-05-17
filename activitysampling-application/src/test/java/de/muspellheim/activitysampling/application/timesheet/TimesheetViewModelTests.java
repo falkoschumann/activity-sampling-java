@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 class TimesheetViewModelTests {
   private ActivitiesServiceStub activitiesService;
   private TimesheetViewModel sut;
-  private List<String> errors;
+  private List<Throwable> errors;
 
   @BeforeEach
   void init() {
@@ -36,7 +36,7 @@ class TimesheetViewModelTests {
     var clock = Clock.fixed(Instant.parse("2023-04-16T14:05:00Z"), ZoneId.systemDefault());
     sut = new TimesheetViewModel(activitiesService, Locale.GERMANY, clock);
     errors = new ArrayList<>();
-    sut.addOnErrorListener(errors::addAll);
+    sut.addOnErrorListener(errors::add);
   }
 
   private static Timesheet newTimesheet() {

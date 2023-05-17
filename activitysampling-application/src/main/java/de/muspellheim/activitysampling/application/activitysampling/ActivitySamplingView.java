@@ -56,10 +56,12 @@ public class ActivitySamplingView {
 
   @FXML
   void initialize() {
-    systemClock.addOnTickListener(viewModel::progressCountdown);
-    viewModel.addOnErrorListener(ErrorView::handleError);
-    stage.setOnCloseRequest(e -> notifier.dispose());
     menuBar.setUseSystemMenuBar(true);
+    recentActivities.setCellFactory(ActivityListCell.newCellFactory(viewModel::setActivityText));
+
+    systemClock.addOnTickListener(viewModel::progressCountdown);
+    viewModel.addOnErrorListener(ErrorView::show);
+    stage.setOnCloseRequest(e -> notifier.dispose());
     stopMenuItem.disableProperty().bind(viewModel.stopMenuItemDisableProperty());
     activityLabel.disableProperty().bind(viewModel.formDisableProperty());
     activity.textProperty().bindBidirectional(viewModel.activityTextProperty());
@@ -67,8 +69,6 @@ public class ActivitySamplingView {
     logButton.disableProperty().bind(viewModel.logButtonDisableProperty());
     countdownLabel.textProperty().bind(viewModel.countdownLabelTextProperty());
     countdown.progressProperty().bind(viewModel.countdownProgressProperty());
-    recentActivities.setCellFactory(
-        ActivityListCell.newCellFactory(t -> viewModel.activityTextProperty().set(t)));
     recentActivities.setItems(viewModel.getRecentActivities());
     hoursTodayLabel.textProperty().bind(viewModel.hoursTodayLabelTextProperty());
     hoursYesterdayLabel.textProperty().bind(viewModel.hoursYesterdayLabelTextProperty());
