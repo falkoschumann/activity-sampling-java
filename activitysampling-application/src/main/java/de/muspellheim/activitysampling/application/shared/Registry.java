@@ -16,7 +16,7 @@ public class Registry {
   }
 
   public static ActivitiesService getActivitiesService() {
-    Configuration configuration = Configuration.INSTANCE;
+    Configuration configuration = Configuration.getInstance();
     var file = configuration.getLogFile();
     var activities = new CsvActivities(file);
     return new ActivitiesServiceImpl(activities);

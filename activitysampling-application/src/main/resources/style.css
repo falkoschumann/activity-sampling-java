@@ -1,3 +1,16 @@
+/* Inspired by UWP Type Ramp
+ *
+ * | Title     | Weight     | Size | Line Height | Ratio |
+ * |-----------|------------|------|-------------|-------|
+ * | Header    | light      | 46px | 56px        | 3.286 |
+ * | Subheader | light      | 34px | 40px        | 2.429 |
+ * | Title     | semi-light | 24px | 28px        | 1.714 |
+ * | Subtitle  | regular    | 20px | 24px        | 1.429 |
+ * | Base      | semi-bold  | 14px | 20px        | 1.000 |
+ * | Body      | regular    | 14px | 20px        | 1.000 |
+ * | Caption   | regular    | 12px | 14px        | 0.857 |
+ */
+
 .root {
   -fx-font-family: "Verdana";
 }
@@ -29,6 +42,4 @@
 
 .caption {
   -fx-font-size: 0.875em;
-  -fx-font-style: normal;
-  -fx-font-weight: normal;
 }

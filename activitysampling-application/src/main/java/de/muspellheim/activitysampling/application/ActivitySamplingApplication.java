@@ -20,7 +20,7 @@ public class ActivitySamplingApplication extends Application {
   public void init() {
     if (getParameters().getNamed().containsKey(ARG_LOG_FILE)) {
       var logFile = Paths.get(getParameters().getNamed().get(ARG_LOG_FILE));
-      Configuration.INSTANCE.setLogFile(logFile);
+      Configuration.getInstance().setLogFile(logFile);
     }
   }
 
