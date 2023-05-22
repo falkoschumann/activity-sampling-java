@@ -9,7 +9,7 @@ plugins {
   id 'muspellheim.java-application-conventions'
   id 'muspellheim.java-module-conventions'
   id 'muspellheim.java-self-contained-application-conventions'
-  id 'org.openjfx.javafxplugin' version '0.0.13'
+  id 'org.openjfx.javafxplugin' version '0.0.14'
 }
 
 dependencies {
