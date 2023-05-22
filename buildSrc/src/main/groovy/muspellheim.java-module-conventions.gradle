@@ -8,7 +8,4 @@ extraJavaModuleInfo {
     exports('org.apache.commons.csv')
     requiresStatic('java.sql')
   }
-
-  // JSR-305 is required by the SonarQube plugin
-  automaticModule("jsr305-3.0.2.jar", "javax.annotation")
 }
