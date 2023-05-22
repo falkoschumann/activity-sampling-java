@@ -18,22 +18,23 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 public class ActivitySamplingView {
   @FXML private Stage stage;
   @FXML private MenuBar menuBar;
   @FXML private MenuItem stopMenuItem;
-  @FXML private Label activityLabel;
+  @FXML private Pane form;
   @FXML private TextField activity;
   @FXML private Button logButton;
   @FXML private Label countdownLabel;
   @FXML private ProgressBar countdown;
   @FXML private ListView<ActivityItem> recentActivities;
-  @FXML private Label hoursTodayLabel;
-  @FXML private Label hoursYesterdayLabel;
-  @FXML private Label hoursThisWeekLabel;
-  @FXML private Label hoursThisMonthLabel;
+  @FXML private Label hoursToday;
+  @FXML private Label hoursYesterday;
+  @FXML private Label hoursThisWeek;
+  @FXML private Label hoursThisMonth;
 
   private final ActivitySamplingViewModel viewModel =
       new ActivitySamplingViewModel(Registry.getActivitiesService());
@@ -55,70 +56,69 @@ public class ActivitySamplingView {
   }
 
   @FXML
-  void initialize() {
+  private void initialize() {
     menuBar.setUseSystemMenuBar(true);
     recentActivities.setCellFactory(ActivityListCell.newCellFactory(viewModel::setActivityText));
 
     systemClock.addOnTickListener(viewModel::progressCountdown);
-    viewModel.addOnErrorListener(ErrorView::show);
+    viewModel.addErrorOccurredListener(ErrorView::show);
     stage.setOnCloseRequest(e -> notifier.dispose());
     stopMenuItem.disableProperty().bind(viewModel.stopMenuItemDisableProperty());
-    activityLabel.disableProperty().bind(viewModel.formDisableProperty());
+    form.disableProperty().bind(viewModel.formDisableProperty());
     activity.textProperty().bindBidirectional(viewModel.activityTextProperty());
-    activity.disableProperty().bind(viewModel.formDisableProperty());
     logButton.disableProperty().bind(viewModel.logButtonDisableProperty());
     countdownLabel.textProperty().bind(viewModel.countdownLabelTextProperty());
     countdown.progressProperty().bind(viewModel.countdownProgressProperty());
     recentActivities.setItems(viewModel.getRecentActivities());
-    hoursTodayLabel.textProperty().bind(viewModel.hoursTodayLabelTextProperty());
-    hoursYesterdayLabel.textProperty().bind(viewModel.hoursYesterdayLabelTextProperty());
-    hoursThisWeekLabel.textProperty().bind(viewModel.hoursThisWeekLabelTextProperty());
-    hoursThisMonthLabel.textProperty().bind(viewModel.hoursThisMonthLabelTextProperty());
+    hoursToday.textProperty().bind(viewModel.hoursTodayTextProperty());
+    hoursYesterday.textProperty().bind(viewModel.hoursYesterdayTextProperty());
+    hoursThisWeek.textProperty().bind(viewModel.hoursThisWeekTextProperty());
+    hoursThisMonth.textProperty().bind(viewModel.hoursThisMonthTextProperty());
   }
 
   public void run() {
     stage.show();
-    viewModel.run();
+    viewModel.load();
     activity.requestFocus();
   }
 
   @FXML
-  void handleQuit() {
+  private void quit() {
     stage.close();
   }
 
   @FXML
-  void handleStart5min() {
+  private void startCountdown5min() {
     startCountdown(Duration.ofMinutes(5));
   }
 
   @FXML
-  void handleStart10min() {
+  private void startCountdown10min() {
     startCountdown(Duration.ofMinutes(10));
   }
 
   @FXML
-  void handleStart15min() {
+  private void startCountdown15min() {
     startCountdown(Duration.ofMinutes(15));
   }
 
   @FXML
-  void handleStart20min() {
+  private void startCountdown20min() {
     startCountdown(Duration.ofMinutes(20));
   }
 
   @FXML
-  void handleStart30min() {
+  private void startCountdown30min() {
     startCountdown(Duration.ofMinutes(30));
   }
 
   @FXML
-  void handleStart60min() {
+  private void startCountdown60min() {
     startCountdown(Duration.ofMinutes(60));
   }
 
   @FXML
-  void handleStart1min() {
+  private void startCountdown1min() {
     startCountdown(Duration.ofMinutes(1));
   }
 
@@ -127,23 +127,23 @@ public class ActivitySamplingView {
   }
 
   @FXML
-  void handleStop() {
+  private void stopCountdown() {
     viewModel.stopCountdown();
   }
 
   @FXML
-  void handleTimesheet() {
+  private void refresh() {
+    viewModel.load();
+  }
+
+  @FXML
+  private void openTimesheet() {
     var timesheetView = TimesheetView.newInstance(stage);
     timesheetView.run();
   }
 
   @FXML
-  void handleRefresh() {
-    viewModel.load();
-  }
-
-  @FXML
-  void handleLog() {
+  private void logActivity() {
     viewModel.logActivity();
   }
 }

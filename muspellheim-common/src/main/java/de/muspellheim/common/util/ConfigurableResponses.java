@@ -38,37 +38,31 @@ public class ConfigurableResponses<T> {
 
   @SuppressWarnings("unchecked")
   public T next() {
-    if (response instanceof Queue<?> q) {
-      var v = q.poll();
-      if (v == null) {
-        throw new IllegalStateException("No more values configured.");
-      } else if (v instanceof RuntimeException e) {
-        throw e;
-      } else {
-        return (T) v;
-      }
-    } else if (response instanceof RuntimeException e) {
+    var r = nextResponse();
+    if (r instanceof RuntimeException e) {
       throw e;
-    } else {
-      return (T) response;
     }
+    return (T) r;
   }
 
   @SuppressWarnings("unchecked")
   public T tryNext() throws Exception {
-    if (response instanceof Queue<?> q) {
-      var v = q.poll();
-      if (v == null) {
-        throw new IllegalStateException("No more values configured.");
-      } else if (v instanceof Exception e) {
-        throw e;
-      } else {
-        return (T) v;
-      }
-    } else if (response instanceof Exception e) {
+    var r = nextResponse();
+    if (r instanceof Exception e) {
       throw e;
-    } else {
-      return (T) response;
     }
+    return (T) r;
+  }
+
+  private Object nextResponse() {
+    if (!(response instanceof Queue<?> q)) {
+      return response;
+    }
+
+    var r = q.poll();
+    if (r == null) {
+      throw new IllegalStateException("No more values configured.");
+    }
+    return r;
   }
 }

@@ -21,7 +21,7 @@ class ConfigurableResponsesTests {
   }
 
   @Test
-  void next_SingleNullResponse_ReturnsAlwaysNull() {
+  void next_Null_ReturnsAlwaysNull() {
     var responses = ConfigurableResponses.always(null);
 
     assertNull(responses.next());
@@ -30,7 +30,7 @@ class ConfigurableResponsesTests {
   }
 
   @Test
-  void next_SingleValueResponse_ReturnsAlwaysThisValue() {
+  void next_Value_ReturnsAlwaysThisValue() {
     var responses = ConfigurableResponses.always("foo");
 
     assertEquals("foo", responses.next());
@@ -39,7 +39,7 @@ class ConfigurableResponsesTests {
   }
 
   @Test
-  void next_SingleExceptionResponse_ThrowsAlwaysThisException() {
+  void next_Exception_ThrowsAlwaysThisException() {
     var responses = ConfigurableResponses.always(new ArithmeticException());
 
     assertThrows(ArithmeticException.class, responses::next);
@@ -48,7 +48,7 @@ class ConfigurableResponsesTests {
   }
 
   @Test
-  void next_MultipleValuesResponse_ReturnsSequenceOfValues() {
+  void next_Sequence_ReturnsValueOrThrowsExceptionInThisOrder() {
     var responses = ConfigurableResponses.sequence(new ArithmeticException(), "foo");
 
     assertThrows(ArithmeticException.class, responses::next);
@@ -57,7 +57,14 @@ class ConfigurableResponsesTests {
   }
 
   @Test
-  void tryNext_SingleNullResponse_ReturnsAlwaysNull() throws Exception {
+  void tryNext_Empty_ThrowsException() {
+    var responses = ConfigurableResponses.empty();
+
+    assertThrows(IllegalStateException.class, responses::tryNext);
+  }
+
+  @Test
+  void tryNext_Null_ReturnsAlwaysNull() throws Exception {
     var responses = ConfigurableResponses.always(null);
 
     assertNull(responses.tryNext());
@@ -66,7 +73,7 @@ class ConfigurableResponsesTests {
   }
 
   @Test
-  void tryNext_SingleValueResponse_ReturnsAlwaysThisValue() throws Exception {
+  void tryNext_Value_ReturnsAlwaysThisValue() throws Exception {
     var responses = ConfigurableResponses.always("foo");
 
     assertEquals("foo", responses.tryNext());
@@ -75,7 +82,7 @@ class ConfigurableResponsesTests {
   }
 
   @Test
-  void tryNext_SingleExceptionResponse_ThrowsAlwaysThisException() {
+  void tryNext_Exception_ThrowsAlwaysThisException() {
     var responses = ConfigurableResponses.always(new IOException());
 
     assertThrows(IOException.class, responses::tryNext);
@@ -84,7 +91,7 @@ class ConfigurableResponsesTests {
   }
 
   @Test
-  void tryNext_MultipleValuesResponse_ReturnsSequenceOfValues() throws Exception {
+  void tryNext_Sequence_ReturnsValueOrThrowsExceptionInThisOrder() throws Exception {
     var responses = ConfigurableResponses.sequence(new IOException(), "foo");
 
     assertThrows(IOException.class, responses::tryNext);

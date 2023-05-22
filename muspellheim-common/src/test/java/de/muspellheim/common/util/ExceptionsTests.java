@@ -13,22 +13,22 @@ import org.junit.jupiter.api.Test;
 
 class ExceptionsTests {
   @Test
-  void collect() {
-    var causeCause = new IllegalArgumentException();
-    var cause = new IllegalStateException("Cause message.", causeCause);
-    var exception = new IOException("Exception message.", cause);
-    var result = Exceptions.collect(exception);
+  void collect_ReturnsListOfExceptionAndCauses() {
+    var e3 = new IllegalArgumentException();
+    var e2 = new IllegalStateException(e3);
+    var e1 = new IOException(e2);
+    var result = Exceptions.collect(e1);
 
-    assertEquals(List.of(exception, cause, causeCause), result);
+    assertEquals(List.of(e1, e2, e3), result);
   }
 
   @Test
-  void summarizeMessages() {
-    var causeCause = new IllegalArgumentException();
-    var cause = new IllegalStateException("Cause message.", causeCause);
-    var exception = new IOException("Exception message.", cause);
-    var result = Exceptions.summarizeMessages(exception);
+  void summarizeMessages_ReturnsConcatenatedMessagesOfExceptionAndCauses() {
+    var e3 = new IllegalArgumentException("e3");
+    var e2 = new IllegalStateException("e2", e3);
+    var e1 = new IOException("e1", e2);
+    var result = Exceptions.summarizeMessages(e1);
 
-    assertEquals("Exception message. Cause message.", result);
+    assertEquals("e1 e2 e3", result);
   }
 }

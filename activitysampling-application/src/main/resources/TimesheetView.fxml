@@ -30,7 +30,7 @@
                <top>
                   <HBox alignment="CENTER_LEFT">
                      <children>
-                        <Button mnemonicParsing="false" onAction="#handleBack">
+                        <Button mnemonicParsing="false" onAction="#back">
                            <graphic>
                               <ImageView pickOnBounds="true" preserveRatio="true">
                                  <image>
@@ -39,7 +39,7 @@
                               </ImageView>
                            </graphic>
                         </Button>
-                        <Button mnemonicParsing="false" onAction="#handleForward">
+                        <Button mnemonicParsing="false" onAction="#forward">
                            <graphic>
                               <ImageView pickOnBounds="true" preserveRatio="true">
                                  <image>

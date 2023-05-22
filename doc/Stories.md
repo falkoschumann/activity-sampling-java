@@ -2,15 +2,19 @@
 
 Periodically ask the user about their current activity and log it for analysis.
 
+![Event Modelling](event-modelling.png)
+
 ## Activities
 
 - Log activity
 - Display recent activities
-- Display time summary
 
 ## Timesheet
 
-- Update holidays
-- Change employee capacity
 - Display Timesheet
-- Display Capacity
+
+## Preferences
+
+- Change employee capacity
+- Change employee vacation
+- Update holidays

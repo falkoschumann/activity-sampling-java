@@ -26,12 +26,11 @@ class ActivitiesServiceTests {
 
   @Test
   void logActivity() {
-    var now = LocalDateTime.now();
-    var duration = Duration.ofMinutes(5);
+    var activity = new Activity(LocalDateTime.now(), Duration.ofMinutes(5), "xyz");
 
-    sut.logActivity(now, duration, "xyz");
+    sut.logActivity(activity);
 
-    assertEquals(List.of(new Activity(now, duration, "xyz")), activitiesRepository);
+    assertEquals(List.of(activity), activitiesRepository);
   }
 
   @Test
@@ -44,20 +43,9 @@ class ActivitiesServiceTests {
 
     assertEquals(
         new RecentActivities(
-            List.of(
-                new WorkingDay(now.toLocalDate(), List.of(new Activity(now, duration, "xyz"))))),
+            List.of(new WorkingDay(now.toLocalDate(), List.of(new Activity(now, duration, "xyz")))),
+            new TimeSummary(duration, Duration.ZERO, duration, duration)),
         activities);
-  }
-
-  @Test
-  void getTimeSummary() {
-    var now = LocalDateTime.now();
-    var duration = Duration.ofMinutes(5);
-    activitiesRepository.add(new Activity(now, duration, "xyz"));
-
-    var summary = sut.getTimeSummary();
-
-    assertEquals(new TimeSummary(duration, Duration.ZERO, duration, duration), summary);
   }
 
   @Test

@@ -12,10 +12,10 @@ import org.junit.jupiter.api.Test;
 
 class StringsTests {
   @Test
-  void requireNonBlank() {
-    var result = Strings.requireNonBlank("not blank", "error message");
+  void requireNonBlank_NeitherBlankNorEmpty_ReturnsValue() {
+    var result = Strings.requireNonBlank("value", "error message");
 
-    assertEquals("not blank", result);
+    assertEquals("value", result);
   }
 
   @Test
@@ -23,6 +23,14 @@ class StringsTests {
     var exception =
         assertThrows(
             IllegalArgumentException.class, () -> Strings.requireNonBlank("", "error message"));
+    assertEquals("error message", exception.getMessage());
+  }
+
+  @Test
+  void requireNonBlank_Blank_ThrowsException() {
+    var exception =
+        assertThrows(
+            IllegalArgumentException.class, () -> Strings.requireNonBlank("  ", "error message"));
     assertEquals("error message", exception.getMessage());
   }
 }

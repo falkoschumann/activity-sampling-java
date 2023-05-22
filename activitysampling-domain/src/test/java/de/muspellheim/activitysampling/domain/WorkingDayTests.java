@@ -14,43 +14,39 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-class RecentActivitiesTests {
+class WorkingDayTests {
   @Test
-  void oneDayAndOneActivity() {
+  void oneDayWithOneActivity() {
     var now = LocalDateTime.now();
     var activity = new Activity(now, Duration.ofMinutes(15), "a");
 
-    var activities = RecentActivities.of(List.of(activity));
+    var days = WorkingDay.of(List.of(activity));
 
-    assertEquals(
-        activities,
-        new RecentActivities(List.of(new WorkingDay(now.toLocalDate(), List.of(activity)))));
+    assertEquals(days, List.of(new WorkingDay(now.toLocalDate(), List.of(activity))));
   }
 
   @Test
-  void oneDayAndTwoActivities_SortsActivitiesByTimeDescending() {
+  void oneDayWithTwoActivities_SortsActivitiesByTimeDescending() {
     var today = LocalDate.now();
     var a = new Activity(LocalDateTime.of(today, LocalTime.of(11, 0)), Duration.ofMinutes(20), "a");
     var b = new Activity(LocalDateTime.of(today, LocalTime.of(12, 0)), Duration.ofMinutes(20), "a");
 
-    var activities = RecentActivities.of(List.of(a, b));
+    var days = WorkingDay.of(List.of(a, b));
 
-    assertEquals(activities, new RecentActivities(List.of(new WorkingDay(today, List.of(b, a)))));
+    assertEquals(days, List.of(new WorkingDay(today, List.of(b, a))));
   }
 
   @Test
-  void twoDays_SortsDateDescending() {
+  void twoDays_SortsDatesDescending() {
     var today = LocalDate.now();
     var yesterday = today.minusDays(1);
     var a =
         new Activity(LocalDateTime.of(yesterday, LocalTime.of(12, 0)), Duration.ofMinutes(20), "a");
     var b = new Activity(LocalDateTime.of(today, LocalTime.of(12, 0)), Duration.ofMinutes(20), "a");
 
-    var activities = RecentActivities.of(List.of(a, b));
+    var days = WorkingDay.of(List.of(a, b));
 
     assertEquals(
-        activities,
-        new RecentActivities(
-            List.of(new WorkingDay(today, List.of(b)), new WorkingDay(yesterday, List.of(a)))));
+        days, List.of(new WorkingDay(today, List.of(b)), new WorkingDay(yesterday, List.of(a))));
   }
 }

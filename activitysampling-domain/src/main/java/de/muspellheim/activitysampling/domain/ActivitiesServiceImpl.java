@@ -5,9 +5,7 @@
 
 package de.muspellheim.activitysampling.domain;
 
-import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.Period;
 
 public class ActivitiesServiceImpl implements ActivitiesService {
@@ -18,8 +16,7 @@ public class ActivitiesServiceImpl implements ActivitiesService {
   }
 
   @Override
-  public void logActivity(LocalDateTime timestamp, Duration duration, String description) {
-    var activity = new Activity(timestamp, duration, description);
+  public void logActivity(Activity activity) {
     activities.append(activity);
   }
 
@@ -28,15 +25,7 @@ public class ActivitiesServiceImpl implements ActivitiesService {
     var today = LocalDate.now();
     var start = today.minus(Period.ofDays(31));
     var activities = this.activities.findInPeriod(start, today);
-    return RecentActivities.of(activities);
-  }
-
-  @Override
-  public TimeSummary getTimeSummary() {
-    var today = LocalDate.now();
-    var start = today.minus(Period.ofDays(31));
-    var activities = this.activities.findInPeriod(start, today);
-    return TimeSummary.of(today, activities);
+    return RecentActivities.of(today, activities);
   }
 
   @Override

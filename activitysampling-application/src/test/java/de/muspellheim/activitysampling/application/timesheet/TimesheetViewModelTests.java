@@ -5,20 +5,20 @@
 
 package de.muspellheim.activitysampling.application.timesheet;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import de.muspellheim.activitysampling.application.ActivitiesServiceStub;
 import de.muspellheim.activitysampling.domain.Timesheet;
 import de.muspellheim.common.util.ConfigurableResponses;
+import de.muspellheim.common.util.Exceptions;
+import de.muspellheim.common.util.OutputTracker;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,40 +27,35 @@ import org.junit.jupiter.api.Test;
 class TimesheetViewModelTests {
   private ActivitiesServiceStub activitiesService;
   private TimesheetViewModel sut;
-  private List<Throwable> errors;
+  private OutputTracker<Throwable> errorOccurred;
 
   @BeforeEach
   void init() {
     activitiesService = new ActivitiesServiceStub();
-    activitiesService.initTimesheetResponses(ConfigurableResponses.always(newTimesheet()));
     var clock = Clock.fixed(Instant.parse("2023-04-16T14:05:00Z"), ZoneId.systemDefault());
     sut = new TimesheetViewModel(activitiesService, Locale.GERMANY, clock);
-    errors = new ArrayList<>();
-    sut.addOnErrorListener(errors::add);
-  }
-
-  private static Timesheet newTimesheet() {
-    return new Timesheet(
-        List.of(newTimesheetEntry(LocalDate.of(2023, 4, 14))), Duration.ofMinutes(20));
-  }
-
-  private static Timesheet.Entry newTimesheetEntry(LocalDate date) {
-    return new Timesheet.Entry(date, "Lorem ipsum", Duration.ofMinutes(20));
+    errorOccurred = sut.getErrorOccurredTracker();
   }
 
   @Test
-  void run_LoadsThisWeek() {
-    sut.run();
+  void load_InitializesWithCurrentWeek() {
+    var timesheet =
+        new Timesheet(
+            List.of(
+                new Timesheet.Entry(
+                    LocalDate.of(2023, 4, 14), "Lorem ipsum", Duration.ofMinutes(20))),
+            Duration.ofMinutes(20));
+    activitiesService.initTimesheetResponses(ConfigurableResponses.always(timesheet));
 
-    assertAll(
-        () -> assertEquals("This Week: ", sut.title1Property().get(), "Title 1"),
-        () -> assertEquals("10.04.2023 - 16.04.2023", sut.title2Property().get(), "Title 2"),
-        () -> assertEquals(ChronoUnit.WEEKS, sut.periodProperty().get(), "Period"),
-        () ->
-            assertEquals(
-                List.of(new TimesheetItem("14.04.2023", "Lorem ipsum", "00:20")),
-                sut.getTimesheetItems()),
-        () -> assertEquals("00:20", sut.totalProperty().get()));
+    sut.load();
+
+    assertTitleAndPeriod("This Week: ", "10.04.2023 - 16.04.2023", ChronoUnit.WEEKS);
+    assertEquals(
+        List.of(new TimesheetItem("14.04.2023", "Lorem ipsum", "00:20")),
+        sut.getTimesheetItems(),
+        "Timesheet items");
+    assertEquals("00:20", sut.totalProperty().get(), "Total");
+    assertNoError();
   }
 
   @Test
@@ -68,128 +63,112 @@ class TimesheetViewModelTests {
     activitiesService.initTimesheetResponses(
         ConfigurableResponses.sequence(
             Timesheet.EMPTY, new IllegalStateException("Something went wrong.")));
-    sut.run();
+    sut.load();
 
     sut.load();
 
-    assertErrors(List.of("Failed to load timesheet.", "Something went wrong."));
+    assertError("Failed to load timesheet. Something went wrong.");
   }
 
   @Test
   void changePeriod_FromWeekToDay_DisplaysMonday() {
-    sut.run();
+    sut.load();
 
-    sut.periodProperty().set(ChronoUnit.DAYS);
+    sut.setPeriod(ChronoUnit.DAYS);
 
-    assertAll(
-        () -> assertEquals("This Day: ", sut.title1Property().get(), "Title 1"),
-        () -> assertEquals("10.04.2023", sut.title2Property().get(), "Title 2"),
-        () -> assertEquals(ChronoUnit.DAYS, sut.periodProperty().get(), "Period"));
+    assertTitleAndPeriod("This Day: ", "10.04.2023", ChronoUnit.DAYS);
   }
 
   @Test
-  void changePeriod_FromWeekToMonth_DisplaysThisMonth() {
-    sut.run();
+  void changePeriod_FromWeekToMonth_DisplaysCurrentMonth() {
+    sut.load();
 
-    sut.periodProperty().set(ChronoUnit.MONTHS);
+    sut.setPeriod(ChronoUnit.MONTHS);
 
-    assertAll(
-        () -> assertEquals("This Month: ", sut.title1Property().get(), "Title 1"),
-        () -> assertEquals("01.04.2023 - 30.04.2023", sut.title2Property().get(), "Title 2"),
-        () -> assertEquals(ChronoUnit.MONTHS, sut.periodProperty().get(), "Period"));
+    assertTitleAndPeriod("This Month: ", "01.04.2023 - 30.04.2023", ChronoUnit.MONTHS);
   }
 
   @Test
-  void changePeriod_FromDayToWeek_DisplaysThisWeek() {
-    sut.run();
-    sut.periodProperty().set(ChronoUnit.DAYS);
+  void changePeriod_FromDayToWeek_DisplaysCurrentWeek() {
+    sut.load();
+    sut.setPeriod(ChronoUnit.DAYS);
 
-    sut.periodProperty().set(ChronoUnit.WEEKS);
+    sut.setPeriod(ChronoUnit.WEEKS);
 
-    assertAll(
-        () -> assertEquals("This Week: ", sut.title1Property().get(), "Title 1"),
-        () -> assertEquals("10.04.2023 - 16.04.2023", sut.title2Property().get(), "Title 2"),
-        () -> assertEquals(ChronoUnit.WEEKS, sut.periodProperty().get(), "Period"));
+    assertTitleAndPeriod("This Week: ", "10.04.2023 - 16.04.2023", ChronoUnit.WEEKS);
   }
 
   @Test
-  void changePeriod_ToUnsupportedPeriod_ThrowsException() {
-    assertThrows(IllegalArgumentException.class, () -> sut.periodProperty().set(ChronoUnit.HOURS));
+  void changePeriod_UnsupportedPeriod_ThrowsException() {
+    assertThrows(IllegalArgumentException.class, () -> sut.setPeriod(ChronoUnit.HOURS));
   }
 
   @Test
   void back_PeriodIsDay_DisplaysYesterday() {
-    sut.run();
-    sut.periodProperty().set(ChronoUnit.DAYS);
+    sut.load();
+    sut.setPeriod(ChronoUnit.DAYS);
 
     sut.back();
 
-    assertAll(
-        () -> assertEquals("This Day: ", sut.title1Property().get(), "Title 1"),
-        () -> assertEquals("09.04.2023", sut.title2Property().get(), "Title 2"),
-        () -> assertEquals(ChronoUnit.DAYS, sut.periodProperty().get(), "Period"));
+    assertTitleAndPeriod("This Day: ", "09.04.2023", ChronoUnit.DAYS);
   }
 
   @Test
   void back_PeriodIsWeek_DisplaysLastWeek() {
-    sut.run();
+    sut.load();
 
     sut.back();
 
-    assertAll(
-        () -> assertEquals("This Week: ", sut.title1Property().get(), "Title 1"),
-        () -> assertEquals("03.04.2023 - 09.04.2023", sut.title2Property().get(), "Title 2"),
-        () -> assertEquals(ChronoUnit.WEEKS, sut.periodProperty().get(), "Period"));
+    assertTitleAndPeriod("This Week: ", "03.04.2023 - 09.04.2023", ChronoUnit.WEEKS);
   }
 
   @Test
   void back_PeriodIsMonth_DisplaysLastMonth() {
-    sut.run();
-    sut.periodProperty().set(ChronoUnit.MONTHS);
+    sut.load();
+    sut.setPeriod(ChronoUnit.MONTHS);
 
     sut.back();
 
-    assertAll(
-        () -> assertEquals("This Month: ", sut.title1Property().get(), "Title 1"),
-        () -> assertEquals("01.03.2023 - 31.03.2023", sut.title2Property().get(), "Title 2"),
-        () -> assertEquals(ChronoUnit.MONTHS, sut.periodProperty().get(), "Period"));
+    assertTitleAndPeriod("This Month: ", "01.03.2023 - 31.03.2023", ChronoUnit.MONTHS);
   }
 
   @Test
   void forward_PeriodIsDay_DisplaysTomorrow() {
-    sut.periodProperty().set(ChronoUnit.DAYS);
+    sut.setPeriod(ChronoUnit.DAYS);
 
     sut.forward();
 
-    assertAll(
-        () -> assertEquals("This Day: ", sut.title1Property().get(), "Title 1"),
-        () -> assertEquals("11.04.2023", sut.title2Property().get(), "Title 2"),
-        () -> assertEquals(ChronoUnit.DAYS, sut.periodProperty().get(), "Period"));
+    assertTitleAndPeriod("This Day: ", "11.04.2023", ChronoUnit.DAYS);
   }
 
   @Test
   void forward_PeriodIsWeek_DisplaysNextWeek() {
     sut.forward();
 
-    assertAll(
-        () -> assertEquals("This Week: ", sut.title1Property().get(), "Title 1"),
-        () -> assertEquals("17.04.2023 - 23.04.2023", sut.title2Property().get(), "Title 2"),
-        () -> assertEquals(ChronoUnit.WEEKS, sut.periodProperty().get(), "Period"));
+    assertTitleAndPeriod("This Week: ", "17.04.2023 - 23.04.2023", ChronoUnit.WEEKS);
   }
 
   @Test
   void forward_PeriodIsMonth_DisplaysNextMonth() {
-    sut.periodProperty().set(ChronoUnit.MONTHS);
+    sut.setPeriod(ChronoUnit.MONTHS);
 
     sut.forward();
 
-    assertAll(
-        () -> assertEquals("This Month: ", sut.title1Property().get(), "Title 1"),
-        () -> assertEquals("01.05.2023 - 31.05.2023", sut.title2Property().get(), "Title 2"),
-        () -> assertEquals(ChronoUnit.MONTHS, sut.periodProperty().get(), "Period"));
+    assertTitleAndPeriod("This Month: ", "01.05.2023 - 31.05.2023", ChronoUnit.MONTHS);
   }
 
-  private void assertErrors(List<String> errors) {
-    assertEquals(errors, this.errors, "Errors");
+  private void assertTitleAndPeriod(String title1, String title2, ChronoUnit period) {
+    assertEquals(title1, sut.title1Property().get(), "Title 1");
+    assertEquals(title2, sut.title2Property().get(), "Title 2");
+    assertEquals(period, sut.periodProperty().get(), "Period");
+  }
+
+  private void assertNoError() {
+    assertEquals(List.of(), this.errorOccurred.data(), "Errors occurred");
+  }
+
+  private void assertError(String errorMessage) {
+    var message = Exceptions.summarizeMessages(this.errorOccurred.data().get(0));
+    assertEquals(errorMessage, message, "Error message");
   }
 }

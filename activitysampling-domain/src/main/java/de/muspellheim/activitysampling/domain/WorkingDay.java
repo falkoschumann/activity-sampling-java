@@ -5,6 +5,7 @@
 
 package de.muspellheim.activitysampling.domain;
 
+import de.muspellheim.common.util.Lists;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -18,33 +19,26 @@ public record WorkingDay(LocalDate date, List<Activity> activities) {
         List.copyOf(Objects.requireNonNull(activities, "The activities must not be null."));
   }
 
-  static List<WorkingDay> of(List<Activity> activities) {
+  public static List<WorkingDay> of(List<Activity> activities) {
     var workingDays = new ArrayList<WorkingDay>();
     for (var activity : activities) {
-      var index = -1;
-      for (var i = 0; i < workingDays.size(); i++) {
-        var e = workingDays.get(i);
-        if (e.date().equals(activity.timestamp().toLocalDate())) {
-          index = i;
-          break;
-        }
-      }
+      var date = activity.timestamp().toLocalDate();
+      var index = Lists.indexOf(workingDays, d -> d.date().equals(date));
+      if (index == -1) {
+        var day = new WorkingDay(date, List.of(activity));
+        workingDays.add(day);
+        workingDays.sort(Comparator.comparing(WorkingDay::date).reversed());
+      } else {
+        var workingDay = workingDays.get(index);
 
-      if (index != -1) {
-        var day = workingDays.get(index);
-
-        var list = new ArrayList<>(day.activities());
+        var list = new ArrayList<>(workingDay.activities());
         list.add(activity);
         list.sort(Comparator.comparing(Activity::timestamp).reversed());
 
-        day = new WorkingDay(day.date(), list);
-        workingDays.set(index, day);
-      } else {
-        var day = new WorkingDay(activity.timestamp().toLocalDate(), List.of(activity));
-        workingDays.add(day);
+        workingDay = new WorkingDay(date, list);
+        workingDays.set(index, workingDay);
       }
     }
-    workingDays.sort(Comparator.comparing(WorkingDay::date).reversed());
     return workingDays;
   }
 }

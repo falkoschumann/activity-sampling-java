@@ -34,28 +34,41 @@ public record TimeSummary(
         continue;
       }
 
-      if (date.equals(today)) {
+      if (isToday(today, date)) {
         hoursToday = hoursToday.plus(activity.duration());
       }
-
-      var yesterday = today.minusDays(1);
-      if (date.equals(yesterday)) {
+      if (isYesterday(today, date)) {
         hoursYesterday = hoursYesterday.plus(activity.duration());
       }
-
-      var sameYear = (today.getDayOfYear() - date.getDayOfYear()) >= 0;
-      var sameWeek =
-          (today.getDayOfYear() - date.getDayOfYear()) < 7
-              && date.getDayOfWeek().getValue() <= today.getDayOfWeek().getValue();
-      if (sameYear && sameWeek) {
+      if (isSameWeek(today, date)) {
         hoursThisWeek = hoursThisWeek.plus(activity.duration());
       }
-
-      var startOfMonth = today.withDayOfMonth(1);
-      if (!date.isBefore(startOfMonth)) {
+      if (isSameMonth(today, date)) {
         hoursThisMonth = hoursThisMonth.plus(activity.duration());
       }
     }
     return new TimeSummary(hoursToday, hoursYesterday, hoursThisWeek, hoursThisMonth);
+  }
+
+  private static boolean isToday(LocalDate today, LocalDate other) {
+    return today.equals(other);
+  }
+
+  private static boolean isYesterday(LocalDate today, LocalDate other) {
+    var yesterday = today.minusDays(1);
+    return yesterday.equals(other);
+  }
+
+  private static boolean isSameWeek(LocalDate today, LocalDate other) {
+    var sameYear = (today.getDayOfYear() - other.getDayOfYear()) >= 0;
+    var sameWeek =
+        (today.getDayOfYear() - other.getDayOfYear()) < 7
+            && other.getDayOfWeek().getValue() <= today.getDayOfWeek().getValue();
+    return sameYear && sameWeek;
+  }
+
+  private static boolean isSameMonth(LocalDate today, LocalDate other) {
+    var startOfMonth = today.withDayOfMonth(1);
+    return !other.isBefore(startOfMonth);
   }
 }

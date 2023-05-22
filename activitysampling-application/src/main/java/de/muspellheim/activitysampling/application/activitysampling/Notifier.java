@@ -27,7 +27,7 @@ class Notifier {
   Notifier(ActivitySamplingViewModel viewModel) {
     this.viewModel = viewModel;
     if (SystemTray.isSupported()) {
-      viewModel.addOnCountdownElapsedListener(v -> showNotification());
+      viewModel.addCountdownElapsedListener(v -> showNotification());
       EventQueue.invokeLater(
           () -> {
             var imageUrl = getImageUrl();

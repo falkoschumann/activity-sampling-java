@@ -26,28 +26,28 @@
                   <menus>
                     <Menu mnemonicParsing="false" text="File">
                       <items>
-                        <MenuItem mnemonicParsing="false" onAction="#handleQuit" text="Quit" />
+                        <MenuItem mnemonicParsing="false" onAction="#quit" text="Quit" />
                       </items>
                     </Menu>
                         <Menu mnemonicParsing="false" text="Notifications">
                            <items>
                               <Menu mnemonicParsing="false" text="Start">
                                  <items>
-                                    <MenuItem mnemonicParsing="false" onAction="#handleStart5min" text="5 min" />
-                                    <MenuItem mnemonicParsing="false" onAction="#handleStart10min" text="10 min" />
-                                    <MenuItem mnemonicParsing="false" onAction="#handleStart15min" text="15 min" />
-                                    <MenuItem mnemonicParsing="false" onAction="#handleStart20min" text="20 min" />
-                                    <MenuItem mnemonicParsing="false" onAction="#handleStart30min" text="30 min" />
-                                    <MenuItem mnemonicParsing="false" onAction="#handleStart60min" text="60 min" />
-                                    <MenuItem mnemonicParsing="false" onAction="#handleStart1min" text="1 min" />
+                                    <MenuItem mnemonicParsing="false" onAction="#startCountdown5min" text="5 min" />
+                                    <MenuItem mnemonicParsing="false" onAction="#startCountdown10min" text="10 min" />
+                                    <MenuItem mnemonicParsing="false" onAction="#startCountdown15min" text="15 min" />
+                                    <MenuItem mnemonicParsing="false" onAction="#startCountdown20min" text="20 min" />
+                                    <MenuItem mnemonicParsing="false" onAction="#startCountdown30min" text="30 min" />
+                                    <MenuItem mnemonicParsing="false" onAction="#startCountdown60min" text="60 min" />
+                                    <MenuItem mnemonicParsing="false" onAction="#startCountdown1min" text="1 min" />
                                  </items>
                               </Menu>
-                              <MenuItem fx:id="stopMenuItem" mnemonicParsing="false" onAction="#handleStop" text="Stop" />
+                              <MenuItem fx:id="stopMenuItem" mnemonicParsing="false" onAction="#stopCountdown" text="Stop" />
                            </items>
                         </Menu>
                         <Menu mnemonicParsing="false" text="Report">
                           <items>
-                            <MenuItem mnemonicParsing="false" onAction="#handleTimesheet" text="Timesheet">
+                            <MenuItem mnemonicParsing="false" onAction="#openTimesheet" text="Timesheet">
                                  <accelerator>
                                     <KeyCodeCombination alt="UP" code="T" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                                  </accelerator></MenuItem>
@@ -55,7 +55,7 @@
                         </Menu>
                         <Menu mnemonicParsing="false" text="View">
                            <items>
-                              <MenuItem mnemonicParsing="false" onAction="#handleRefresh" text="Refresh" />
+                              <MenuItem mnemonicParsing="false" onAction="#refresh" text="Refresh" />
                            </items>
                         </Menu>
                   </menus>
@@ -67,11 +67,19 @@
                      <top>
                         <VBox spacing="8.0" BorderPane.alignment="CENTER">
                            <children>
-                              <Label fx:id="activityLabel" text="Activity:" />
-                              <TextField fx:id="activity" onAction="#handleLog" promptText="What are you working on?" />
-                              <Button fx:id="logButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleLog" text="Log" />
-                              <Label fx:id="countdownLabel" alignment="CENTER" maxWidth="1.7976931348623157E308" text="00:00:00" />
-                              <ProgressBar fx:id="countdown" maxWidth="1.7976931348623157E308" prefWidth="200.0" progress="0.0" />
+                              <VBox fx:id="form" spacing="8.0">
+                                 <children>
+                                    <Label fx:id="activityLabel" text="Activity:" />
+                                    <TextField fx:id="activity" onAction="#logActivity" promptText="What are you working on?" />
+                                    <Button fx:id="logButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#logActivity" text="Log" />
+                                 </children>
+                              </VBox>
+                              <VBox spacing="8.0">
+                                 <children>
+                                    <Label fx:id="countdownLabel" alignment="CENTER" maxWidth="1.7976931348623157E308" text="00:00:00" />
+                                    <ProgressBar fx:id="countdown" maxWidth="1.7976931348623157E308" prefWidth="200.0" progress="0.0" />
+                                 </children>
+                              </VBox>
                            </children>
                            <BorderPane.margin>
                               <Insets bottom="8.0" />
@@ -87,25 +95,25 @@
                               <VBox alignment="CENTER" prefWidth="120.0">
                                  <children>
                                     <Label styleClass="caption" text="Hours Today" />
-                                    <Label fx:id="hoursTodayLabel" styleClass="subtitle" text="00:00" />
+                                    <Label fx:id="hoursToday" styleClass="subtitle" text="00:00" />
                                  </children>
                               </VBox>
                               <VBox alignment="CENTER" layoutX="10.0" layoutY="10.0" prefWidth="120.0">
                                  <children>
                                     <Label styleClass="caption" text="Hours Yesterday" />
-                                    <Label fx:id="hoursYesterdayLabel" styleClass="subtitle" text="00:00" />
+                                    <Label fx:id="hoursYesterday" styleClass="subtitle" text="00:00" />
                                  </children>
                               </VBox>
                               <VBox alignment="CENTER" layoutX="92.0" layoutY="10.0" prefWidth="120.0">
                                  <children>
                                     <Label styleClass="caption" text="Hours this Week" />
-                                    <Label fx:id="hoursThisWeekLabel" styleClass="subtitle" text="00:00" />
+                                    <Label fx:id="hoursThisWeek" styleClass="subtitle" text="00:00" />
                                  </children>
                               </VBox>
                               <VBox alignment="CENTER" layoutX="174.0" layoutY="10.0" prefWidth="120.0">
                                  <children>
                                     <Label styleClass="caption" text="Hours this Month" />
-                                    <Label fx:id="hoursThisMonthLabel" styleClass="subtitle" text="00:00" />
+                                    <Label fx:id="hoursThisMonth" styleClass="subtitle" text="00:00" />
                                  </children>
                               </VBox>
                            </children>

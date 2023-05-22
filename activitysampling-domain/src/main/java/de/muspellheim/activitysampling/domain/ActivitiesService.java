@@ -5,16 +5,12 @@
 
 package de.muspellheim.activitysampling.domain;
 
-import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public interface ActivitiesService {
-  void logActivity(LocalDateTime timestamp, Duration duration, String description);
+  void logActivity(Activity activity);
 
   RecentActivities getRecentActivities();
-
-  TimeSummary getTimeSummary();
 
   Timesheet getTimesheet(LocalDate from, LocalDate to);
 }

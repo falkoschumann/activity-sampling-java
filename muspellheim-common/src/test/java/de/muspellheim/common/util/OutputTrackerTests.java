@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 class OutputTrackerTests {
   @Test
-  void data() {
+  void data_ReturnsRecordedValues() {
     var emitter = new EventEmitter<String>();
     var tracker = new OutputTracker<>(emitter);
 
@@ -23,7 +23,7 @@ class OutputTrackerTests {
   }
 
   @Test
-  void clear() {
+  void clear_ReturnsRecordedValuesAndResetData() {
     var emitter = new EventEmitter<String>();
     var tracker = new OutputTracker<>(emitter);
     emitter.emit("foo");
@@ -35,7 +35,7 @@ class OutputTrackerTests {
   }
 
   @Test
-  void stop() {
+  void stop_StopsRecordingValues() {
     var emitter = new EventEmitter<String>();
     var tracker = new OutputTracker<>(emitter);
     emitter.emit("foo");

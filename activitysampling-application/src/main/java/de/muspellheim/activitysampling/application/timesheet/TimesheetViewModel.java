@@ -7,7 +7,9 @@ package de.muspellheim.activitysampling.application.timesheet;
 
 import de.muspellheim.activitysampling.domain.ActivitiesService;
 import de.muspellheim.activitysampling.domain.Timesheet;
+import de.muspellheim.common.util.Durations;
 import de.muspellheim.common.util.EventEmitter;
+import de.muspellheim.common.util.OutputTracker;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -46,11 +48,16 @@ class TimesheetViewModel {
   TimesheetViewModel(ActivitiesService activitiesService, Locale locale, Clock clock) {
     this.activitiesService = activitiesService;
     dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale);
+    initPeriodWithCurrentWeek(clock);
+  }
 
+  private void initPeriodWithCurrentWeek(Clock clock) {
     var today = LocalDate.now(clock);
     var weekday = today.getDayOfWeek().getValue();
-    from.set(today.minusDays(weekday - 1));
-    to.set(today.plusDays(7 - weekday));
+    var monday = today.minusDays(weekday - 1);
+    var sunday = today.plusDays(7 - weekday);
+    from.set(monday);
+    to.set(sunday);
   }
 
   /* *************************************************************************
@@ -59,14 +66,18 @@ class TimesheetViewModel {
    *                                                                         *
    **************************************************************************/
 
-  private final EventEmitter<Throwable> onError = new EventEmitter<>();
+  private final EventEmitter<Throwable> errorOccurred = new EventEmitter<>();
 
-  void addOnErrorListener(Consumer<Throwable> listener) {
-    onError.addListener(listener);
+  void addErrorOccurredListener(Consumer<Throwable> listener) {
+    errorOccurred.addListener(listener);
   }
 
-  void removeOnErrorListener(Consumer<Throwable> listener) {
-    onError.removeListener(listener);
+  void removeErrorOccurredListener(Consumer<Throwable> listener) {
+    errorOccurred.removeListener(listener);
+  }
+
+  OutputTracker<Throwable> getErrorOccurredTracker() {
+    return new OutputTracker<>(errorOccurred);
   }
 
   /* *************************************************************************
@@ -103,6 +114,10 @@ class TimesheetViewModel {
 
   ObjectProperty<ChronoUnit> periodProperty() {
     return period;
+  }
+
+  void setPeriod(ChronoUnit value) {
+    periodProperty().set(value);
   }
 
   // --- title1
@@ -152,30 +167,30 @@ class TimesheetViewModel {
    *                                                                         *
    **************************************************************************/
 
-  void run() {
-    load();
+  void load() {
+    try {
+      var timesheet = activitiesService.getTimesheet(from.get(), to.get());
+      updateTimesheetItems(timesheet);
+      updateTotal(timesheet);
+    } catch (Exception e) {
+      errorOccurred.emit(new Exception("Failed to load timesheet.", e));
+    }
   }
 
-  void load() {
-    Timesheet timesheet;
-    try {
-      timesheet = activitiesService.getTimesheet(from.get(), to.get());
-    } catch (Exception e) {
-      onError.emit(new Exception("Failed to load timesheet.", e));
-      return;
-    }
-
-    var timeFormat = "%1$02d:%2$02d";
+  private void updateTimesheetItems(Timesheet timesheet) {
     var items = new ArrayList<TimesheetItem>();
     for (var entry : timesheet.entries()) {
       items.add(
           new TimesheetItem(
               dateFormatter.format(entry.date()),
               entry.notes(),
-              timeFormat.formatted(entry.hours().toHours(), entry.hours().toMinutesPart())));
+              Durations.format(entry.hours(), FormatStyle.SHORT)));
     }
     timesheetItems.setAll(items);
-    total.set(timeFormat.formatted(timesheet.total().toHours(), timesheet.total().toMinutesPart()));
+  }
+
+  private void updateTotal(Timesheet timesheet) {
+    total.set(Durations.format(timesheet.total(), FormatStyle.SHORT));
   }
 
   void back() {

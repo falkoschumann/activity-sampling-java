@@ -6,13 +6,14 @@
 package de.muspellheim.activitysampling.application.activitysampling;
 
 import de.muspellheim.activitysampling.domain.ActivitiesService;
+import de.muspellheim.activitysampling.domain.Activity;
 import de.muspellheim.activitysampling.domain.RecentActivities;
-import de.muspellheim.activitysampling.domain.TimeSummary;
+import de.muspellheim.common.util.Durations;
 import de.muspellheim.common.util.EventEmitter;
+import de.muspellheim.common.util.OutputTracker;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ import javafx.collections.ObservableList;
 
 class ActivitySamplingViewModel {
   private final ActivitiesService activitiesService;
-  private Locale locale;
+  private final Locale locale;
   private final Clock clock;
 
   // State
@@ -66,24 +67,32 @@ class ActivitySamplingViewModel {
    *                                                                         *
    **************************************************************************/
 
-  private final EventEmitter<Void> onCountdownElapsed = new EventEmitter<>();
+  private final EventEmitter<LocalDateTime> countdownElapsed = new EventEmitter<>();
 
-  public void addOnCountdownElapsedListener(Consumer<Void> listener) {
-    onCountdownElapsed.addListener(listener);
+  void addCountdownElapsedListener(Consumer<LocalDateTime> listener) {
+    countdownElapsed.addListener(listener);
   }
 
-  public void removeOnCountdownElapsedListener(Consumer<Void> listener) {
-    onCountdownElapsed.removeListener(listener);
+  void removeCountdownElapsedListener(Consumer<LocalDateTime> listener) {
+    countdownElapsed.removeListener(listener);
   }
 
-  private final EventEmitter<Throwable> onError = new EventEmitter<>();
-
-  public void addOnErrorListener(Consumer<Throwable> listener) {
-    onError.addListener(listener);
+  OutputTracker<LocalDateTime> getCountdownElapsedTracker() {
+    return new OutputTracker<>(countdownElapsed);
   }
 
-  public void removeOnErrorListener(Consumer<Throwable> listener) {
-    onError.removeListener(listener);
+  private final EventEmitter<Throwable> errorOccurred = new EventEmitter<>();
+
+  void addErrorOccurredListener(Consumer<Throwable> listener) {
+    errorOccurred.addListener(listener);
+  }
+
+  void removeErrorOccurredListener(Consumer<Throwable> listener) {
+    errorOccurred.removeListener(listener);
+  }
+
+  OutputTracker<Throwable> getErrorOccurredTracker() {
+    return new OutputTracker<>(errorOccurred);
   }
 
   /* *************************************************************************
@@ -97,7 +106,7 @@ class ActivitySamplingViewModel {
   private final ObservableBooleanValue stopMenuItemDisable =
       Bindings.createBooleanBinding(() -> countdownActive.not().get(), countdownActive);
 
-  public ObservableBooleanValue stopMenuItemDisableProperty() {
+  ObservableBooleanValue stopMenuItemDisableProperty() {
     return stopMenuItemDisable;
   }
 
@@ -105,7 +114,7 @@ class ActivitySamplingViewModel {
 
   private final ObservableBooleanValue formDisable = countdownActive.and(intervalLogged);
 
-  public ObservableBooleanValue formDisableProperty() {
+  ObservableBooleanValue formDisableProperty() {
     return formDisable;
   }
 
@@ -113,21 +122,20 @@ class ActivitySamplingViewModel {
 
   private final StringProperty activityText = new SimpleStringProperty("");
 
-  public StringProperty activityTextProperty() {
+  StringProperty activityTextProperty() {
     return activityText;
   }
 
-  public void setActivityText(String value) {
+  void setActivityText(String value) {
     activityTextProperty().set(value);
   }
 
   // --- logButtonDisable
 
   private final ObservableBooleanValue logButtonDisable =
-      Bindings.createBooleanBinding(() -> activityText.get().isBlank(), activityText)
-          .or(countdownActive.and(intervalLogged));
+      Bindings.createBooleanBinding(() -> activityText.get().isBlank(), activityText);
 
-  public ObservableBooleanValue logButtonDisableProperty() {
+  ObservableBooleanValue logButtonDisableProperty() {
     return logButtonDisable;
   }
 
@@ -135,13 +143,9 @@ class ActivitySamplingViewModel {
 
   private final ObservableStringValue countdownLabelText =
       Bindings.createStringBinding(
-          () -> {
-            var time = LocalTime.ofSecondOfDay(countdown.get().toSeconds());
-            return DateTimeFormatter.ofPattern("HH:mm:ss").withLocale(locale).format(time);
-          },
-          countdown);
+          () -> Durations.format(countdown.get(), FormatStyle.MEDIUM), countdown);
 
-  public ObservableStringValue countdownLabelTextProperty() {
+  ObservableStringValue countdownLabelTextProperty() {
     return countdownLabelText;
   }
 
@@ -159,7 +163,7 @@ class ActivitySamplingViewModel {
           },
           countdown);
 
-  public ObservableDoubleValue countdownProgressProperty() {
+  ObservableDoubleValue countdownProgressProperty() {
     return countdownProgress;
   }
 
@@ -168,7 +172,7 @@ class ActivitySamplingViewModel {
   private final ObservableList<ActivityItem> recentActivityItems =
       FXCollections.observableArrayList();
 
-  public ObservableList<ActivityItem> getRecentActivities() {
+  ObservableList<ActivityItem> getRecentActivities() {
     return recentActivityItems;
   }
 
@@ -176,7 +180,7 @@ class ActivitySamplingViewModel {
 
   private final ReadOnlyStringWrapper hoursTodayLabelText = new ReadOnlyStringWrapper("00:00");
 
-  public ObservableStringValue hoursTodayLabelTextProperty() {
+  ObservableStringValue hoursTodayTextProperty() {
     return hoursTodayLabelText.getReadOnlyProperty();
   }
 
@@ -184,7 +188,7 @@ class ActivitySamplingViewModel {
 
   private final ReadOnlyStringWrapper hoursYesterdayLabelText = new ReadOnlyStringWrapper("00:00");
 
-  public ObservableStringValue hoursYesterdayLabelTextProperty() {
+  ObservableStringValue hoursYesterdayTextProperty() {
     return hoursYesterdayLabelText.getReadOnlyProperty();
   }
 
@@ -192,7 +196,7 @@ class ActivitySamplingViewModel {
 
   private final ReadOnlyStringWrapper hoursThisWeekLabelText = new ReadOnlyStringWrapper("00:00");
 
-  public ObservableStringValue hoursThisWeekLabelTextProperty() {
+  ObservableStringValue hoursThisWeekTextProperty() {
     return hoursThisWeekLabelText.getReadOnlyProperty();
   }
 
@@ -200,7 +204,7 @@ class ActivitySamplingViewModel {
 
   private final ReadOnlyStringWrapper hoursThisMonthLabelText = new ReadOnlyStringWrapper("00:00");
 
-  public ObservableStringValue hoursThisMonthLabelTextProperty() {
+  ObservableStringValue hoursThisMonthTextProperty() {
     return hoursThisMonthLabelText.getReadOnlyProperty();
   }
 
@@ -210,21 +214,17 @@ class ActivitySamplingViewModel {
    *                                                                         *
    **************************************************************************/
 
-  public void run() {
-    load();
+  void load() {
+    try {
+      var recentActivities = activitiesService.getRecentActivities();
+      updateActivityItems(recentActivities);
+      updateTimeSummary(recentActivities);
+    } catch (Exception e) {
+      errorOccurred.emit(new Exception("Failed to load activities.", e));
+    }
   }
 
-  public void load() {
-    RecentActivities recentActivities;
-    TimeSummary timeSummary;
-    try {
-      recentActivities = activitiesService.getRecentActivities();
-      timeSummary = activitiesService.getTimeSummary();
-    } catch (Exception e) {
-      onError.emit(new Exception("Failed to load activities.", e));
-      return;
-    }
-
+  private void updateActivityItems(RecentActivities recentActivities) {
     var items = new ArrayList<ActivityItem>();
     var dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).withLocale(locale);
     var timeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(locale);
@@ -237,43 +237,36 @@ class ActivitySamplingViewModel {
                 activity.description()));
       }
     }
-
-    var timeFormat = "%1$02d:%2$02d";
-    hoursTodayLabelText.set(
-        timeFormat.formatted(
-            timeSummary.hoursToday().toHours(), timeSummary.hoursToday().toMinutesPart()));
-    hoursYesterdayLabelText.set(
-        timeFormat.formatted(
-            timeSummary.hoursYesterday().toHours(), timeSummary.hoursYesterday().toMinutesPart()));
-    hoursThisWeekLabelText.set(
-        timeFormat.formatted(
-            timeSummary.hoursThisWeek().toHours(), timeSummary.hoursThisWeek().toMinutesPart()));
-    hoursThisMonthLabelText.set(
-        timeFormat.formatted(
-            timeSummary.hoursThisMonth().toHours(), timeSummary.hoursThisMonth().toMinutesPart()));
-    this.recentActivityItems.setAll(items);
+    recentActivityItems.setAll(items);
   }
 
-  public void logActivity() {
+  private void updateTimeSummary(RecentActivities recentActivities) {
+    var timeSummary = recentActivities.timeSummary();
+    hoursTodayLabelText.set(Durations.format(timeSummary.hoursToday(), FormatStyle.SHORT));
+    hoursYesterdayLabelText.set(Durations.format(timeSummary.hoursYesterday(), FormatStyle.SHORT));
+    hoursThisWeekLabelText.set(Durations.format(timeSummary.hoursThisWeek(), FormatStyle.SHORT));
+    hoursThisMonthLabelText.set(Durations.format(timeSummary.hoursThisMonth(), FormatStyle.SHORT));
+  }
+
+  void logActivity() {
     try {
-      activitiesService.logActivity(LocalDateTime.now(clock), interval, activityText.get());
+      activitiesService.logActivity(
+          new Activity(LocalDateTime.now(clock), interval, activityText.get()));
       intervalLogged.set(true);
+      load();
     } catch (Exception e) {
-      onError.emit(new Exception("Failed to log activity.", e));
-      return;
+      errorOccurred.emit(new Exception("Failed to log activity.", e));
     }
-
-    load();
   }
 
-  public void startCountdown(Duration interval) {
+  void startCountdown(Duration interval) {
     this.interval = interval;
     countdown.set(interval);
     countdownActive.set(true);
     intervalLogged.set(true);
   }
 
-  public void progressCountdown(Duration duration) {
+  void progressCountdown(Duration duration) {
     if (!countdownActive.get()) {
       return;
     }
@@ -281,12 +274,12 @@ class ActivitySamplingViewModel {
     countdown.set(countdown.get().minus(duration));
     if (countdown.get().isZero()) {
       intervalLogged.set(false);
-      onCountdownElapsed.emit(null);
+      countdownElapsed.emit(LocalDateTime.now(clock));
       countdown.set(interval);
     }
   }
 
-  public void stopCountdown() {
+  void stopCountdown() {
     countdownActive.set(false);
   }
 }

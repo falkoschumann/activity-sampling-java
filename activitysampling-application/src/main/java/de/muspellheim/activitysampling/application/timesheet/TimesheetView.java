@@ -48,7 +48,7 @@ public class TimesheetView {
 
   @FXML
   void initialize() {
-    viewModel.addOnErrorListener(ErrorView::show);
+    viewModel.addErrorOccurredListener(ErrorView::show);
     period.setConverter(new ChronoUnitStringConverter());
     period.getItems().addAll(ChronoUnit.DAYS, ChronoUnit.WEEKS, ChronoUnit.MONTHS);
     period.valueProperty().bindBidirectional(viewModel.periodProperty());
@@ -68,16 +68,16 @@ public class TimesheetView {
 
   public void run() {
     stage.show();
-    viewModel.run();
+    viewModel.load();
   }
 
   @FXML
-  void handleBack() {
+  void back() {
     viewModel.back();
   }
 
   @FXML
-  void handleForward() {
+  void forward() {
     viewModel.forward();
   }
 }
