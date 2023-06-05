@@ -1,8 +1,8 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
-  id 'muspellheim.groovy-gradle-conventions'
   id 'org.beryx.jlink'
+  id 'muspellheim.groovy-gradle-conventions'
 }
 
 jlink {

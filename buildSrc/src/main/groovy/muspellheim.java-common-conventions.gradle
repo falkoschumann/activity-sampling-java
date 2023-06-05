@@ -1,14 +1,12 @@
 import java.time.LocalDate
 
 plugins {
-  id 'muspellheim.groovy-gradle-conventions'
   id 'checkstyle'
   id 'jacoco'
   id 'java'
-  id 'jvm-test-suite'
   id 'com.diffplug.spotless'
-  id 'info.solidsoft.pitest'
   id 'io.freefair.lombok'
+  id 'muspellheim.groovy-gradle-conventions'
 }
 
 group = 'de.muspellheim'
@@ -39,11 +37,9 @@ java {
   }
 }
 
-tasks {
-  processResources {
-    filesMatching('**/*.properties') {
-      expand([version: version, copyrightYear: copyrightYear])
-    }
+processResources {
+  filesMatching('**/*.properties') {
+    expand([version: version, copyrightYear: copyrightYear])
   }
 }
 
@@ -62,11 +58,6 @@ jacocoTestReport {
   reports {
     xml.required = true
   }
-}
-
-pitest {
-  junit5PluginVersion = '1.1.2'
-  timestampedReports = false
 }
 
 checkstyle {
