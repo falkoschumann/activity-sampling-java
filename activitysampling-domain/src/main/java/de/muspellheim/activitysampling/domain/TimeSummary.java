@@ -60,11 +60,8 @@ public record TimeSummary(
   }
 
   private static boolean isSameWeek(LocalDate today, LocalDate other) {
-    var sameYear = (today.getDayOfYear() - other.getDayOfYear()) >= 0;
-    var sameWeek =
-        (today.getDayOfYear() - other.getDayOfYear()) < 7
-            && other.getDayOfWeek().getValue() <= today.getDayOfWeek().getValue();
-    return sameYear && sameWeek;
+    return (today.getDayOfYear() - other.getDayOfYear()) < 7
+        && other.getDayOfWeek().getValue() <= today.getDayOfWeek().getValue();
   }
 
   private static boolean isSameMonth(LocalDate today, LocalDate other) {

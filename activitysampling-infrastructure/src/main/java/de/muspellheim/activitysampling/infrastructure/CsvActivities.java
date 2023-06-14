@@ -25,7 +25,9 @@ import org.apache.commons.csv.CSVRecord;
 public class CsvActivities implements Activities {
   private static final String COLUMN_TIMESTAMP = "Timestamp";
   private static final String COLUMN_DURATION = "Duration";
-  private static final String COLUMN_DESCRIPTION = "Description";
+  private static final String COLUMN_CLIENT = "Client";
+  private static final String COLUMN_PROJECT = "Project";
+  private static final String COLUMN_NOTES = "Notes";
 
   private final Path file;
 
@@ -48,7 +50,9 @@ public class CsvActivities implements Activities {
     return new Activity(
         LocalDateTime.parse(csvRecord.get(COLUMN_TIMESTAMP)),
         Duration.parse(csvRecord.get(COLUMN_DURATION)),
-        csvRecord.get(COLUMN_DESCRIPTION));
+        csvRecord.get(COLUMN_CLIENT),
+        csvRecord.get(COLUMN_PROJECT),
+        csvRecord.get(COLUMN_NOTES));
   }
 
   private boolean isBetween(Activity activity, LocalDate from, LocalDate to) {
@@ -67,7 +71,9 @@ public class CsvActivities implements Activities {
       printer.printRecord(
           activity.timestamp().truncatedTo(ChronoUnit.SECONDS),
           activity.duration(),
-          activity.description());
+          activity.client(),
+          activity.project(),
+          activity.notes());
     } catch (Exception e) {
       throw new IllegalStateException("Failed to append activity to file " + file, e);
     }
@@ -84,7 +90,8 @@ public class CsvActivities implements Activities {
   private CSVFormat newFormat() {
     var builder =
         CSVFormat.Builder.create(CSVFormat.RFC4180)
-            .setHeader(COLUMN_TIMESTAMP, COLUMN_DURATION, COLUMN_DESCRIPTION);
+            .setHeader(
+                COLUMN_TIMESTAMP, COLUMN_DURATION, COLUMN_CLIENT, COLUMN_PROJECT, COLUMN_NOTES);
     if (Files.exists(file)) {
       builder.setSkipHeaderRecord(true);
     }

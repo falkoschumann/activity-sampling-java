@@ -8,7 +8,6 @@ package de.muspellheim.activitysampling.domain;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +25,7 @@ class ActivitiesServiceTests {
 
   @Test
   void logActivity() {
-    var activity = new Activity(LocalDateTime.now(), Duration.ofMinutes(5), "xyz");
+    var activity = newActivity(LocalDateTime.now());
 
     sut.logActivity(activity);
 
@@ -36,35 +35,39 @@ class ActivitiesServiceTests {
   @Test
   void getRecentActivities() {
     var now = LocalDateTime.now();
-    var duration = Duration.ofMinutes(5);
-    activitiesRepository.add(new Activity(now, duration, "xyz"));
+    var activity = newActivity(now);
+    activitiesRepository.add(activity);
 
     var activities = sut.getRecentActivities();
 
     assertEquals(
         new RecentActivities(
-            List.of(new WorkingDay(now.toLocalDate(), List.of(new Activity(now, duration, "xyz")))),
-            new TimeSummary(duration, Duration.ZERO, duration, duration)),
+            List.of(new WorkingDay(now.toLocalDate(), List.of(activity))),
+            new TimeSummary(
+                Duration.ofMinutes(30),
+                Duration.ZERO,
+                Duration.ofMinutes(30),
+                Duration.ofMinutes(30))),
         activities);
   }
 
   @Test
   void getTimesheet() {
-    activitiesRepository.addAll(
-        List.of(
-            new Activity(LocalDateTime.of(2022, 11, 14, 15, 0, 0), Duration.ofMinutes(20), "c"),
-            new Activity(LocalDateTime.of(2022, 11, 14, 16, 0, 0), Duration.ofMinutes(20), "b"),
-            new Activity(LocalDateTime.of(2022, 11, 18, 8, 0, 0), Duration.ofMinutes(20), "a")));
+    var now = LocalDateTime.now();
+    activitiesRepository.add(newActivity(now));
 
-    var timesheet = sut.getTimesheet(LocalDate.parse("2022-11-14"), LocalDate.parse("2022-11-18"));
+    var timesheet = sut.getTimesheet(now.toLocalDate(), now.toLocalDate());
 
     assertEquals(
         new Timesheet(
             List.of(
-                new Timesheet.Entry(LocalDate.of(2022, 11, 14), "b", Duration.ofMinutes(20)),
-                new Timesheet.Entry(LocalDate.of(2022, 11, 14), "c", Duration.ofMinutes(20)),
-                new Timesheet.Entry(LocalDate.of(2022, 11, 18), "a", Duration.ofMinutes(20))),
-            Duration.ofMinutes(60)),
+                new Timesheet.Entry(
+                    now.toLocalDate(), "client", "project", "notes", Duration.ofMinutes(30))),
+            Duration.ofMinutes(30)),
         timesheet);
+  }
+
+  private static Activity newActivity(LocalDateTime timestamp) {
+    return new Activity(timestamp, Duration.ofMinutes(30), "client", "project", "notes");
   }
 }

@@ -26,7 +26,9 @@ public class ActivitySamplingView {
   @FXML private MenuBar menuBar;
   @FXML private MenuItem stopMenuItem;
   @FXML private Pane form;
-  @FXML private TextField activity;
+  @FXML private TextField client;
+  @FXML private TextField project;
+  @FXML private TextField notes;
   @FXML private Button logButton;
   @FXML private Label countdownLabel;
   @FXML private ProgressBar countdown;
@@ -58,14 +60,16 @@ public class ActivitySamplingView {
   @FXML
   private void initialize() {
     menuBar.setUseSystemMenuBar(true);
-    recentActivities.setCellFactory(ActivityListCell.newCellFactory(viewModel::setActivityText));
+    recentActivities.setCellFactory(ActivityListCell.newCellFactory(viewModel::setNotesText));
 
     systemClock.addOnTickListener(viewModel::progressCountdown);
     viewModel.addErrorOccurredListener(ErrorView::show);
     stage.setOnCloseRequest(e -> notifier.dispose());
     stopMenuItem.disableProperty().bind(viewModel.stopMenuItemDisableProperty());
     form.disableProperty().bind(viewModel.formDisableProperty());
-    activity.textProperty().bindBidirectional(viewModel.activityTextProperty());
+    client.textProperty().bindBidirectional(viewModel.clientTextProperty());
+    project.textProperty().bindBidirectional(viewModel.projectTextProperty());
+    notes.textProperty().bindBidirectional(viewModel.notesTextProperty());
     logButton.disableProperty().bind(viewModel.logButtonDisableProperty());
     countdownLabel.textProperty().bind(viewModel.countdownLabelTextProperty());
     countdown.progressProperty().bind(viewModel.countdownProgressProperty());
@@ -79,7 +83,7 @@ public class ActivitySamplingView {
   public void run() {
     stage.show();
     viewModel.load();
-    activity.requestFocus();
+    client.requestFocus();
   }
 
   @FXML

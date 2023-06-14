@@ -34,7 +34,7 @@ public class ActivitiesServiceStub implements ActivitiesService {
     this.timesheetResponses = responses;
   }
 
-  public OutputTracker<Activity> getLoggedActivityTracker() {
+  public OutputTracker<Activity> trackLoggedActivity() {
     return new OutputTracker<>(onActivityLogged);
   }
 

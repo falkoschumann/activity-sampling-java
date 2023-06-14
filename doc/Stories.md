@@ -13,7 +13,8 @@ Periodically ask the user about their current activity and log it for analysis.
 
 ### Create Timesheet
 
-- As a user, I want to summarize my monthly activities so that I can bill them.
+- As a user, I want to summarize my monthly hours worked on projects so that I
+  can bill the client.
 - As a user, I want to set my weekly capacity so that I can track overtime.
 - As a user, I want holidays to be taken into account so that they do not count
   as capacity.

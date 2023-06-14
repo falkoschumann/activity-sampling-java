@@ -67,11 +67,29 @@
                      <top>
                         <VBox spacing="8.0" BorderPane.alignment="CENTER">
                            <children>
-                              <VBox fx:id="form" spacing="8.0">
+                              <VBox fx:id="form" spacing="4.0">
                                  <children>
-                                    <Label fx:id="activityLabel" text="Activity:" />
-                                    <TextField fx:id="activity" onAction="#logActivity" promptText="What are you working on?" />
-                                    <Button fx:id="logButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#logActivity" text="Log" />
+                                    <Label text="Client:" />
+                                    <TextField fx:id="client" onAction="#logActivity">
+                                       <VBox.margin>
+                                          <Insets />
+                                       </VBox.margin></TextField>
+                                    <Label text="Project:">
+                                       <VBox.margin>
+                                          <Insets top="4.0" />
+                                       </VBox.margin>
+                                    </Label>
+                                    <TextField fx:id="project" onAction="#logActivity" />
+                                    <Label text="Notes:">
+                                       <VBox.margin>
+                                          <Insets top="4.0" />
+                                       </VBox.margin>
+                                    </Label>
+                                    <TextField fx:id="notes" onAction="#logActivity" />
+                                    <Button fx:id="logButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#logActivity" text="Log">
+                                       <VBox.margin>
+                                          <Insets top="4.0" />
+                                       </VBox.margin></Button>
                                  </children>
                               </VBox>
                               <VBox spacing="8.0">

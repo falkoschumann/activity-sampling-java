@@ -21,7 +21,8 @@ public class ErrorView {
     var alert = new Alert(Alert.AlertType.ERROR);
     alert.setTitle("Error");
     alert.setHeaderText(errorMessage);
-    var messages = Exceptions.collect(exception).stream().map(Throwable::toString).toList();
+    var messages =
+        Exceptions.collect(exception).stream().map(Throwable::getLocalizedMessage).toList();
     alert.setContentText(String.join("\n", messages));
     alert.show();
   }

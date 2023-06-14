@@ -76,7 +76,7 @@ class TimesheetViewModel {
     errorOccurred.removeListener(listener);
   }
 
-  OutputTracker<Throwable> getErrorOccurredTracker() {
+  OutputTracker<Throwable> trackErrorOccurred() {
     return new OutputTracker<>(errorOccurred);
   }
 
@@ -116,6 +116,10 @@ class TimesheetViewModel {
     return period;
   }
 
+  ChronoUnit getPeriod() {
+    return period.get();
+  }
+
   void setPeriod(ChronoUnit value) {
     periodProperty().set(value);
   }
@@ -128,6 +132,10 @@ class TimesheetViewModel {
 
   ObservableStringValue title1Property() {
     return title1;
+  }
+
+  String getTitle1() {
+    return title1.get();
   }
 
   // --- title2
@@ -145,6 +153,10 @@ class TimesheetViewModel {
     return title2;
   }
 
+  String getTitle2() {
+    return title2.get();
+  }
+
   // --- timesheetItems
 
   private final ObservableList<TimesheetItem> timesheetItems = FXCollections.observableArrayList();
@@ -159,6 +171,10 @@ class TimesheetViewModel {
 
   ObservableStringValue totalProperty() {
     return total.getReadOnlyProperty();
+  }
+
+  String getTotal() {
+    return total.get();
   }
 
   /* *************************************************************************
@@ -209,8 +225,9 @@ class TimesheetViewModel {
         var last = first.plusMonths(1).minusDays(1);
         to.set(last);
       }
-      default -> throw new IllegalArgumentException(
-          "Unsupported period: %s.".formatted(period.get()));
+      default -> {
+        // do nothing
+      }
     }
     load();
   }
@@ -231,8 +248,9 @@ class TimesheetViewModel {
         var last = first.plusMonths(1).minusDays(1);
         to.set(last);
       }
-      default -> throw new IllegalArgumentException(
-          "Unsupported period: %s.".formatted(period.get()));
+      default -> {
+        // do nothing
+      }
     }
     load();
   }

@@ -6,6 +6,7 @@
 package de.muspellheim.activitysampling.domain;
 
 import de.muspellheim.common.util.Lists;
+import de.muspellheim.common.util.Strings;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -15,16 +16,31 @@ import java.util.List;
 import java.util.Objects;
 
 public record Timesheet(List<Entry> entries, Duration total) {
-  public record Entry(LocalDate date, String notes, Duration hours) implements Comparable<Entry> {
+  public record Entry(LocalDate date, String client, String project, String notes, Duration hours)
+      implements Comparable<Entry> {
     public Entry {
-      Objects.requireNonNull(date, "The date must not be null.");
-      Objects.requireNonNull(notes, "The notes must not be null.");
-      Objects.requireNonNull(hours, "The hours must not be null.");
+      Objects.requireNonNull(date, "The date is null.");
+      Objects.requireNonNull(client, "The client is null.");
+      Strings.requireNonBlank(client, "The client is blank.");
+      Objects.requireNonNull(project, "The project is null.");
+      Strings.requireNonBlank(project, "The project is blank.");
+      Objects.requireNonNull(notes, "The notes is null.");
+      Objects.requireNonNull(hours, "The hours is null.");
+    }
+
+    // @Deprecated
+    public Entry(LocalDate date, String notes, Duration hours) {
+      // TODO remove deprecated constructor
+      this(date, "n/a", "n/a", notes, hours);
     }
 
     @Override
     public int compareTo(Entry other) {
-      return Comparator.comparing(Entry::date).thenComparing(Entry::notes).compare(this, other);
+      return Comparator.comparing(Entry::date)
+          .thenComparing(Entry::client)
+          .thenComparing(Entry::project)
+          .thenComparing(Entry::notes)
+          .compare(this, other);
     }
   }
 
@@ -38,22 +54,29 @@ public record Timesheet(List<Entry> entries, Duration total) {
   static Timesheet of(List<Activity> activities) {
     var entries = new ArrayList<Entry>();
     var total = Duration.ZERO;
-    for (var activity : activities) {
-      var date = activity.timestamp().toLocalDate();
+    for (var a : activities) {
+      var date = a.timestamp().toLocalDate();
       var index =
           Lists.indexOf(
-              entries, e -> e.date().equals(date) && e.notes().equals(activity.description()));
+              entries,
+              e ->
+                  e.date().equals(date)
+                      && e.client().equals(a.client())
+                      && e.project().equals(a.project())
+                      && e.notes().equals(a.notes()));
       if (index == -1) {
-        var entry = new Entry(date, activity.description(), activity.duration());
+        var entry = new Entry(date, a.client(), a.project(), a.notes(), a.duration());
         entries.add(entry);
         Collections.sort(entries);
       } else {
         var entry = entries.get(index);
-        var accumulatedHours = entry.hours().plus(activity.duration());
-        entry = new Entry(entry.date(), entry.notes(), accumulatedHours);
+        var accumulatedHours = entry.hours().plus(a.duration());
+        entry =
+            new Entry(
+                entry.date(), entry.client(), entry.project(), entry.notes(), accumulatedHours);
         entries.set(index, entry);
       }
-      total = total.plus(activity.duration());
+      total = total.plus(a.duration());
     }
     return new Timesheet(entries, total);
   }

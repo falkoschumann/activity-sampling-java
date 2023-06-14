@@ -39,35 +39,38 @@ class CsvActivitiesTests {
 
   @Test
   void findInPeriod_FileExists_ReturnsAppendedEvents() {
-    sut.append(createA1());
-    sut.append(createA2());
-    sut.append(createA3());
+    sut.append(createActivity1());
+    sut.append(createActivity2());
+    sut.append(createActivity3());
 
     var activities = sut.findInPeriod(LocalDate.ofEpochDay(0), LocalDate.now());
 
-    assertEquals(List.of(createA1(), createA2(), createA3()), activities);
+    assertEquals(List.of(createActivity1(), createActivity2(), createActivity3()), activities);
   }
 
   @Test
-  void findInPeriod_ReturnsActivitiesInPeriod() {
-    sut.append(createA1());
-    sut.append(createA2());
-    sut.append(createA3());
+  void findInPeriod_ReturnsActivitiesOnlyInPeriod() {
+    sut.append(createActivity1());
+    sut.append(createActivity2());
+    sut.append(createActivity3());
 
     var activities = sut.findInPeriod(LocalDate.parse("2022-11-16"), LocalDate.parse("2022-11-16"));
 
-    assertEquals(List.of(createA2()), activities);
+    assertEquals(List.of(createActivity2()), activities);
   }
 
-  private static Activity createA1() {
-    return new Activity(LocalDateTime.parse("2022-11-15T13:04:00"), Duration.ofMinutes(5), "A1");
+  private static Activity createActivity1() {
+    return new Activity(
+        LocalDateTime.parse("2022-11-15T13:04:00"), Duration.ofMinutes(5), "c1", "p1", "a1");
   }
 
-  private static Activity createA2() {
-    return new Activity(LocalDateTime.parse("2022-11-16T13:24:00"), Duration.ofMinutes(5), "A2");
+  private static Activity createActivity2() {
+    return new Activity(
+        LocalDateTime.parse("2022-11-16T13:24:00"), Duration.ofMinutes(5), "c2", "p2", "a2");
   }
 
-  private static Activity createA3() {
-    return new Activity(LocalDateTime.parse("2022-11-17T13:44:00"), Duration.ofMinutes(5), "A3");
+  private static Activity createActivity3() {
+    return new Activity(
+        LocalDateTime.parse("2022-11-17T13:44:00"), Duration.ofMinutes(5), "c3", "p3", "a3");
   }
 }

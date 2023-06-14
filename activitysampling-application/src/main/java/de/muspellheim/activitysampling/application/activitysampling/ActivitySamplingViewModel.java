@@ -14,7 +14,6 @@ import de.muspellheim.common.util.OutputTracker;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -77,7 +76,7 @@ class ActivitySamplingViewModel {
     countdownElapsed.removeListener(listener);
   }
 
-  OutputTracker<LocalDateTime> getCountdownElapsedTracker() {
+  OutputTracker<LocalDateTime> trackCountdownElapsed() {
     return new OutputTracker<>(countdownElapsed);
   }
 
@@ -91,7 +90,7 @@ class ActivitySamplingViewModel {
     errorOccurred.removeListener(listener);
   }
 
-  OutputTracker<Throwable> getErrorOccurredTracker() {
+  OutputTracker<Throwable> trackErrorOccurred() {
     return new OutputTracker<>(errorOccurred);
   }
 
@@ -110,6 +109,10 @@ class ActivitySamplingViewModel {
     return stopMenuItemDisable;
   }
 
+  final boolean isStopMenuItemDisable() {
+    return stopMenuItemDisable.get();
+  }
+
   // --- formDisable
 
   private final ObservableBooleanValue formDisable = countdownActive.and(intervalLogged);
@@ -118,25 +121,71 @@ class ActivitySamplingViewModel {
     return formDisable;
   }
 
-  // --- activityText
-
-  private final StringProperty activityText = new SimpleStringProperty("");
-
-  StringProperty activityTextProperty() {
-    return activityText;
+  final boolean isFormDisable() {
+    return formDisable.get();
   }
 
-  void setActivityText(String value) {
-    activityTextProperty().set(value);
+  // --- clientText
+
+  private final StringProperty clientText = new SimpleStringProperty("");
+
+  StringProperty clientTextProperty() {
+    return clientText;
+  }
+
+  final String getClientText() {
+    return clientText.get();
+  }
+
+  final void setClientText(String value) {
+    clientTextProperty().set(value);
+  }
+
+  // --- projectText
+
+  private final StringProperty projectText = new SimpleStringProperty("");
+
+  StringProperty projectTextProperty() {
+    return projectText;
+  }
+
+  final String getProjectText() {
+    return projectText.get();
+  }
+
+  final void setProjectText(String value) {
+    projectTextProperty().set(value);
+  }
+
+  // --- notesText
+
+  private final StringProperty notesText = new SimpleStringProperty("");
+
+  StringProperty notesTextProperty() {
+    return notesText;
+  }
+
+  final String getNotesText() {
+    return notesText.get();
+  }
+
+  final void setNotesText(String value) {
+    notesTextProperty().set(value);
   }
 
   // --- logButtonDisable
 
   private final ObservableBooleanValue logButtonDisable =
-      Bindings.createBooleanBinding(() -> activityText.get().isBlank(), activityText);
+      Bindings.createBooleanBinding(() -> clientText.get().isBlank(), clientText)
+          .or(Bindings.createBooleanBinding(() -> projectText.get().isBlank(), projectText))
+          .or(Bindings.createBooleanBinding(() -> notesText.get().isBlank(), notesText));
 
   ObservableBooleanValue logButtonDisableProperty() {
     return logButtonDisable;
+  }
+
+  final boolean isLogButtonDisable() {
+    return logButtonDisable.get();
   }
 
   // --- countdownLabelText
@@ -147,6 +196,10 @@ class ActivitySamplingViewModel {
 
   ObservableStringValue countdownLabelTextProperty() {
     return countdownLabelText;
+  }
+
+  final String getCountdownLabelText() {
+    return countdownLabelText.get();
   }
 
   // --- countdownProgress
@@ -167,12 +220,16 @@ class ActivitySamplingViewModel {
     return countdownProgress;
   }
 
+  final double getCountdownProgress() {
+    return countdownProgress.get();
+  }
+
   // --- recentActivityItems
 
   private final ObservableList<ActivityItem> recentActivityItems =
       FXCollections.observableArrayList();
 
-  ObservableList<ActivityItem> getRecentActivities() {
+  final ObservableList<ActivityItem> getRecentActivities() {
     return recentActivityItems;
   }
 
@@ -184,12 +241,20 @@ class ActivitySamplingViewModel {
     return hoursTodayLabelText.getReadOnlyProperty();
   }
 
+  final String getHoursTodayLabelText() {
+    return hoursTodayLabelText.get();
+  }
+
   // --- hoursYesterdayLabelText
 
   private final ReadOnlyStringWrapper hoursYesterdayLabelText = new ReadOnlyStringWrapper("00:00");
 
   ObservableStringValue hoursYesterdayTextProperty() {
     return hoursYesterdayLabelText.getReadOnlyProperty();
+  }
+
+  final String getHoursYesterdayLabelText() {
+    return hoursYesterdayLabelText.get();
   }
 
   // --- hoursThisWeekLabelText
@@ -200,6 +265,10 @@ class ActivitySamplingViewModel {
     return hoursThisWeekLabelText.getReadOnlyProperty();
   }
 
+  final String getHoursThisWeekLabelText() {
+    return hoursThisWeekLabelText.get();
+  }
+
   // --- hoursThisMonthLabelText
 
   private final ReadOnlyStringWrapper hoursThisMonthLabelText = new ReadOnlyStringWrapper("00:00");
@@ -208,9 +277,13 @@ class ActivitySamplingViewModel {
     return hoursThisMonthLabelText.getReadOnlyProperty();
   }
 
+  final String getHoursThisMonthLabelText() {
+    return hoursThisMonthLabelText.get();
+  }
+
   /* *************************************************************************
    *                                                                         *
-   * Public API                                                              *
+   *  API                                                              *
    *                                                                         *
    **************************************************************************/
 
@@ -226,15 +299,10 @@ class ActivitySamplingViewModel {
 
   private void updateActivityItems(RecentActivities recentActivities) {
     var items = new ArrayList<ActivityItem>();
-    var dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).withLocale(locale);
-    var timeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(locale);
     for (var day : recentActivities.workingDays()) {
-      items.add(new ActivityItem(day.date().format(dateFormatter)));
+      items.add(ActivityItem.header(day, locale));
       for (var activity : day.activities()) {
-        items.add(
-            new ActivityItem(
-                activity.timestamp().format(timeFormatter) + " - " + activity.description(),
-                activity.description()));
+        items.add(ActivityItem.item(activity, locale));
       }
     }
     recentActivityItems.setAll(items);
@@ -251,7 +319,12 @@ class ActivitySamplingViewModel {
   void logActivity() {
     try {
       activitiesService.logActivity(
-          new Activity(LocalDateTime.now(clock), interval, activityText.get()));
+          new Activity(
+              LocalDateTime.now(clock),
+              interval,
+              clientText.get(),
+              projectText.get(),
+              notesText.get()));
       intervalLogged.set(true);
       load();
     } catch (Exception e) {
@@ -272,7 +345,7 @@ class ActivitySamplingViewModel {
     }
 
     countdown.set(countdown.get().minus(duration));
-    if (countdown.get().isZero()) {
+    if (countdown.get().isZero() || countdown.get().isNegative()) {
       intervalLogged.set(false);
       countdownElapsed.emit(LocalDateTime.now(clock));
       countdown.set(interval);

@@ -32,13 +32,19 @@ class TimesheetViewModelTests {
   @BeforeEach
   void init() {
     activitiesService = new ActivitiesServiceStub();
-    var clock = Clock.fixed(Instant.parse("2023-04-16T14:05:00Z"), ZoneId.systemDefault());
+    var clock = Clock.fixed(Instant.parse("2023-04-12T12:00:00Z"), ZoneId.systemDefault());
     sut = new TimesheetViewModel(activitiesService, Locale.GERMANY, clock);
-    errorOccurred = sut.getErrorOccurredTracker();
+    errorOccurred = sut.trackErrorOccurred();
   }
 
   @Test
-  void load_InitializesWithCurrentWeek() {
+  void new_InitializesState() {
+    assertTitleAndPeriod("This Week: ", "10.04.2023 - 16.04.2023", ChronoUnit.WEEKS);
+    assertTimesheet(List.of(), "00:00");
+  }
+
+  @Test
+  void load_Successfully_RefreshesTimesheet() {
     var timesheet =
         new Timesheet(
             List.of(
@@ -49,29 +55,23 @@ class TimesheetViewModelTests {
 
     sut.load();
 
-    assertTitleAndPeriod("This Week: ", "10.04.2023 - 16.04.2023", ChronoUnit.WEEKS);
-    assertEquals(
-        List.of(new TimesheetItem("14.04.2023", "Lorem ipsum", "00:20")),
-        sut.getTimesheetItems(),
-        "Timesheet items");
-    assertEquals("00:20", sut.totalProperty().get(), "Total");
+    assertTimesheet(List.of(new TimesheetItem("14.04.2023", "Lorem ipsum", "00:20")), "00:20");
     assertNoError();
   }
 
   @Test
-  void load_Failed_NotifyErrors() {
+  void load_Failed_NotifiesErrorOccurred() {
     activitiesService.initTimesheetResponses(
-        ConfigurableResponses.sequence(
-            Timesheet.EMPTY, new IllegalStateException("Something went wrong.")));
-    sut.load();
+        ConfigurableResponses.sequence(new IllegalStateException("Something went wrong.")));
 
     sut.load();
 
+    assertTimesheet(List.of(), "00:00");
     assertError("Failed to load timesheet. Something went wrong.");
   }
 
   @Test
-  void changePeriod_FromWeekToDay_DisplaysMonday() {
+  void setPeriod_FromWeekToDay_DisplaysMonday() {
     sut.load();
 
     sut.setPeriod(ChronoUnit.DAYS);
@@ -80,7 +80,7 @@ class TimesheetViewModelTests {
   }
 
   @Test
-  void changePeriod_FromWeekToMonth_DisplaysCurrentMonth() {
+  void setPeriod_FromWeekToMonth_DisplaysEntireMonth() {
     sut.load();
 
     sut.setPeriod(ChronoUnit.MONTHS);
@@ -89,7 +89,7 @@ class TimesheetViewModelTests {
   }
 
   @Test
-  void changePeriod_FromDayToWeek_DisplaysCurrentWeek() {
+  void setPeriod_FromDayToWeek_DisplaysEntireWeek() {
     sut.load();
     sut.setPeriod(ChronoUnit.DAYS);
 
@@ -99,7 +99,37 @@ class TimesheetViewModelTests {
   }
 
   @Test
-  void changePeriod_UnsupportedPeriod_ThrowsException() {
+  void setPeriod_FromDayToMonth_DisplaysEntireMonth() {
+    sut.load();
+    sut.setPeriod(ChronoUnit.DAYS);
+
+    sut.setPeriod(ChronoUnit.MONTHS);
+
+    assertTitleAndPeriod("This Month: ", "01.04.2023 - 30.04.2023", ChronoUnit.MONTHS);
+  }
+
+  @Test
+  void setPeriod_FromMonthToDay_DisplaysFirstDayOfMonth() {
+    sut.load();
+    sut.setPeriod(ChronoUnit.MONTHS);
+
+    sut.setPeriod(ChronoUnit.DAYS);
+
+    assertTitleAndPeriod("This Day: ", "01.04.2023", ChronoUnit.DAYS);
+  }
+
+  @Test
+  void setPeriod_FromMonthToWeek_DisplaysFirstWeekOfMonth() {
+    sut.load();
+    sut.setPeriod(ChronoUnit.MONTHS);
+
+    sut.setPeriod(ChronoUnit.WEEKS);
+
+    assertTitleAndPeriod("This Week: ", "27.03.2023 - 02.04.2023", ChronoUnit.WEEKS);
+  }
+
+  @Test
+  void setPeriod_UnsupportedPeriod_ThrowsException() {
     assertThrows(IllegalArgumentException.class, () -> sut.setPeriod(ChronoUnit.HOURS));
   }
 
@@ -158,9 +188,14 @@ class TimesheetViewModelTests {
   }
 
   private void assertTitleAndPeriod(String title1, String title2, ChronoUnit period) {
-    assertEquals(title1, sut.title1Property().get(), "Title 1");
-    assertEquals(title2, sut.title2Property().get(), "Title 2");
-    assertEquals(period, sut.periodProperty().get(), "Period");
+    assertEquals(title1, sut.getTitle1(), "Title 1");
+    assertEquals(title2, sut.getTitle2(), "Title 2");
+    assertEquals(period, sut.getPeriod(), "Period");
+  }
+
+  private void assertTimesheet(List<TimesheetItem> items, String total) {
+    assertEquals(items, sut.getTimesheetItems(), "Timesheet items");
+    assertEquals(total, sut.getTotal(), "Timesheet total");
   }
 
   private void assertNoError() {
