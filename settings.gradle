@@ -4,9 +4,3 @@
  */
 
 rootProject.name = 'activity-sampling'
-include(
-  'activitysampling-application',
-  'activitysampling-domain',
-  'activitysampling-infrastructure',
-  'muspellheim-common',
-)

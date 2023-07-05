@@ -3,40 +3,145 @@
  * Copyright (c) 2022 Falko Schumann <falko.schumann@muspellheim.de>
  */
 
+import org.apache.tools.ant.taskdefs.condition.Os
+
 plugins {
-  id 'base'
-  id 'jacoco-report-aggregation'
-  id 'test-report-aggregation'
-  id 'muspellheim.groovy-gradle-conventions'
+  id 'checkstyle'
+  id 'jacoco'
+  id 'java'
+  id 'com.diffplug.spotless' version '6.19.0'
+  id 'io.freefair.lombok' version '8.0.1'
+  id 'org.beryx.jlink' version '2.26.0'
+  id 'org.openjfx.javafxplugin' version '0.0.14'
 }
 
-version = '1.1.0'
+group 'de.muspellheim'
+version '1.1.0'
+
+ext {
+  copyrightYear = LocalDate.now().year
+}
 
 repositories {
   mavenCentral()
 }
 
 dependencies {
-  jacocoAggregation project(':activitysampling-application')
-  jacocoAggregation project(':activitysampling-domain')
-  jacocoAggregation project(':activitysampling-infrastructure')
-  testReportAggregation project(':activitysampling-application')
-  testReportAggregation project(':activitysampling-domain')
-  testReportAggregation project(':activitysampling-infrastructure')
+  implementation "com.h2database:h2:2.1.214"
+  implementation 'org.apache.commons:commons-csv:1.10.0'
+  testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
 }
 
-reporting {
+application {
+  mainModule = 'de.muspellheim.activitysampling'
+  mainClass = 'de.muspellheim.activitysampling.application.ActivitySamplingApplication'
+}
+
+sourceCompatibility = 17
+
+java {
+  compileJava {
+    options.release = 17
+    options.encoding = 'utf-8'
+    options.compilerArgs.addAll(['-Xlint:all,-requires-automatic', '-Werror', '-implicit:class'])
+  }
+  compileTestJava {
+    options.release = 17
+    options.encoding = 'utf-8'
+    options.compilerArgs.addAll(['-Xlint:all', '-Werror', '-implicit:class'])
+  }
+}
+
+javafx {
+  version = "20.0.1"
+  modules = ['javafx.controls', 'javafx.fxml']
+}
+
+test {
+  useJUnitPlatform()
+  testLogging {
+    events 'passed', 'skipped', 'failed'
+    showExceptions = true
+    exceptionFormat 'full'
+  }
+  finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+  dependsOn test
   reports {
-    testAggregateTestReport(AggregateTestReport) {
-      testType = TestSuiteType.UNIT_TEST
-    }
-    testCodeCoverageReport(JacocoCoverageReport) {
-      testType = TestSuiteType.UNIT_TEST
+    xml.required = true
+  }
+}
+
+checkstyle {
+  toolVersion = '10.11.0'
+  maxWarnings = 0
+}
+
+spotless {
+  java {
+    googleJavaFormat()
+    licenseHeaderFile 'config/LicenseHeader.txt'
+  }
+  groovyGradle {
+    licenseHeaderFile('config/LicenseHeader.txt', 'plugins|import|rootProject')
+  }
+}
+
+jlink {
+  options = [
+    '--compress', '2',
+    '--include-locales', 'de,en',
+    '--no-header-files',
+    '--no-man-pages',
+    '--strip-native-commands',
+    '--strip-debug',
+  ]
+  jpackage {
+    imageOptions += [
+      '--vendor', 'Muspellheim',
+    ]
+    installerOptions = [
+      '--license-file', "$rootDir/LICENSE.txt",
+    ]
+  }
+}
+
+if (Os.isFamily(Os.FAMILY_MAC)) {
+  jlink {
+    jpackage {
+      imageName = 'Activity Sampling'
+      icon = "$projectDir/src/main/macos/app-icon.icns"
+      imageOptions += [
+        '--copyright', "Copyright © ${copyrightYear} Falko Schumann",
+        '--mac-sign',
+        '--mac-signing-key-user-name', 'Falko Schumann (QC6EN37P56)',
+        '--resource-dir', "$projectDir/src/main/macos",
+      ]
+      installerType = 'dmg'
     }
   }
 }
 
-tasks.named('check') {
-  dependsOn tasks.named('testAggregateTestReport', TestReport)
-  dependsOn tasks.named('testCodeCoverageReport', JacocoReport)
+if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+  jlink {
+    jpackage {
+      imageName = 'Activity Sampling'
+      icon = "$projectDir/src/main/win/app-icon.ico"
+      imageOptions = [
+        '--copyright', "Copyright (c) ${copyrightYear} Falko Schumann",
+        '--resource-dir', "$projectDir/src/main/win",
+      ]
+      installerName = 'Activity Sampling'
+      installerType = 'msi'
+      installerOptions = [
+        '--copyright', "Copyright (c) ${copyrightYear} Falko Schumann",
+        '--win-dir-chooser',
+        '--win-menu',
+        '--win-menu-group', 'Muspellheim',
+        '--win-upgrade-uuid', '755510a8-d4c0-4517-94a9-6c6a1d95bfd6'
+      ]
+    }
+  }
 }
