@@ -3,10 +3,10 @@
  * Copyright (c) 2022 Falko Schumann <falko.schumann@muspellheim.de>
  */
 
-package de.muspellheim.activitysampling.application.timesheet;
+package de.muspellheim.activitysampling.ui.timesheet;
 
-import de.muspellheim.activitysampling.application.shared.ErrorView;
-import de.muspellheim.activitysampling.application.shared.Registry;
+import de.muspellheim.activitysampling.ui.shared.ErrorView;
+import de.muspellheim.activitysampling.ui.shared.Registry;
 import java.time.temporal.ChronoUnit;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

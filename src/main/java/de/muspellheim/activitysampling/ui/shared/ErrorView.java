@@ -3,7 +3,7 @@
  * Copyright (c) 2022 Falko Schumann <falko.schumann@muspellheim.de>
  */
 
-package de.muspellheim.activitysampling.application.shared;
+package de.muspellheim.activitysampling.ui.shared;
 
 import de.muspellheim.common.util.Exceptions;
 import javafx.scene.control.Alert;

@@ -3,11 +3,11 @@
  * Copyright (c) 2022 Falko Schumann <falko.schumann@muspellheim.de>
  */
 
-package de.muspellheim.activitysampling.application.activitysampling;
+package de.muspellheim.activitysampling.ui.activitysampling;
 
-import de.muspellheim.activitysampling.application.shared.ErrorView;
-import de.muspellheim.activitysampling.application.shared.Registry;
-import de.muspellheim.activitysampling.application.timesheet.TimesheetView;
+import de.muspellheim.activitysampling.ui.shared.ErrorView;
+import de.muspellheim.activitysampling.ui.shared.Registry;
+import de.muspellheim.activitysampling.ui.timesheet.TimesheetView;
 import java.time.Duration;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

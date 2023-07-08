@@ -3,10 +3,10 @@
  * Copyright (c) 2022 Falko Schumann <falko.schumann@muspellheim.de>
  */
 
-package de.muspellheim.activitysampling.application;
+package de.muspellheim.activitysampling.ui;
 
-import de.muspellheim.activitysampling.application.activitysampling.ActivitySamplingView;
-import de.muspellheim.activitysampling.application.shared.Configuration;
+import de.muspellheim.activitysampling.ui.activitysampling.ActivitySamplingView;
+import de.muspellheim.activitysampling.ui.shared.Configuration;
 import java.nio.file.Paths;
 import javafx.application.Application;
 import javafx.stage.Stage;

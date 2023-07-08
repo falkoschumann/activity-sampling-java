@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.stage.Stage?>
 
-<fx:root fx:id="stage" title="Activity Sampling" type="Stage" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.muspellheim.activitysampling.application.activitysampling.ActivitySamplingView">
+<fx:root fx:id="stage" title="Activity Sampling" type="Stage" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.muspellheim.activitysampling.ui.activitysampling.ActivitySamplingView">
    <scene>
       <Scene stylesheets="@style.css">
          <root>

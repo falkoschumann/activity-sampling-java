@@ -3,7 +3,7 @@
  * Copyright (c) 2022 Falko Schumann <falko.schumann@muspellheim.de>
  */
 
-package de.muspellheim.activitysampling.application.activitysampling;
+package de.muspellheim.activitysampling.ui.activitysampling;
 
 import java.awt.AWTException;
 import java.awt.EventQueue;

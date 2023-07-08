@@ -6,10 +6,10 @@ module de.muspellheim.activitysampling {
   requires javafx.fxml;
   requires jdk.localedata;
 
-  opens de.muspellheim.activitysampling.application to
+  opens de.muspellheim.activitysampling.ui to
       javafx.graphics;
-  opens de.muspellheim.activitysampling.application.activitysampling to
+  opens de.muspellheim.activitysampling.ui.activitysampling to
       javafx.fxml;
-  opens de.muspellheim.activitysampling.application.timesheet to
+  opens de.muspellheim.activitysampling.ui.timesheet to
       javafx.fxml;
 }

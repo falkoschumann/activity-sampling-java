@@ -3,7 +3,7 @@
  * Copyright (c) 2022 Falko Schumann <falko.schumann@muspellheim.de>
  */
 
-package de.muspellheim.activitysampling.application.shared;
+package de.muspellheim.activitysampling.ui.shared;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;

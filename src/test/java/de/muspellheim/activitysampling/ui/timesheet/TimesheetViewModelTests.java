@@ -3,12 +3,12 @@
  * Copyright (c) 2022 Falko Schumann <falko.schumann@muspellheim.de>
  */
 
-package de.muspellheim.activitysampling.application.timesheet;
+package de.muspellheim.activitysampling.ui.timesheet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import de.muspellheim.activitysampling.application.ActivitiesServiceStub;
+import de.muspellheim.activitysampling.ui.ActivitiesServiceStub;
 import de.muspellheim.activitysampling.domain.Timesheet;
 import de.muspellheim.common.util.ConfigurableResponses;
 import de.muspellheim.common.util.Exceptions;

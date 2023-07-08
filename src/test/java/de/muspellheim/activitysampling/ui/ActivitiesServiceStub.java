@@ -3,7 +3,7 @@
  * Copyright (c) 2023 Falko Schumann <falko.schumann@muspellheim.de>
  */
 
-package de.muspellheim.activitysampling.application;
+package de.muspellheim.activitysampling.ui;
 
 import de.muspellheim.activitysampling.domain.ActivitiesService;
 import de.muspellheim.activitysampling.domain.Activity;
