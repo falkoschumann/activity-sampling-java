@@ -1,4 +1,4 @@
-# Activity Sampling
+ # Activity Sampling
 
 Periodically ask the user about their current activity and log it for analysis.
 
@@ -21,4 +21,8 @@ Periodically ask the user about their current activity and log it for analysis.
 
 ## Domain
 
-![Event Modelling](event-modelling.png)
+![Domain](domain.png)
+
+## ER Diagram
+
+![ER Diagram](er-diagram.png)
