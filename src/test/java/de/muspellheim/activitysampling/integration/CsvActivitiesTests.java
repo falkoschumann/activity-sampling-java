@@ -39,7 +39,7 @@ class CsvActivitiesTests {
   }
 
   @Test
-  void findInPeriod_FileExists_ReturnsAppendedEvents() {
+  void findInPeriod_FileExists_ReturnsEvents() {
     sut.append(createActivity1());
     sut.append(createActivity2());
     sut.append(createActivity3());

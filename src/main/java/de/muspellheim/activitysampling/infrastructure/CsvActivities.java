@@ -36,6 +36,20 @@ public class CsvActivities implements Activities {
   }
 
   @Override
+  public void append(Activity activity) {
+    try (var printer = newPrinter()) {
+      printer.printRecord(
+          activity.timestamp().truncatedTo(ChronoUnit.SECONDS),
+          activity.duration(),
+          activity.client(),
+          activity.project(),
+          activity.notes());
+    } catch (Exception e) {
+      throw new IllegalStateException("Failed to append activity to file " + file, e);
+    }
+  }
+
+  @Override
   public List<Activity> findInPeriod(LocalDate from, LocalDate to) {
     try (var parser = newParser()) {
       return parser.stream().map(this::parseActivity).filter(a -> isBetween(a, from, to)).toList();
@@ -44,6 +58,19 @@ public class CsvActivities implements Activities {
     } catch (Exception e) {
       throw new IllegalStateException("Failed to find activities in period from file " + file, e);
     }
+  }
+
+  private CSVPrinter newPrinter() throws IOException {
+    var format = newFormat();
+    return new CSVPrinter(
+        Files.newBufferedWriter(
+            file, StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.APPEND),
+        format);
+  }
+
+  private CSVParser newParser() throws IOException {
+    var format = newFormat();
+    return new CSVParser(Files.newBufferedReader(file), format);
   }
 
   private Activity parseActivity(CSVRecord csvRecord) {
@@ -58,33 +85,6 @@ public class CsvActivities implements Activities {
   private boolean isBetween(Activity activity, LocalDate from, LocalDate to) {
     var date = activity.timestamp().toLocalDate();
     return !date.isBefore(from) && !date.isAfter(to);
-  }
-
-  private CSVParser newParser() throws IOException {
-    var format = newFormat();
-    return new CSVParser(Files.newBufferedReader(file), format);
-  }
-
-  @Override
-  public void append(Activity activity) {
-    try (var printer = newPrinter()) {
-      printer.printRecord(
-          activity.timestamp().truncatedTo(ChronoUnit.SECONDS),
-          activity.duration(),
-          activity.client(),
-          activity.project(),
-          activity.notes());
-    } catch (Exception e) {
-      throw new IllegalStateException("Failed to append activity to file " + file, e);
-    }
-  }
-
-  private CSVPrinter newPrinter() throws IOException {
-    var format = newFormat();
-    return new CSVPrinter(
-        Files.newBufferedWriter(
-            file, StandardOpenOption.APPEND, StandardOpenOption.APPEND, StandardOpenOption.CREATE),
-        format);
   }
 
   private CSVFormat newFormat() {
