@@ -3,13 +3,14 @@
  * Copyright (c) 2022 Falko Schumann <falko.schumann@muspellheim.de>
  */
 
-package de.muspellheim.activitysampling.ui.activitysampling;
+package de.muspellheim.activitysampling.e2e;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import de.muspellheim.activitysampling.ui.ActivitiesServiceStub;
 import de.muspellheim.activitysampling.domain.Activity;
 import de.muspellheim.activitysampling.domain.RecentActivities;
+import de.muspellheim.activitysampling.ui.activitysampling.ActivityItem;
+import de.muspellheim.activitysampling.ui.activitysampling.ActivitySamplingViewModel;
 import de.muspellheim.activitysampling.util.ConfigurableResponses;
 import de.muspellheim.activitysampling.util.Exceptions;
 import de.muspellheim.activitysampling.util.OutputTracker;

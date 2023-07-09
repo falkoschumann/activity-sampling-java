@@ -32,7 +32,7 @@ import javafx.beans.value.ObservableStringValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-class ActivitySamplingViewModel {
+public class ActivitySamplingViewModel {
   private final ActivitiesService activitiesService;
   private final Locale locale;
   private final Clock clock;
@@ -53,7 +53,8 @@ class ActivitySamplingViewModel {
     this(activitiesService, Locale.getDefault(), Clock.systemDefaultZone());
   }
 
-  ActivitySamplingViewModel(ActivitiesService activitiesService, Locale locale, Clock clock) {
+  public ActivitySamplingViewModel(
+      ActivitiesService activitiesService, Locale locale, Clock clock) {
     this.activitiesService = activitiesService;
     this.locale = locale;
     this.clock = clock;
@@ -76,7 +77,7 @@ class ActivitySamplingViewModel {
     countdownElapsed.removeListener(listener);
   }
 
-  OutputTracker<LocalDateTime> trackCountdownElapsed() {
+  public OutputTracker<LocalDateTime> trackCountdownElapsed() {
     return new OutputTracker<>(countdownElapsed);
   }
 
@@ -90,7 +91,7 @@ class ActivitySamplingViewModel {
     errorOccurred.removeListener(listener);
   }
 
-  OutputTracker<Throwable> trackErrorOccurred() {
+  public OutputTracker<Throwable> trackErrorOccurred() {
     return new OutputTracker<>(errorOccurred);
   }
 
@@ -109,7 +110,7 @@ class ActivitySamplingViewModel {
     return stopMenuItemDisable;
   }
 
-  final boolean isStopMenuItemDisable() {
+  public final boolean isStopMenuItemDisable() {
     return stopMenuItemDisable.get();
   }
 
@@ -121,7 +122,7 @@ class ActivitySamplingViewModel {
     return formDisable;
   }
 
-  final boolean isFormDisable() {
+  public final boolean isFormDisable() {
     return formDisable.get();
   }
 
@@ -133,11 +134,11 @@ class ActivitySamplingViewModel {
     return clientText;
   }
 
-  final String getClientText() {
+  public final String getClientText() {
     return clientText.get();
   }
 
-  final void setClientText(String value) {
+  public final void setClientText(String value) {
     clientTextProperty().set(value);
   }
 
@@ -149,11 +150,11 @@ class ActivitySamplingViewModel {
     return projectText;
   }
 
-  final String getProjectText() {
+  public final String getProjectText() {
     return projectText.get();
   }
 
-  final void setProjectText(String value) {
+  public final void setProjectText(String value) {
     projectTextProperty().set(value);
   }
 
@@ -165,11 +166,11 @@ class ActivitySamplingViewModel {
     return notesText;
   }
 
-  final String getNotesText() {
+  public final String getNotesText() {
     return notesText.get();
   }
 
-  final void setNotesText(String value) {
+  public final void setNotesText(String value) {
     notesTextProperty().set(value);
   }
 
@@ -184,7 +185,7 @@ class ActivitySamplingViewModel {
     return logButtonDisable;
   }
 
-  final boolean isLogButtonDisable() {
+  public final boolean isLogButtonDisable() {
     return logButtonDisable.get();
   }
 
@@ -198,7 +199,7 @@ class ActivitySamplingViewModel {
     return countdownLabelText;
   }
 
-  final String getCountdownLabelText() {
+  public final String getCountdownLabelText() {
     return countdownLabelText.get();
   }
 
@@ -220,7 +221,7 @@ class ActivitySamplingViewModel {
     return countdownProgress;
   }
 
-  final double getCountdownProgress() {
+  public final double getCountdownProgress() {
     return countdownProgress.get();
   }
 
@@ -229,7 +230,7 @@ class ActivitySamplingViewModel {
   private final ObservableList<ActivityItem> recentActivityItems =
       FXCollections.observableArrayList();
 
-  final ObservableList<ActivityItem> getRecentActivities() {
+  public final ObservableList<ActivityItem> getRecentActivities() {
     return recentActivityItems;
   }
 
@@ -241,7 +242,7 @@ class ActivitySamplingViewModel {
     return hoursTodayLabelText.getReadOnlyProperty();
   }
 
-  final String getHoursTodayLabelText() {
+  public final String getHoursTodayLabelText() {
     return hoursTodayLabelText.get();
   }
 
@@ -253,7 +254,7 @@ class ActivitySamplingViewModel {
     return hoursYesterdayLabelText.getReadOnlyProperty();
   }
 
-  final String getHoursYesterdayLabelText() {
+  public final String getHoursYesterdayLabelText() {
     return hoursYesterdayLabelText.get();
   }
 
@@ -265,7 +266,7 @@ class ActivitySamplingViewModel {
     return hoursThisWeekLabelText.getReadOnlyProperty();
   }
 
-  final String getHoursThisWeekLabelText() {
+  public final String getHoursThisWeekLabelText() {
     return hoursThisWeekLabelText.get();
   }
 
@@ -277,7 +278,7 @@ class ActivitySamplingViewModel {
     return hoursThisMonthLabelText.getReadOnlyProperty();
   }
 
-  final String getHoursThisMonthLabelText() {
+  public final String getHoursThisMonthLabelText() {
     return hoursThisMonthLabelText.get();
   }
 
@@ -287,7 +288,7 @@ class ActivitySamplingViewModel {
    *                                                                         *
    **************************************************************************/
 
-  void load() {
+  public void load() {
     try {
       var recentActivities = activitiesService.getRecentActivities();
       updateActivityItems(recentActivities);
@@ -316,7 +317,7 @@ class ActivitySamplingViewModel {
     hoursThisMonthLabelText.set(Durations.format(timeSummary.hoursThisMonth(), FormatStyle.SHORT));
   }
 
-  void logActivity() {
+  public void logActivity() {
     try {
       activitiesService.logActivity(
           new Activity(
@@ -332,14 +333,14 @@ class ActivitySamplingViewModel {
     }
   }
 
-  void startCountdown(Duration interval) {
+  public void startCountdown(Duration interval) {
     this.interval = interval;
     countdown.set(interval);
     countdownActive.set(true);
     intervalLogged.set(true);
   }
 
-  void progressCountdown(Duration duration) {
+  public void progressCountdown(Duration duration) {
     if (!countdownActive.get()) {
       return;
     }
@@ -352,7 +353,7 @@ class ActivitySamplingViewModel {
     }
   }
 
-  void stopCountdown() {
+  public void stopCountdown() {
     countdownActive.set(false);
   }
 }

@@ -27,7 +27,7 @@ import javafx.beans.value.ObservableStringValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-class TimesheetViewModel {
+public class TimesheetViewModel {
   private final ActivitiesService activitiesService;
   private DateTimeFormatter dateFormatter;
 
@@ -45,7 +45,7 @@ class TimesheetViewModel {
     this(activitiesService, Locale.getDefault(), Clock.systemDefaultZone());
   }
 
-  TimesheetViewModel(ActivitiesService activitiesService, Locale locale, Clock clock) {
+  public TimesheetViewModel(ActivitiesService activitiesService, Locale locale, Clock clock) {
     this.activitiesService = activitiesService;
     dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale);
     initPeriodWithCurrentWeek(clock);
@@ -76,7 +76,7 @@ class TimesheetViewModel {
     errorOccurred.removeListener(listener);
   }
 
-  OutputTracker<Throwable> trackErrorOccurred() {
+  public OutputTracker<Throwable> trackErrorOccurred() {
     return new OutputTracker<>(errorOccurred);
   }
 
@@ -116,11 +116,11 @@ class TimesheetViewModel {
     return period;
   }
 
-  ChronoUnit getPeriod() {
+  public ChronoUnit getPeriod() {
     return period.get();
   }
 
-  void setPeriod(ChronoUnit value) {
+  public void setPeriod(ChronoUnit value) {
     periodProperty().set(value);
   }
 
@@ -134,7 +134,7 @@ class TimesheetViewModel {
     return title1;
   }
 
-  String getTitle1() {
+  public String getTitle1() {
     return title1.get();
   }
 
@@ -153,7 +153,7 @@ class TimesheetViewModel {
     return title2;
   }
 
-  String getTitle2() {
+  public String getTitle2() {
     return title2.get();
   }
 
@@ -161,7 +161,7 @@ class TimesheetViewModel {
 
   private final ObservableList<TimesheetItem> timesheetItems = FXCollections.observableArrayList();
 
-  ObservableList<TimesheetItem> getTimesheetItems() {
+  public ObservableList<TimesheetItem> getTimesheetItems() {
     return timesheetItems;
   }
 
@@ -173,7 +173,7 @@ class TimesheetViewModel {
     return total.getReadOnlyProperty();
   }
 
-  String getTotal() {
+  public String getTotal() {
     return total.get();
   }
 
@@ -183,7 +183,7 @@ class TimesheetViewModel {
    *                                                                         *
    **************************************************************************/
 
-  void load() {
+  public void load() {
     try {
       var timesheet = activitiesService.getTimesheet(from.get(), to.get());
       updateTimesheetItems(timesheet);
@@ -209,7 +209,7 @@ class TimesheetViewModel {
     total.set(Durations.format(timesheet.total(), FormatStyle.SHORT));
   }
 
-  void back() {
+  public void back() {
     switch (period.get()) {
       case DAYS -> {
         from.set(from.get().minusDays(1));
@@ -232,7 +232,7 @@ class TimesheetViewModel {
     load();
   }
 
-  void forward() {
+  public void forward() {
     switch (period.get()) {
       case DAYS -> {
         from.set(from.get().plusDays(1));

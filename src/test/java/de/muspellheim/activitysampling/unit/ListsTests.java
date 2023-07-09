@@ -3,10 +3,11 @@
  * Copyright (c) 2023 Falko Schumann <falko.schumann@muspellheim.de>
  */
 
-package de.muspellheim.activitysampling.util;
+package de.muspellheim.activitysampling.unit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import de.muspellheim.activitysampling.util.Lists;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 

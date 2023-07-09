@@ -3,13 +3,20 @@
  * Copyright (c) 2022 Falko Schumann <falko.schumann@muspellheim.de>
  */
 
-package de.muspellheim.activitysampling.domain;
+package de.muspellheim.activitysampling.unit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import de.muspellheim.activitysampling.domain.ActivitiesServiceImpl;
+import de.muspellheim.activitysampling.domain.Activity;
+import de.muspellheim.activitysampling.domain.RecentActivities;
+import de.muspellheim.activitysampling.domain.TimeSummary;
+import de.muspellheim.activitysampling.domain.Timesheet;
+import de.muspellheim.activitysampling.domain.WorkingDay;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -40,7 +47,7 @@ class ActivitiesServiceTests {
 
     var activities = sut.getRecentActivities();
 
-    assertEquals(
+    Assertions.assertEquals(
         new RecentActivities(
             List.of(new WorkingDay(now.toLocalDate(), List.of(activity))),
             new TimeSummary(
@@ -58,7 +65,7 @@ class ActivitiesServiceTests {
 
     var timesheet = sut.getTimesheet(now.toLocalDate(), now.toLocalDate());
 
-    assertEquals(
+    Assertions.assertEquals(
         new Timesheet(
             List.of(
                 new Timesheet.Entry(

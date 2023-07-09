@@ -51,7 +51,7 @@ public record Timesheet(List<Entry> entries, Duration total) {
     Objects.requireNonNull(total, "The total must not be null.");
   }
 
-  static Timesheet of(List<Activity> activities) {
+  public static Timesheet of(List<Activity> activities) {
     var entries = new ArrayList<Entry>();
     var total = Duration.ZERO;
     for (var a : activities) {

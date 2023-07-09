@@ -12,8 +12,8 @@ import java.time.format.FormatStyle;
 import java.util.Locale;
 import java.util.Objects;
 
-record ActivityItem(String text, String description) {
-  ActivityItem {
+public record ActivityItem(String text, String description) {
+  public ActivityItem {
     Objects.requireNonNull(text, "The text must not be null.");
   }
 

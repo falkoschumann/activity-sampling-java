@@ -3,8 +3,10 @@
  * Copyright (c) 2023 Falko Schumann <falko.schumann@muspellheim.de>
  */
 
-package de.muspellheim.activitysampling.domain;
+package de.muspellheim.activitysampling.unit;
 
+import de.muspellheim.activitysampling.domain.Activities;
+import de.muspellheim.activitysampling.domain.Activity;
 import java.io.Serial;
 import java.time.LocalDate;
 import java.util.ArrayList;

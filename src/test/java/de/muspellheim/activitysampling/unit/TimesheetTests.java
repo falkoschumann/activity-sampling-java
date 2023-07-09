@@ -3,10 +3,12 @@
  * Copyright (c) 2023 Falko Schumann <falko.schumann@muspellheim.de>
  */
 
-package de.muspellheim.activitysampling.domain;
+package de.muspellheim.activitysampling.unit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import de.muspellheim.activitysampling.domain.Activity;
+import de.muspellheim.activitysampling.domain.Timesheet;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

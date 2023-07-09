@@ -3,11 +3,12 @@
  * Copyright (c) 2023 Falko Schumann <falko.schumann@muspellheim.de>
  */
 
-package de.muspellheim.activitysampling.util;
+package de.muspellheim.activitysampling.unit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import de.muspellheim.activitysampling.util.Durations;
 import java.time.Duration;
 import java.time.format.FormatStyle;
 import org.junit.jupiter.api.Test;
