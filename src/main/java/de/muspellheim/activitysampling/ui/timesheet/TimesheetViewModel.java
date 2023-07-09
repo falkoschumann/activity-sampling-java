@@ -5,7 +5,7 @@
 
 package de.muspellheim.activitysampling.ui.timesheet;
 
-import de.muspellheim.activitysampling.domain.ActivitiesService;
+import de.muspellheim.activitysampling.application.ActivitiesService;
 import de.muspellheim.activitysampling.domain.Timesheet;
 import de.muspellheim.activitysampling.util.Durations;
 import de.muspellheim.activitysampling.util.EventEmitter;

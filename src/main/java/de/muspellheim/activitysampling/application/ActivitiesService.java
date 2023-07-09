@@ -3,8 +3,11 @@
  * Copyright (c) 2022 Falko Schumann <falko.schumann@muspellheim.de>
  */
 
-package de.muspellheim.activitysampling.domain;
+package de.muspellheim.activitysampling.application;
 
+import de.muspellheim.activitysampling.domain.Activity;
+import de.muspellheim.activitysampling.domain.RecentActivities;
+import de.muspellheim.activitysampling.domain.Timesheet;
 import java.time.LocalDate;
 
 public interface ActivitiesService {

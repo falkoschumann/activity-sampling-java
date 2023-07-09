@@ -7,7 +7,7 @@ package de.muspellheim.activitysampling.unit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import de.muspellheim.activitysampling.domain.ActivitiesServiceImpl;
+import de.muspellheim.activitysampling.application.ActivitiesServiceImpl;
 import de.muspellheim.activitysampling.domain.Activity;
 import de.muspellheim.activitysampling.domain.RecentActivities;
 import de.muspellheim.activitysampling.domain.TimeSummary;
