@@ -18,13 +18,13 @@ import org.junit.jupiter.api.Test;
 
 class TimeSummaryTests {
   @Test
-  void of_MultipleActivitiesToday_SumsHours() {
+  void from_MultipleActivitiesToday_SumsHours() {
     var today = LocalDate.now();
     var activities =
         List.of(
             newActivity(today, Duration.ofMinutes(5)), newActivity(today, Duration.ofMinutes(10)));
 
-    var summary = TimeSummary.of(today, activities);
+    var summary = TimeSummary.from(today, activities);
 
     assertEquals(
         TimeSummary.builder()
@@ -37,7 +37,7 @@ class TimeSummaryTests {
   }
 
   @Test
-  void of_MultipleActivitiesYesterday_SumsHours() {
+  void from_MultipleActivitiesYesterday_SumsHours() {
     var today = LocalDate.of(2023, 4, 7);
     var yesterday = today.minusDays(1);
     var activities =
@@ -46,7 +46,7 @@ class TimeSummaryTests {
             newActivity(yesterday, Duration.ofMinutes(12)),
             newActivity(yesterday, Duration.ofMinutes(20)));
 
-    var summary = TimeSummary.of(today, activities);
+    var summary = TimeSummary.from(today, activities);
 
     assertEquals(
         TimeSummary.builder()
@@ -59,7 +59,7 @@ class TimeSummaryTests {
   }
 
   @Test
-  void of_MultipleActivitiesThisWeek_SumsHours() {
+  void from_MultipleActivitiesThisWeek_SumsHours() {
     var thursday = LocalDate.of(2023, 4, 6);
     var wednesday = LocalDate.of(2023, 4, 5);
     var monday = LocalDate.of(2023, 4, 3);
@@ -69,7 +69,7 @@ class TimeSummaryTests {
             newActivity(wednesday, Duration.ofMinutes(12)),
             newActivity(thursday, Duration.ofMinutes(8)));
 
-    var summary = TimeSummary.of(thursday, activities);
+    var summary = TimeSummary.from(thursday, activities);
 
     assertEquals(
         TimeSummary.builder()
@@ -82,7 +82,7 @@ class TimeSummaryTests {
   }
 
   @Test
-  void of_MultipleActivitiesThisMonth_SumsHours() {
+  void from_MultipleActivitiesThisMonth_SumsHours() {
     var day24 = LocalDate.of(2023, 3, 24);
     var day23 = LocalDate.of(2023, 3, 23);
     var day22SameWeek = LocalDate.of(2023, 3, 22);
@@ -94,7 +94,7 @@ class TimeSummaryTests {
             newActivity(day23, Duration.ofMinutes(8)),
             newActivity(day24, Duration.ofMinutes(12)));
 
-    var summary = TimeSummary.of(day24, activities);
+    var summary = TimeSummary.from(day24, activities);
 
     assertEquals(
         TimeSummary.builder()
@@ -107,7 +107,7 @@ class TimeSummaryTests {
   }
 
   @Test
-  void of_IgnoresTheLastMonth() {
+  void from_IgnoresTheLastMonth() {
     var thisMonthDay1 = LocalDate.of(2023, 4, 1);
     var lastMonthDay31 = LocalDate.of(2023, 3, 31);
     var activities =
@@ -115,7 +115,7 @@ class TimeSummaryTests {
             newActivity(lastMonthDay31, Duration.ofMinutes(8)),
             newActivity(thisMonthDay1, Duration.ofMinutes(12)));
 
-    var summary = TimeSummary.of(thisMonthDay1, activities);
+    var summary = TimeSummary.from(thisMonthDay1, activities);
 
     assertEquals(
         TimeSummary.builder()
@@ -128,7 +128,7 @@ class TimeSummaryTests {
   }
 
   @Test
-  void of_WeekOverlapsEndOfYear_SumsUpTheWholeWeek() {
+  void from_WeekOverlapsEndOfYear_SumsUpTheWholeWeek() {
     var monday = LocalDate.of(2022, 12, 26);
     var saturday = LocalDate.of(2022, 12, 31);
     var sunday = LocalDate.of(2023, 1, 1);
@@ -138,7 +138,7 @@ class TimeSummaryTests {
             newActivity(saturday, Duration.ofMinutes(12)),
             newActivity(sunday, Duration.ofMinutes(8)));
 
-    var summary = TimeSummary.of(sunday, activities);
+    var summary = TimeSummary.from(sunday, activities);
 
     assertEquals(
         TimeSummary.builder()
@@ -151,7 +151,7 @@ class TimeSummaryTests {
   }
 
   @Test
-  void of_IgnoresLastWeek() {
+  void from_IgnoresLastWeek() {
     var sunday = LocalDate.of(2023, 6, 4);
     var monday = LocalDate.of(2023, 6, 5);
     var activities =
@@ -159,7 +159,7 @@ class TimeSummaryTests {
             newActivity(sunday, Duration.ofMinutes(8)),
             newActivity(monday, Duration.ofMinutes(12)));
 
-    var summary = TimeSummary.of(monday, activities);
+    var summary = TimeSummary.from(monday, activities);
 
     assertEquals(
         TimeSummary.builder()
@@ -172,7 +172,7 @@ class TimeSummaryTests {
   }
 
   @Test
-  void of_ActivityTomorrow_IgnoresTheFuture() {
+  void from_ActivityTomorrow_IgnoresTheFuture() {
     var today = LocalDate.now();
     var tomorrow = today.plusDays(1);
     var activities =
@@ -180,7 +180,7 @@ class TimeSummaryTests {
             newActivity(today, Duration.ofMinutes(5)),
             newActivity(tomorrow, Duration.ofMinutes(10)));
 
-    var summary = TimeSummary.of(today, activities);
+    var summary = TimeSummary.from(today, activities);
 
     assertEquals(
         TimeSummary.builder()

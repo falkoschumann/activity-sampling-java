@@ -18,19 +18,19 @@ import org.junit.jupiter.api.Test;
 
 class TimesheetTests {
   @Test
-  void of_NoActivities_CreatesEmptyTimesheet() {
-    var timesheet = Timesheet.of(List.of());
+  void from_NoActivities_CreatesEmptyTimesheet() {
+    var timesheet = Timesheet.from(List.of());
 
     assertEquals(new Timesheet(List.of()), timesheet);
     assertEquals(Duration.ZERO, timesheet.total());
   }
 
   @Test
-  void of_OneActivity_CreatesTimesheetWithOneEntry() {
+  void from_OneActivity_CreatesTimesheetWithOneEntry() {
     var today = LocalDate.now();
     var a = newActivity(today, "c", "p", "n");
 
-    var timesheet = Timesheet.of(List.of(a));
+    var timesheet = Timesheet.from(List.of(a));
 
     assertEquals(
         new Timesheet(
@@ -47,12 +47,12 @@ class TimesheetTests {
   }
 
   @Test
-  void of_RepetitiveActivity_CreatesTimesheetWithOneSummarizedEntry() {
+  void from_RepetitiveActivity_CreatesTimesheetWithOneSummarizedEntry() {
     var today = LocalDate.now();
     var a1 = newActivity(today, "c", "p", "n");
     var a2 = newActivity(today, "c", "p", "n");
 
-    var timesheet = Timesheet.of(List.of(a1, a2));
+    var timesheet = Timesheet.from(List.of(a1, a2));
 
     assertEquals(
         new Timesheet(
@@ -69,7 +69,7 @@ class TimesheetTests {
   }
 
   @Test
-  void of_MultipleActivities_CreatesTimesheetWithEntriesOrderedByDateClientProjectAndNotes() {
+  void from_MultipleActivities_CreatesTimesheetWithEntriesOrderedByDateClientProjectAndNotes() {
     var today = LocalDate.now();
     var yesterday = today.minusDays(1);
     var y1 = newActivity(yesterday, "c2", "p2", "n2");
@@ -78,7 +78,7 @@ class TimesheetTests {
     var t3 = newActivity(today, "c1", "p1", "n1");
     var t4 = newActivity(today, "c2", "p2", "n1");
 
-    var timesheet = Timesheet.of(List.of(y1, t1, t2, t3, t4));
+    var timesheet = Timesheet.from(List.of(y1, t1, t2, t3, t4));
 
     assertEquals(
         new Timesheet(

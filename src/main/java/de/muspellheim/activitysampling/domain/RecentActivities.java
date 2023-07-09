@@ -17,7 +17,7 @@ public record RecentActivities(List<WorkingDay> workingDays, TimeSummary timeSum
     Objects.requireNonNull(timeSummary, "The time summary must not be null.");
   }
 
-  public static RecentActivities of(LocalDate today, List<Activity> activities) {
-    return new RecentActivities(WorkingDay.of(activities), TimeSummary.of(today, activities));
+  public static RecentActivities from(LocalDate today, List<Activity> activities) {
+    return new RecentActivities(WorkingDay.from(activities), TimeSummary.from(today, activities));
   }
 }

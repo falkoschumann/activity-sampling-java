@@ -29,12 +29,12 @@ public class ActivitiesServiceImpl implements ActivitiesService {
     var today = LocalDate.now();
     var start = today.minus(Period.ofDays(31));
     var activities = this.activities.findInPeriod(start, today);
-    return RecentActivities.of(today, activities);
+    return RecentActivities.from(today, activities);
   }
 
   @Override
   public Timesheet getTimesheet(LocalDate from, LocalDate to) {
     var activities = this.activities.findInPeriod(from, to);
-    return Timesheet.of(activities);
+    return Timesheet.from(activities);
   }
 }

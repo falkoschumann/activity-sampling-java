@@ -7,6 +7,7 @@ package de.muspellheim.activitysampling.unit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import de.muspellheim.activitysampling.application.ActivitiesService;
 import de.muspellheim.activitysampling.application.ActivitiesServiceImpl;
 import de.muspellheim.activitysampling.domain.Activity;
 import de.muspellheim.activitysampling.domain.RecentActivities;
@@ -22,7 +23,7 @@ import org.junit.jupiter.api.Test;
 
 class ActivitiesServiceTests {
   private FakeActivities activitiesRepository;
-  private ActivitiesServiceImpl sut;
+  private ActivitiesService sut;
 
   @BeforeEach
   void init() {
@@ -42,14 +43,18 @@ class ActivitiesServiceTests {
   @Test
   void getRecentActivities() {
     var now = LocalDateTime.now();
-    var activity = newActivity(now);
-    activitiesRepository.add(activity);
+    var lastMonth = now.minusDays(31);
+    var activityLastMonth = newActivity(lastMonth);
+    var activityToday = newActivity(now);
+    activitiesRepository.addAll(List.of(activityLastMonth, activityToday));
 
     var activities = sut.getRecentActivities();
 
     Assertions.assertEquals(
         new RecentActivities(
-            List.of(new WorkingDay(now.toLocalDate(), List.of(activity))),
+            List.of(
+                new WorkingDay(now.toLocalDate(), List.of(activityToday)),
+                new WorkingDay(lastMonth.toLocalDate(), List.of(activityLastMonth))),
             TimeSummary.builder()
                 .hoursToday(Duration.ofMinutes(30))
                 .hoursYesterday(Duration.ZERO)

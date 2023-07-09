@@ -50,7 +50,7 @@ public record Timesheet(List<Entry> entries) {
     Objects.requireNonNull(entries, "The entries must not be null.");
   }
 
-  public static Timesheet of(List<Activity> activities) {
+  public static Timesheet from(List<Activity> activities) {
     var entries = new ArrayList<Entry>();
     for (var a : activities) {
       var date = a.timestamp().toLocalDate();

@@ -25,7 +25,7 @@ public record TimeSummary(
     Objects.requireNonNull(hoursThisMonth, "The hours this month must not be null.");
   }
 
-  public static TimeSummary of(LocalDate today, List<Activity> activities) {
+  public static TimeSummary from(LocalDate today, List<Activity> activities) {
     var hoursToday = Duration.ZERO;
     var hoursYesterday = Duration.ZERO;
     var hoursThisWeek = Duration.ZERO;

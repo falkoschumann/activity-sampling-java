@@ -19,7 +19,7 @@ public record WorkingDay(LocalDate date, List<Activity> activities) {
         List.copyOf(Objects.requireNonNull(activities, "The activities must not be null."));
   }
 
-  public static List<WorkingDay> of(List<Activity> activities) {
+  public static List<WorkingDay> from(List<Activity> activities) {
     var workingDays = new ArrayList<WorkingDay>();
     for (var activity : activities) {
       var date = activity.timestamp().toLocalDate();

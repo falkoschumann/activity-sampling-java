@@ -57,7 +57,7 @@ class ActivitySamplingViewModelTests {
   void load_Successfully_RefreshesRecentActivitiesAndTimeSummary() {
     activitiesService.initRecentActivitiesResponses(
         ConfigurableResponses.sequence(
-            RecentActivities.of(
+            RecentActivities.from(
                 LocalDate.of(2022, 11, 16),
                 List.of(
                     new Activity(

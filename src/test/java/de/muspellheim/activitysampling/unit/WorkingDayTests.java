@@ -18,27 +18,27 @@ import org.junit.jupiter.api.Test;
 
 class WorkingDayTests {
   @Test
-  void of_MultipleActivitiesOnSameDay_SortsActivitiesByTimeDescending() {
+  void from_MultipleActivitiesOnSameDay_SortsActivitiesByTimeDescending() {
     var today = LocalDate.now();
-    var a = newActivity(today, LocalTime.of(11, 0));
-    var b = newActivity(today, LocalTime.of(12, 0));
+    var a1 = newActivity(today, LocalTime.of(11, 0));
+    var a2 = newActivity(today, LocalTime.of(12, 0));
 
-    var days = WorkingDay.of(List.of(a, b));
+    var days = WorkingDay.from(List.of(a1, a2));
 
-    assertEquals(days, List.of(new WorkingDay(today, List.of(b, a))));
+    assertEquals(days, List.of(new WorkingDay(today, List.of(a2, a1))));
   }
 
   @Test
-  void of_MultipleActivitiesOnDifferentDays_SortsDatesDescending() {
+  void from_MultipleActivitiesOnDifferentDays_SortsDatesDescending() {
     var today = LocalDate.now();
     var yesterday = today.minusDays(1);
-    var a = newActivity(yesterday, LocalTime.of(12, 0));
-    var b = newActivity(today, LocalTime.of(12, 0));
+    var a1 = newActivity(yesterday, LocalTime.of(12, 0));
+    var a2 = newActivity(today, LocalTime.of(12, 0));
 
-    var days = WorkingDay.of(List.of(a, b));
+    var days = WorkingDay.from(List.of(a1, a2));
 
     assertEquals(
-        days, List.of(new WorkingDay(today, List.of(b)), new WorkingDay(yesterday, List.of(a))));
+        days, List.of(new WorkingDay(today, List.of(a2)), new WorkingDay(yesterday, List.of(a1))));
   }
 
   private static Activity newActivity(LocalDate date, LocalTime time) {
