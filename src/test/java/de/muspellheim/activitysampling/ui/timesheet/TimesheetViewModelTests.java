@@ -10,9 +10,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import de.muspellheim.activitysampling.ui.ActivitiesServiceStub;
 import de.muspellheim.activitysampling.domain.Timesheet;
-import de.muspellheim.common.util.ConfigurableResponses;
-import de.muspellheim.common.util.Exceptions;
-import de.muspellheim.common.util.OutputTracker;
+import de.muspellheim.activitysampling.util.ConfigurableResponses;
+import de.muspellheim.activitysampling.util.Exceptions;
+import de.muspellheim.activitysampling.util.OutputTracker;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;

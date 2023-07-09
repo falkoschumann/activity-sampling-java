@@ -5,7 +5,7 @@
 
 package de.muspellheim.activitysampling.domain;
 
-import de.muspellheim.common.util.Lists;
+import de.muspellheim.activitysampling.util.Lists;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;

@@ -5,8 +5,8 @@
 
 package de.muspellheim.activitysampling.domain;
 
-import de.muspellheim.common.util.Lists;
-import de.muspellheim.common.util.Strings;
+import de.muspellheim.activitysampling.util.Lists;
+import de.muspellheim.activitysampling.util.Strings;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;

@@ -9,9 +9,9 @@ import de.muspellheim.activitysampling.domain.ActivitiesService;
 import de.muspellheim.activitysampling.domain.Activity;
 import de.muspellheim.activitysampling.domain.RecentActivities;
 import de.muspellheim.activitysampling.domain.Timesheet;
-import de.muspellheim.common.util.ConfigurableResponses;
-import de.muspellheim.common.util.EventEmitter;
-import de.muspellheim.common.util.OutputTracker;
+import de.muspellheim.activitysampling.util.ConfigurableResponses;
+import de.muspellheim.activitysampling.util.EventEmitter;
+import de.muspellheim.activitysampling.util.OutputTracker;
 import java.time.LocalDate;
 
 public class ActivitiesServiceStub implements ActivitiesService {

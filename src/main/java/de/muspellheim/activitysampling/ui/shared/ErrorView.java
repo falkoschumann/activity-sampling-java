@@ -5,7 +5,7 @@
 
 package de.muspellheim.activitysampling.ui.shared;
 
-import de.muspellheim.common.util.Exceptions;
+import de.muspellheim.activitysampling.util.Exceptions;
 import javafx.scene.control.Alert;
 
 public class ErrorView {

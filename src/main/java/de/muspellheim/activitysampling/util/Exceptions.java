@@ -3,7 +3,7 @@
  * Copyright (c) 2022 Falko Schumann <falko.schumann@muspellheim.de>
  */
 
-package de.muspellheim.common.util;
+package de.muspellheim.activitysampling.util;
 
 import java.util.ArrayList;
 import java.util.List;

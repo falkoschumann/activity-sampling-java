@@ -7,9 +7,9 @@ package de.muspellheim.activitysampling.ui.timesheet;
 
 import de.muspellheim.activitysampling.domain.ActivitiesService;
 import de.muspellheim.activitysampling.domain.Timesheet;
-import de.muspellheim.common.util.Durations;
-import de.muspellheim.common.util.EventEmitter;
-import de.muspellheim.common.util.OutputTracker;
+import de.muspellheim.activitysampling.util.Durations;
+import de.muspellheim.activitysampling.util.EventEmitter;
+import de.muspellheim.activitysampling.util.OutputTracker;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
