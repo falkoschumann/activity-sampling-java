@@ -9,7 +9,9 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import lombok.Builder;
 
+@Builder
 public record TimeSummary(
     Duration hoursToday, Duration hoursYesterday, Duration hoursThisWeek, Duration hoursThisMonth) {
 
@@ -47,7 +49,12 @@ public record TimeSummary(
         hoursThisMonth = hoursThisMonth.plus(activity.duration());
       }
     }
-    return new TimeSummary(hoursToday, hoursYesterday, hoursThisWeek, hoursThisMonth);
+    return TimeSummary.builder()
+        .hoursToday(hoursToday)
+        .hoursYesterday(hoursYesterday)
+        .hoursThisWeek(hoursThisWeek)
+        .hoursThisMonth(hoursThisMonth)
+        .build();
   }
 
   private static boolean isToday(LocalDate today, LocalDate other) {

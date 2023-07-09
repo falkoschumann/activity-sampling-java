@@ -49,9 +49,11 @@ class TimesheetViewModelTests {
     var timesheet =
         new Timesheet(
             List.of(
-                new Timesheet.Entry(
-                    LocalDate.of(2023, 4, 14), "Lorem ipsum", Duration.ofMinutes(20))),
-            Duration.ofMinutes(20));
+                Timesheet.Entry.builder()
+                    .date(LocalDate.of(2023, 4, 14))
+                    .notes("Lorem ipsum")
+                    .hours(Duration.ofMinutes(20))
+                    .build()));
     activitiesService.initTimesheetResponses(ConfigurableResponses.always(timesheet));
 
     sut.load();

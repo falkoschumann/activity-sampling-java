@@ -50,11 +50,12 @@ class ActivitiesServiceTests {
     Assertions.assertEquals(
         new RecentActivities(
             List.of(new WorkingDay(now.toLocalDate(), List.of(activity))),
-            new TimeSummary(
-                Duration.ofMinutes(30),
-                Duration.ZERO,
-                Duration.ofMinutes(30),
-                Duration.ofMinutes(30))),
+            TimeSummary.builder()
+                .hoursToday(Duration.ofMinutes(30))
+                .hoursYesterday(Duration.ZERO)
+                .hoursThisWeek(Duration.ofMinutes(30))
+                .hoursThisMonth(Duration.ofMinutes(30))
+                .build()),
         activities);
   }
 
@@ -68,9 +69,13 @@ class ActivitiesServiceTests {
     Assertions.assertEquals(
         new Timesheet(
             List.of(
-                new Timesheet.Entry(
-                    now.toLocalDate(), "client", "project", "notes", Duration.ofMinutes(30))),
-            Duration.ofMinutes(30)),
+                Timesheet.Entry.builder()
+                    .date(now.toLocalDate())
+                    .client("client")
+                    .project("project")
+                    .notes("notes")
+                    .hours(Duration.ofMinutes(30))
+                    .build())),
         timesheet);
   }
 

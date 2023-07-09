@@ -27,8 +27,12 @@ class TimeSummaryTests {
     var summary = TimeSummary.of(today, activities);
 
     assertEquals(
-        new TimeSummary(
-            Duration.ofMinutes(15), Duration.ZERO, Duration.ofMinutes(15), Duration.ofMinutes(15)),
+        TimeSummary.builder()
+            .hoursToday(Duration.ofMinutes(15))
+            .hoursYesterday(Duration.ZERO)
+            .hoursThisWeek(Duration.ofMinutes(15))
+            .hoursThisMonth(Duration.ofMinutes(15))
+            .build(),
         summary);
   }
 
@@ -45,11 +49,12 @@ class TimeSummaryTests {
     var summary = TimeSummary.of(today, activities);
 
     assertEquals(
-        new TimeSummary(
-            Duration.ofMinutes(5),
-            Duration.ofMinutes(32),
-            Duration.ofMinutes(37),
-            Duration.ofMinutes(37)),
+        TimeSummary.builder()
+            .hoursToday(Duration.ofMinutes(5))
+            .hoursYesterday(Duration.ofMinutes(32))
+            .hoursThisWeek(Duration.ofMinutes(37))
+            .hoursThisMonth(Duration.ofMinutes(37))
+            .build(),
         summary);
   }
 
@@ -67,11 +72,12 @@ class TimeSummaryTests {
     var summary = TimeSummary.of(thursday, activities);
 
     assertEquals(
-        new TimeSummary(
-            Duration.ofMinutes(8),
-            Duration.ofMinutes(12),
-            Duration.ofMinutes(40),
-            Duration.ofMinutes(40)),
+        TimeSummary.builder()
+            .hoursToday(Duration.ofMinutes(8))
+            .hoursYesterday(Duration.ofMinutes(12))
+            .hoursThisWeek(Duration.ofMinutes(40))
+            .hoursThisMonth(Duration.ofMinutes(40))
+            .build(),
         summary);
   }
 
@@ -91,11 +97,12 @@ class TimeSummaryTests {
     var summary = TimeSummary.of(day24, activities);
 
     assertEquals(
-        new TimeSummary(
-            Duration.ofMinutes(12),
-            Duration.ofMinutes(8),
-            Duration.ofMinutes(35),
-            Duration.ofMinutes(65)),
+        TimeSummary.builder()
+            .hoursToday(Duration.ofMinutes(12))
+            .hoursYesterday(Duration.ofMinutes(8))
+            .hoursThisWeek(Duration.ofMinutes(35))
+            .hoursThisMonth(Duration.ofMinutes(65))
+            .build(),
         summary);
   }
 
@@ -111,11 +118,12 @@ class TimeSummaryTests {
     var summary = TimeSummary.of(thisMonthDay1, activities);
 
     assertEquals(
-        new TimeSummary(
-            Duration.ofMinutes(12),
-            Duration.ofMinutes(8),
-            Duration.ofMinutes(20),
-            Duration.ofMinutes(12)),
+        TimeSummary.builder()
+            .hoursToday(Duration.ofMinutes(12))
+            .hoursYesterday(Duration.ofMinutes(8))
+            .hoursThisWeek(Duration.ofMinutes(20))
+            .hoursThisMonth(Duration.ofMinutes(12))
+            .build(),
         summary);
   }
 
@@ -133,11 +141,12 @@ class TimeSummaryTests {
     var summary = TimeSummary.of(sunday, activities);
 
     assertEquals(
-        new TimeSummary(
-            Duration.ofMinutes(8),
-            Duration.ofMinutes(12),
-            Duration.ofMinutes(40),
-            Duration.ofMinutes(8)),
+        TimeSummary.builder()
+            .hoursToday(Duration.ofMinutes(8))
+            .hoursYesterday(Duration.ofMinutes(12))
+            .hoursThisWeek(Duration.ofMinutes(40))
+            .hoursThisMonth(Duration.ofMinutes(8))
+            .build(),
         summary);
   }
 
@@ -153,11 +162,12 @@ class TimeSummaryTests {
     var summary = TimeSummary.of(monday, activities);
 
     assertEquals(
-        new TimeSummary(
-            Duration.ofMinutes(12),
-            Duration.ofMinutes(8),
-            Duration.ofMinutes(12),
-            Duration.ofMinutes(20)),
+        TimeSummary.builder()
+            .hoursToday(Duration.ofMinutes(12))
+            .hoursYesterday(Duration.ofMinutes(8))
+            .hoursThisWeek(Duration.ofMinutes(12))
+            .hoursThisMonth(Duration.ofMinutes(20))
+            .build(),
         summary);
   }
 
@@ -173,8 +183,12 @@ class TimeSummaryTests {
     var summary = TimeSummary.of(today, activities);
 
     assertEquals(
-        new TimeSummary(
-            Duration.ofMinutes(5), Duration.ZERO, Duration.ofMinutes(5), Duration.ofMinutes(5)),
+        TimeSummary.builder()
+            .hoursToday(Duration.ofMinutes(5))
+            .hoursYesterday(Duration.ZERO)
+            .hoursThisWeek(Duration.ofMinutes(5))
+            .hoursThisMonth(Duration.ofMinutes(5))
+            .build(),
         summary);
   }
 
