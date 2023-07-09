@@ -34,7 +34,7 @@ dependencies {
 
 application {
   mainModule = 'de.muspellheim.activitysampling'
-  mainClass = 'de.muspellheim.activitysampling.application.ActivitySamplingApplication'
+  mainClass = 'de.muspellheim.activitysampling.ui.ActivitySamplingApplication'
 }
 
 sourceCompatibility = 17
