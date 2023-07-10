@@ -21,20 +21,33 @@ public class ActivitiesServiceImpl implements ActivitiesService {
 
   @Override
   public void logActivity(Activity activity) {
-    activities.append(activity);
+    try {
+      activities.append(activity);
+    } catch (Exception e) {
+      throw new IllegalStateException("Failed to log activity: %s.".formatted(activity), e);
+    }
   }
 
   @Override
   public RecentActivities getRecentActivities() {
-    var today = LocalDate.now();
-    var start = today.minus(Period.ofDays(31));
-    var activities = this.activities.findInPeriod(start, today);
-    return RecentActivities.from(today, activities);
+    try {
+      var today = LocalDate.now();
+      var start = today.minus(Period.ofDays(31));
+      var activities = this.activities.findInPeriod(start, today);
+      return RecentActivities.from(today, activities);
+    } catch (Exception e) {
+      throw new IllegalStateException("Failed to get recent activities.", e);
+    }
   }
 
   @Override
   public Timesheet getTimesheet(LocalDate from, LocalDate to) {
-    var activities = this.activities.findInPeriod(from, to);
-    return Timesheet.from(activities);
+    try {
+      var activities = this.activities.findInPeriod(from, to);
+      return Timesheet.from(activities);
+    } catch (Exception e) {
+      throw new IllegalStateException(
+          "Failed to get timesheet from %s to %s.".formatted(from, to), e);
+    }
   }
 }

@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface Activities {
-  void append(Activity activity);
+  void append(Activity activity) throws Exception;
 
-  List<Activity> findInPeriod(LocalDate from, LocalDate to);
+  List<Activity> findInPeriod(LocalDate from, LocalDate to) throws Exception;
 }

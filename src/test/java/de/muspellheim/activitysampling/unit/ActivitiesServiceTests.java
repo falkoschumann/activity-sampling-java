@@ -78,13 +78,20 @@ class ActivitiesServiceTests {
                     .date(now.toLocalDate())
                     .client("client")
                     .project("project")
-                    .notes("notes")
+                    .task("task")
                     .hours(Duration.ofMinutes(30))
                     .build())),
         timesheet);
   }
 
   private static Activity newActivity(LocalDateTime timestamp) {
-    return new Activity(timestamp, Duration.ofMinutes(30), "client", "project", "notes");
+    return Activity.builder()
+        .timestamp(timestamp)
+        .duration(Duration.ofMinutes(30))
+        .client("client")
+        .project("project")
+        .task("task")
+        .notes("notes")
+        .build();
   }
 }

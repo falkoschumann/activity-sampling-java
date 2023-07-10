@@ -32,14 +32,14 @@ class CsvActivitiesTests {
   }
 
   @Test
-  void findInPeriod_FileDoesNotExist_ReturnsEmptyList() {
+  void findInPeriod_FileDoesNotExist_ReturnsEmptyList() throws Exception {
     var activities = sut.findInPeriod(LocalDate.ofEpochDay(0), LocalDate.now());
 
     assertEquals(List.of(), activities);
   }
 
   @Test
-  void findInPeriod_FileExists_ReturnsEvents() {
+  void findInPeriod_FileExists_ReturnsEvents() throws Exception {
     sut.append(createActivity1());
     sut.append(createActivity2());
     sut.append(createActivity3());
@@ -50,7 +50,7 @@ class CsvActivitiesTests {
   }
 
   @Test
-  void findInPeriod_ReturnsActivitiesOnlyInPeriod() {
+  void findInPeriod_ReturnsActivitiesOnlyInPeriod() throws Exception {
     sut.append(createActivity1());
     sut.append(createActivity2());
     sut.append(createActivity3());
@@ -61,17 +61,35 @@ class CsvActivitiesTests {
   }
 
   private static Activity createActivity1() {
-    return new Activity(
-        LocalDateTime.parse("2022-11-15T13:04:00"), Duration.ofMinutes(5), "c1", "p1", "a1");
+    return Activity.builder()
+        .timestamp(LocalDateTime.parse("2022-11-15T13:04:00"))
+        .duration(Duration.ofMinutes(5))
+        .client("c1")
+        .project("p1")
+        .task("t1")
+        .notes("n1")
+        .build();
   }
 
   private static Activity createActivity2() {
-    return new Activity(
-        LocalDateTime.parse("2022-11-16T13:24:00"), Duration.ofMinutes(5), "c2", "p2", "a2");
+    return Activity.builder()
+        .timestamp(LocalDateTime.parse("2022-11-16T13:24:00"))
+        .duration(Duration.ofMinutes(5))
+        .client("c2")
+        .project("p2")
+        .task("t2")
+        .notes("n2")
+        .build();
   }
 
   private static Activity createActivity3() {
-    return new Activity(
-        LocalDateTime.parse("2022-11-17T13:44:00"), Duration.ofMinutes(5), "c3", "p3", "a3");
+    return Activity.builder()
+        .timestamp(LocalDateTime.parse("2022-11-17T13:44:00"))
+        .duration(Duration.ofMinutes(5))
+        .client("c3")
+        .project("p3")
+        .task("t3")
+        .notes("n3")
+        .build();
   }
 }

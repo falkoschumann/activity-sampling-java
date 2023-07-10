@@ -2,6 +2,7 @@ module de.muspellheim.activitysampling {
   requires org.apache.commons.csv;
   requires static lombok;
   requires java.desktop;
+  requires static java.sql;
   requires javafx.controls;
   requires javafx.fxml;
   requires jdk.localedata;

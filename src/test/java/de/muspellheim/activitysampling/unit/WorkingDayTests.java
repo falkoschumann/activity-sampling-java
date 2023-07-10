@@ -42,7 +42,12 @@ class WorkingDayTests {
   }
 
   private static Activity newActivity(LocalDate date, LocalTime time) {
-    return new Activity(
-        LocalDateTime.of(date, time), Duration.ofMinutes(20), "client", "project", "notes");
+    return Activity.builder()
+        .timestamp(LocalDateTime.of(date, time))
+        .duration(Duration.ofMinutes(20))
+        .client("client")
+        .project("project")
+        .task("task")
+        .build();
   }
 }

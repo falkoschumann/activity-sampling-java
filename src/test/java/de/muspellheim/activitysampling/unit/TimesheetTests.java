@@ -28,7 +28,7 @@ class TimesheetTests {
   @Test
   void from_OneActivity_CreatesTimesheetWithOneEntry() {
     var today = LocalDate.now();
-    var a = newActivity(today, "c", "p", "n");
+    var a = newActivity(today, "c", "p", "t");
 
     var timesheet = Timesheet.from(List.of(a));
 
@@ -39,7 +39,7 @@ class TimesheetTests {
                     .date(today)
                     .client("c")
                     .project("p")
-                    .notes("n")
+                    .task("t")
                     .hours(Duration.ofMinutes(30))
                     .build())),
         timesheet);
@@ -49,8 +49,8 @@ class TimesheetTests {
   @Test
   void from_RepetitiveActivity_CreatesTimesheetWithOneSummarizedEntry() {
     var today = LocalDate.now();
-    var a1 = newActivity(today, "c", "p", "n");
-    var a2 = newActivity(today, "c", "p", "n");
+    var a1 = newActivity(today, "c", "p", "t");
+    var a2 = newActivity(today, "c", "p", "t");
 
     var timesheet = Timesheet.from(List.of(a1, a2));
 
@@ -61,7 +61,7 @@ class TimesheetTests {
                     .date(today)
                     .client("c")
                     .project("p")
-                    .notes("n")
+                    .task("t")
                     .hours(Duration.ofMinutes(60))
                     .build())),
         timesheet);
@@ -72,32 +72,44 @@ class TimesheetTests {
   void from_MultipleActivities_CreatesTimesheetWithEntriesOrderedByDateClientProjectAndNotes() {
     var today = LocalDate.now();
     var yesterday = today.minusDays(1);
-    var y1 = newActivity(yesterday, "c2", "p2", "n2");
-    var t1 = newActivity(today, "c2", "p2", "n2");
-    var t2 = newActivity(today, "c2", "p1", "n1");
-    var t3 = newActivity(today, "c1", "p1", "n1");
-    var t4 = newActivity(today, "c2", "p2", "n1");
+    var y1 = newActivity(yesterday, "c2", "p2", "t2");
+    var t1 = newActivity(today, "c2", "p2", "t2");
+    var t2 = newActivity(today, "c2", "p1", "t1");
+    var t3 = newActivity(today, "c1", "p1", "t1");
+    var t4 = newActivity(today, "c2", "p2", "t1");
 
     var timesheet = Timesheet.from(List.of(y1, t1, t2, t3, t4));
 
     assertEquals(
         new Timesheet(
             List.of(
-                new Timesheet.Entry(yesterday, "c2", "p2", "n2", Duration.ofMinutes(30)),
-                new Timesheet.Entry(today, "c1", "p1", "n1", Duration.ofMinutes(30)),
-                new Timesheet.Entry(today, "c2", "p1", "n1", Duration.ofMinutes(30)),
-                new Timesheet.Entry(today, "c2", "p2", "n1", Duration.ofMinutes(30)),
-                new Timesheet.Entry(today, "c2", "p2", "n2", Duration.ofMinutes(30)))),
+                newTimesheetEntry(yesterday, "c2", "p2", "t2"),
+                newTimesheetEntry(today, "c1", "p1", "t1"),
+                newTimesheetEntry(today, "c2", "p1", "t1"),
+                newTimesheetEntry(today, "c2", "p2", "t1"),
+                newTimesheetEntry(today, "c2", "p2", "t2"))),
         timesheet);
     assertEquals(Duration.ofMinutes(150), timesheet.total());
   }
 
-  private static Activity newActivity(LocalDate date, String client, String project, String notes) {
-    return new Activity(
-        LocalDateTime.of(date, LocalTime.of(13, 0)),
-        Duration.ofMinutes(30),
-        client,
-        project,
-        notes);
+  private static Activity newActivity(LocalDate date, String client, String project, String task) {
+    return Activity.builder()
+        .timestamp(LocalDateTime.of(date, LocalTime.of(13, 0)))
+        .duration(Duration.ofMinutes(30))
+        .client(client)
+        .project(project)
+        .task(task)
+        .build();
+  }
+
+  private static Timesheet.Entry newTimesheetEntry(
+      LocalDate date, String client, String project, String task) {
+    return Timesheet.Entry.builder()
+        .date(date)
+        .client(client)
+        .project(project)
+        .task(task)
+        .hours(Duration.ofMinutes(30))
+        .build();
   }
 }

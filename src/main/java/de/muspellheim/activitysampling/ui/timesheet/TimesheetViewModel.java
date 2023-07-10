@@ -199,7 +199,7 @@ public class TimesheetViewModel {
       items.add(
           new TimesheetItem(
               dateFormatter.format(entry.date()),
-              entry.notes(),
+              entry.task(),
               Durations.format(entry.hours(), FormatStyle.SHORT)));
     }
     timesheetItems.setAll(items);

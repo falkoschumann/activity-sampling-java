@@ -320,12 +320,13 @@ public class ActivitySamplingViewModel {
   public void logActivity() {
     try {
       activitiesService.logActivity(
-          new Activity(
-              LocalDateTime.now(clock),
-              interval,
-              clientText.get(),
-              projectText.get(),
-              notesText.get()));
+          Activity.builder()
+              .timestamp(LocalDateTime.now(clock))
+              .duration(interval)
+              .client(clientText.get())
+              .project(projectText.get())
+              .notes(notesText.get())
+              .build());
       intervalLogged.set(true);
       load();
     } catch (Exception e) {

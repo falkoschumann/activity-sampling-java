@@ -23,11 +23,14 @@ import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 
 public class CsvActivities implements Activities {
-  private static final String COLUMN_TIMESTAMP = "Timestamp";
-  private static final String COLUMN_DURATION = "Duration";
-  private static final String COLUMN_CLIENT = "Client";
-  private static final String COLUMN_PROJECT = "Project";
-  private static final String COLUMN_NOTES = "Notes";
+  private enum Field {
+    Timestamp,
+    Duration,
+    Client,
+    Project,
+    Task,
+    Notes,
+  }
 
   private final Path file;
 
@@ -36,27 +39,28 @@ public class CsvActivities implements Activities {
   }
 
   @Override
-  public void append(Activity activity) {
+  public void append(Activity activity) throws Exception {
     try (var printer = newPrinter()) {
       printer.printRecord(
           activity.timestamp().truncatedTo(ChronoUnit.SECONDS),
           activity.duration(),
           activity.client(),
           activity.project(),
+          activity.task(),
           activity.notes());
     } catch (Exception e) {
-      throw new IllegalStateException("Failed to append activity to file " + file, e);
+      throw new IOException("Failed to append activity to file " + file, e);
     }
   }
 
   @Override
-  public List<Activity> findInPeriod(LocalDate from, LocalDate to) {
+  public List<Activity> findInPeriod(LocalDate from, LocalDate to) throws Exception {
     try (var parser = newParser()) {
       return parser.stream().map(this::parseActivity).filter(a -> isBetween(a, from, to)).toList();
     } catch (NoSuchFileException e) {
       return List.of();
     } catch (Exception e) {
-      throw new IllegalStateException("Failed to find activities in period from file " + file, e);
+      throw new IOException("Failed to find activities in period from file " + file, e);
     }
   }
 
@@ -74,12 +78,14 @@ public class CsvActivities implements Activities {
   }
 
   private Activity parseActivity(CSVRecord csvRecord) {
-    return new Activity(
-        LocalDateTime.parse(csvRecord.get(COLUMN_TIMESTAMP)),
-        Duration.parse(csvRecord.get(COLUMN_DURATION)),
-        csvRecord.get(COLUMN_CLIENT),
-        csvRecord.get(COLUMN_PROJECT),
-        csvRecord.get(COLUMN_NOTES));
+    return Activity.builder()
+        .timestamp(LocalDateTime.parse(csvRecord.get(Field.Timestamp)))
+        .duration(Duration.parse(csvRecord.get(Field.Duration)))
+        .client(csvRecord.get(Field.Client))
+        .project(csvRecord.get(Field.Project))
+        .task(csvRecord.get(Field.Task))
+        .notes(csvRecord.get(Field.Notes))
+        .build();
   }
 
   private boolean isBetween(Activity activity, LocalDate from, LocalDate to) {
@@ -88,10 +94,7 @@ public class CsvActivities implements Activities {
   }
 
   private CSVFormat newFormat() {
-    var builder =
-        CSVFormat.Builder.create(CSVFormat.RFC4180)
-            .setHeader(
-                COLUMN_TIMESTAMP, COLUMN_DURATION, COLUMN_CLIENT, COLUMN_PROJECT, COLUMN_NOTES);
+    var builder = CSVFormat.Builder.create(CSVFormat.RFC4180).setHeader(Field.class);
     if (Files.exists(file)) {
       builder.setSkipHeaderRecord(true);
     }

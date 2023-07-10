@@ -18,22 +18,18 @@ import lombok.Builder;
 
 public record Timesheet(List<Entry> entries) {
   @Builder
-  public record Entry(LocalDate date, String client, String project, String notes, Duration hours)
+  public record Entry(LocalDate date, String client, String project, String task, Duration hours)
       implements Comparable<Entry> {
-    public static class EntryBuilder {
-      // TODO remove n/a as default
-      private String client = "n/a";
-      private String project = "n/a";
-    }
 
     public Entry {
-      Objects.requireNonNull(date, "The date is null.");
-      Objects.requireNonNull(client, "The client is null.");
-      Strings.requireNonBlank(client, "The client is blank.");
-      Objects.requireNonNull(project, "The project is null.");
-      Strings.requireNonBlank(project, "The project is blank.");
-      Objects.requireNonNull(notes, "The notes is null.");
-      Objects.requireNonNull(hours, "The hours is null.");
+      Objects.requireNonNull(date, "The date cannot be null.");
+      Objects.requireNonNull(client, "The client cannot be null.");
+      Strings.requireNonBlank(client, "The client cannot be blank.");
+      Objects.requireNonNull(project, "The project cannot be null.");
+      Strings.requireNonBlank(project, "The project cannot be blank.");
+      Objects.requireNonNull(task, "The task cannot be null.");
+      Strings.requireNonBlank(task, "The task cannot be blank.");
+      Objects.requireNonNull(hours, "The hours cannot be null.");
     }
 
     @Override
@@ -41,7 +37,7 @@ public record Timesheet(List<Entry> entries) {
       return Comparator.comparing(Entry::date)
           .thenComparing(Entry::client)
           .thenComparing(Entry::project)
-          .thenComparing(Entry::notes)
+          .thenComparing(Entry::task)
           .compare(this, other);
     }
   }
@@ -61,14 +57,14 @@ public record Timesheet(List<Entry> entries) {
                   e.date().equals(date)
                       && e.client().equals(a.client())
                       && e.project().equals(a.project())
-                      && e.notes().equals(a.notes()));
+                      && e.task().equals(a.task()));
       if (index == -1) {
         var entry =
             Entry.builder()
                 .date(date)
                 .client(a.client())
                 .project(a.project())
-                .notes(a.notes())
+                .task(a.task())
                 .hours(a.duration())
                 .build();
         entries.add(entry);
@@ -81,7 +77,7 @@ public record Timesheet(List<Entry> entries) {
                 .date(entry.date())
                 .client(entry.client())
                 .project(entry.project())
-                .notes(entry.notes())
+                .task(entry.task())
                 .hours(accumulatedHours)
                 .build();
         entries.set(index, entry);

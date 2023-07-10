@@ -193,7 +193,12 @@ class TimeSummaryTests {
   }
 
   private static Activity newActivity(LocalDate date, Duration duration) {
-    return new Activity(
-        LocalDateTime.of(date, LocalTime.of(12, 0)), duration, "client", "project", "notes");
+    return Activity.builder()
+        .timestamp(LocalDateTime.of(date, LocalTime.of(12, 0)))
+        .duration(duration)
+        .client("client")
+        .project("project")
+        .task("task")
+        .build();
   }
 }
