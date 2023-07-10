@@ -27,7 +27,7 @@ repositories {
 }
 
 dependencies {
-  implementation "com.h2database:h2:2.1.214"
+  implementation "com.h2database:h2:2.2.220"
   implementation 'org.apache.commons:commons-csv:1.10.0'
   testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
 }
