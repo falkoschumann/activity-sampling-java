@@ -49,7 +49,7 @@ public class ActivitySamplingViewModel {
    *                                                                         *
    **************************************************************************/
 
-  ActivitySamplingViewModel(ActivitiesService activitiesService) {
+  public ActivitySamplingViewModel(ActivitiesService activitiesService) {
     this(activitiesService, Locale.getDefault(), Clock.systemDefaultZone());
   }
 
@@ -69,11 +69,11 @@ public class ActivitySamplingViewModel {
 
   private final EventEmitter<LocalDateTime> countdownElapsed = new EventEmitter<>();
 
-  void addCountdownElapsedListener(Consumer<LocalDateTime> listener) {
+  public void addCountdownElapsedListener(Consumer<LocalDateTime> listener) {
     countdownElapsed.addListener(listener);
   }
 
-  void removeCountdownElapsedListener(Consumer<LocalDateTime> listener) {
+  public void removeCountdownElapsedListener(Consumer<LocalDateTime> listener) {
     countdownElapsed.removeListener(listener);
   }
 
@@ -83,11 +83,11 @@ public class ActivitySamplingViewModel {
 
   private final EventEmitter<Throwable> errorOccurred = new EventEmitter<>();
 
-  void addErrorOccurredListener(Consumer<Throwable> listener) {
+  public void addErrorOccurredListener(Consumer<Throwable> listener) {
     errorOccurred.addListener(listener);
   }
 
-  void removeErrorOccurredListener(Consumer<Throwable> listener) {
+  public void removeErrorOccurredListener(Consumer<Throwable> listener) {
     errorOccurred.removeListener(listener);
   }
 
@@ -106,7 +106,7 @@ public class ActivitySamplingViewModel {
   private final ObservableBooleanValue stopMenuItemDisable =
       Bindings.createBooleanBinding(() -> countdownActive.not().get(), countdownActive);
 
-  ObservableBooleanValue stopMenuItemDisableProperty() {
+  public ObservableBooleanValue stopMenuItemDisableProperty() {
     return stopMenuItemDisable;
   }
 
@@ -118,7 +118,7 @@ public class ActivitySamplingViewModel {
 
   private final ObservableBooleanValue formDisable = countdownActive.and(intervalLogged);
 
-  ObservableBooleanValue formDisableProperty() {
+  public ObservableBooleanValue formDisableProperty() {
     return formDisable;
   }
 
@@ -130,7 +130,7 @@ public class ActivitySamplingViewModel {
 
   private final StringProperty clientText = new SimpleStringProperty("");
 
-  StringProperty clientTextProperty() {
+  public StringProperty clientTextProperty() {
     return clientText;
   }
 
@@ -146,7 +146,7 @@ public class ActivitySamplingViewModel {
 
   private final StringProperty projectText = new SimpleStringProperty("");
 
-  StringProperty projectTextProperty() {
+  public StringProperty projectTextProperty() {
     return projectText;
   }
 
@@ -158,11 +158,27 @@ public class ActivitySamplingViewModel {
     projectTextProperty().set(value);
   }
 
+  // --- taskText
+
+  private final StringProperty taskText = new SimpleStringProperty("");
+
+  public StringProperty taskTextProperty() {
+    return taskText;
+  }
+
+  public final String getRaskText() {
+    return taskText.get();
+  }
+
+  public final void setTaskText(String value) {
+    taskTextProperty().set(value);
+  }
+
   // --- notesText
 
   private final StringProperty notesText = new SimpleStringProperty("");
 
-  StringProperty notesTextProperty() {
+  public StringProperty notesTextProperty() {
     return notesText;
   }
 
@@ -181,7 +197,7 @@ public class ActivitySamplingViewModel {
           .or(Bindings.createBooleanBinding(() -> projectText.get().isBlank(), projectText))
           .or(Bindings.createBooleanBinding(() -> notesText.get().isBlank(), notesText));
 
-  ObservableBooleanValue logButtonDisableProperty() {
+  public ObservableBooleanValue logButtonDisableProperty() {
     return logButtonDisable;
   }
 
@@ -195,7 +211,7 @@ public class ActivitySamplingViewModel {
       Bindings.createStringBinding(
           () -> Durations.format(countdown.get(), FormatStyle.MEDIUM), countdown);
 
-  ObservableStringValue countdownLabelTextProperty() {
+  public ObservableStringValue countdownLabelTextProperty() {
     return countdownLabelText;
   }
 
@@ -217,7 +233,7 @@ public class ActivitySamplingViewModel {
           },
           countdown);
 
-  ObservableDoubleValue countdownProgressProperty() {
+  public ObservableDoubleValue countdownProgressProperty() {
     return countdownProgress;
   }
 
@@ -238,7 +254,7 @@ public class ActivitySamplingViewModel {
 
   private final ReadOnlyStringWrapper hoursTodayLabelText = new ReadOnlyStringWrapper("00:00");
 
-  ObservableStringValue hoursTodayTextProperty() {
+  public ObservableStringValue hoursTodayTextProperty() {
     return hoursTodayLabelText.getReadOnlyProperty();
   }
 
@@ -250,7 +266,7 @@ public class ActivitySamplingViewModel {
 
   private final ReadOnlyStringWrapper hoursYesterdayLabelText = new ReadOnlyStringWrapper("00:00");
 
-  ObservableStringValue hoursYesterdayTextProperty() {
+  public ObservableStringValue hoursYesterdayTextProperty() {
     return hoursYesterdayLabelText.getReadOnlyProperty();
   }
 
@@ -262,7 +278,7 @@ public class ActivitySamplingViewModel {
 
   private final ReadOnlyStringWrapper hoursThisWeekLabelText = new ReadOnlyStringWrapper("00:00");
 
-  ObservableStringValue hoursThisWeekTextProperty() {
+  public ObservableStringValue hoursThisWeekTextProperty() {
     return hoursThisWeekLabelText.getReadOnlyProperty();
   }
 
@@ -274,7 +290,7 @@ public class ActivitySamplingViewModel {
 
   private final ReadOnlyStringWrapper hoursThisMonthLabelText = new ReadOnlyStringWrapper("00:00");
 
-  ObservableStringValue hoursThisMonthTextProperty() {
+  public ObservableStringValue hoursThisMonthTextProperty() {
     return hoursThisMonthLabelText.getReadOnlyProperty();
   }
 
@@ -325,6 +341,7 @@ public class ActivitySamplingViewModel {
               .duration(interval)
               .client(clientText.get())
               .project(projectText.get())
+              .task(taskText.get())
               .notes(notesText.get())
               .build());
       intervalLogged.set(true);

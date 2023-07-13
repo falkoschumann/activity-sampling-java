@@ -53,6 +53,8 @@ class TimesheetViewModelTests {
             List.of(
                 Timesheet.Entry.builder()
                     .date(LocalDate.of(2023, 4, 14))
+                    .client("ACME Ltd.")
+                    .project("Foobar")
                     .task("Lorem ipsum")
                     .hours(Duration.ofMinutes(20))
                     .build()));

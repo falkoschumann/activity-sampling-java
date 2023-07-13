@@ -24,10 +24,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-@Disabled
 class ActivitySamplingViewModelTests {
   private ActivitiesServiceStub activitiesService;
   private Clock clock;
@@ -62,34 +60,10 @@ class ActivitySamplingViewModelTests {
             RecentActivities.from(
                 LocalDate.of(2022, 11, 16),
                 List.of(
-                    Activity.builder()
-                        .timestamp(LocalDateTime.of(2022, 11, 16, 16, 16))
-                        .duration(Duration.ofMinutes(5))
-                        .client("ACME Ltd.")
-                        .project("Foobar")
-                        .notes("Lorem ipsum")
-                        .build(),
-                    Activity.builder()
-                        .timestamp(LocalDateTime.of(2022, 11, 15, 15, 15))
-                        .duration(Duration.ofMinutes(10))
-                        .client("ACME Ltd.")
-                        .project("Foobar")
-                        .notes("Lorem ipsum")
-                        .build(),
-                    Activity.builder()
-                        .timestamp(LocalDateTime.of(2022, 11, 14, 14, 14))
-                        .duration(Duration.ofMinutes(15))
-                        .client("ACME Ltd.")
-                        .project("Foobar")
-                        .notes("Lorem ipsum")
-                        .build(),
-                    Activity.builder()
-                        .timestamp(LocalDateTime.of(2022, 11, 7, 7, 7))
-                        .duration(Duration.ofMinutes(20))
-                        .client("ACME Ltd.")
-                        .project("Foobar")
-                        .notes("Lorem ipsum")
-                        .build()))));
+                    newActivity(LocalDateTime.of(2022, 11, 16, 16, 16), Duration.ofMinutes(5)),
+                    newActivity(LocalDateTime.of(2022, 11, 15, 15, 15), Duration.ofMinutes(10)),
+                    newActivity(LocalDateTime.of(2022, 11, 14, 14, 14), Duration.ofMinutes(15)),
+                    newActivity(LocalDateTime.of(2022, 11, 7, 7, 7), Duration.ofMinutes(20))))));
 
     sut.load();
 
@@ -97,13 +71,13 @@ class ActivitySamplingViewModelTests {
     assertRecentActivities(
         List.of(
             new ActivityItem("Mittwoch, 16. November 2022", null),
-            new ActivityItem("16:16 - Foobar (ACME Ltd.) Lorem ipsum", "Lorem ipsum"),
+            new ActivityItem("16:16 - Foobar (ACME Ltd.) Task #1", "Task #1"),
             new ActivityItem("Dienstag, 15. November 2022", null),
-            new ActivityItem("15:15 - Foobar (ACME Ltd.) Lorem ipsum", "Lorem ipsum"),
+            new ActivityItem("15:15 - Foobar (ACME Ltd.) Task #1", "Task #1"),
             new ActivityItem("Montag, 14. November 2022", null),
-            new ActivityItem("14:14 - Foobar (ACME Ltd.) Lorem ipsum", "Lorem ipsum"),
+            new ActivityItem("14:14 - Foobar (ACME Ltd.) Task #1", "Task #1"),
             new ActivityItem("Montag, 7. November 2022", null),
-            new ActivityItem("07:07 - Foobar (ACME Ltd.) Lorem ipsum", "Lorem ipsum")));
+            new ActivityItem("07:07 - Foobar (ACME Ltd.) Task #1", "Task #1")));
     assertTimeSummary("00:05", "00:10", "00:30", "00:50");
   }
 
@@ -227,19 +201,12 @@ class ActivitySamplingViewModelTests {
 
     sut.setClientText("ACME Ltd.");
     sut.setProjectText("Foobar");
+    sut.setTaskText("Task #1");
     sut.setNotesText("Lorem ipsum");
     sut.logActivity();
 
     assertNoError();
-    assertLoggedActivities(
-        List.of(
-            Activity.builder()
-                .timestamp(LocalDateTime.now(clock))
-                .duration(Duration.ofMinutes(20))
-                .client("ACME Ltd.")
-                .project("Foobar")
-                .notes("Lorem ipsum")
-                .build()));
+    assertLoggedActivities(List.of(newActivity(LocalDateTime.now(clock), Duration.ofMinutes(20))));
     assertForm(false, "ACME Ltd.", "Foobar", "Lorem ipsum", false);
   }
 
@@ -254,19 +221,12 @@ class ActivitySamplingViewModelTests {
 
     sut.setClientText("ACME Ltd.");
     sut.setProjectText("Foobar");
+    sut.setTaskText("Task #1");
     sut.setNotesText("Lorem ipsum");
     sut.logActivity();
 
     assertNoError();
-    assertLoggedActivities(
-        List.of(
-            Activity.builder()
-                .timestamp(LocalDateTime.now(clock))
-                .duration(Duration.ofMinutes(20))
-                .client("ACME Ltd.")
-                .project("Foobar")
-                .notes("Lorem ipsum")
-                .build()));
+    assertLoggedActivities(List.of(newActivity(LocalDateTime.now(clock), Duration.ofMinutes(20))));
     assertForm(true, "ACME Ltd.", "Foobar", "Lorem ipsum", false);
   }
 
@@ -281,6 +241,7 @@ class ActivitySamplingViewModelTests {
 
     sut.setClientText("ACME Ltd.");
     sut.setProjectText("Foobar");
+    sut.setTaskText("Task #1");
     sut.setNotesText("Lorem ipsum");
     sut.logActivity();
 
@@ -358,6 +319,17 @@ class ActivitySamplingViewModelTests {
     assertMenu(true);
     assertForm(false, "", "", "", true);
     assertCountdown("00:05:00", 0.75, List.of());
+  }
+
+  private static Activity newActivity(LocalDateTime timestamp, Duration duration) {
+    return Activity.builder()
+        .timestamp(timestamp)
+        .duration(duration)
+        .client("ACME Ltd.")
+        .project("Foobar")
+        .task("Task #1")
+        .notes("Lorem ipsum")
+        .build();
   }
 
   private void assertMenu(boolean stopMenuItemDisable) {

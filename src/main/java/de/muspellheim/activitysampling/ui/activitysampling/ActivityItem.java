@@ -31,8 +31,8 @@ public record ActivityItem(String text, String description) {
             + " ("
             + activity.client()
             + ") "
-            + activity.notes(),
-        activity.notes());
+            + activity.task(),
+        activity.task());
   }
 
   boolean isActivity() {
