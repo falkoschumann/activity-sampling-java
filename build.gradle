@@ -10,7 +10,6 @@ plugins {
   id 'jacoco'
   id 'java'
   id 'com.diffplug.spotless' version '6.19.0'
-  id 'io.freefair.lombok' version '8.1.0'
   id 'org.beryx.jlink' version '2.26.0'
   id 'org.openjfx.javafxplugin' version '0.0.14'
 }
@@ -29,7 +28,11 @@ repositories {
 dependencies {
   implementation "com.h2database:h2:2.2.220"
   implementation 'org.apache.commons:commons-csv:1.10.0'
+  compileOnly 'org.projectlombok:lombok:1.18.28'
+  annotationProcessor 'org.projectlombok:lombok:1.18.28'
   testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
+  testCompileOnly 'org.projectlombok:lombok:1.18.28'
+  testAnnotationProcessor 'org.projectlombok:lombok:1.18.28'
 }
 
 application {
@@ -37,18 +40,17 @@ application {
   mainClass = 'de.muspellheim.activitysampling.ui.ActivitySamplingApplication'
 }
 
-sourceCompatibility = 17
-
 java {
+  sourceCompatibility = 17
   compileJava {
     options.release = 17
     options.encoding = 'utf-8'
-    options.compilerArgs.addAll(['-Xlint:all,-requires-automatic', '-Werror', '-implicit:class'])
+    options.compilerArgs.addAll(['-Xlint:all,-requires-automatic,-processing,-serial', '-Werror', '-implicit:class'])
   }
   compileTestJava {
     options.release = 17
     options.encoding = 'utf-8'
-    options.compilerArgs.addAll(['-Xlint:all', '-Werror', '-implicit:class'])
+    options.compilerArgs.addAll(['-Xlint:all,-processing,-serial', '-Werror', '-implicit:class'])
   }
 }
 

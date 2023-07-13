@@ -7,13 +7,11 @@ package de.muspellheim.activitysampling.unit;
 
 import de.muspellheim.activitysampling.domain.Activities;
 import de.muspellheim.activitysampling.domain.Activity;
-import java.io.Serial;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 class FakeActivities extends ArrayList<Activity> implements Activities {
-  @Serial private static final long serialVersionUID = 0;
 
   @Override
   public List<Activity> findInPeriod(LocalDate from, LocalDate to) {
