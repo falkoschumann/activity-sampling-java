@@ -28,6 +28,7 @@ public class ActivitySamplingView {
   @FXML private Pane form;
   @FXML private TextField client;
   @FXML private TextField project;
+  @FXML private TextField task;
   @FXML private TextField notes;
   @FXML private Button logButton;
   @FXML private Label countdownLabel;
@@ -69,6 +70,7 @@ public class ActivitySamplingView {
     form.disableProperty().bind(viewModel.formDisableProperty());
     client.textProperty().bindBidirectional(viewModel.clientTextProperty());
     project.textProperty().bindBidirectional(viewModel.projectTextProperty());
+    task.textProperty().bindBidirectional(viewModel.taskTextProperty());
     notes.textProperty().bindBidirectional(viewModel.notesTextProperty());
     logButton.disableProperty().bind(viewModel.logButtonDisableProperty());
     countdownLabel.textProperty().bind(viewModel.countdownLabelTextProperty());

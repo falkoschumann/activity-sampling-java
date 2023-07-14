@@ -24,7 +24,9 @@ public class TimesheetView {
   @FXML private ChoiceBox<ChronoUnit> period;
   @FXML private TableView<TimesheetItem> timesheetTable;
   @FXML private TableColumn<TimesheetItem, String> dateColumn;
-  @FXML private TableColumn<TimesheetItem, String> notesColumn;
+  @FXML private TableColumn<TimesheetItem, String> clientColumn;
+  @FXML private TableColumn<TimesheetItem, String> projectColumn;
+  @FXML private TableColumn<TimesheetItem, String> taskColumn;
   @FXML private TableColumn<TimesheetItem, String> hoursColumn;
   @FXML private Label total;
 
@@ -57,12 +59,15 @@ public class TimesheetView {
     timesheetTable.setItems(viewModel.getTimesheetItems());
     dateColumn.setCellFactory(TimesheetTableCell.newCellFactory(Pos.BASELINE_CENTER));
     dateColumn.setCellValueFactory(TimesheetTableCell.newCellValueFactory(TimesheetItem::date));
-    notesColumn.setCellFactory(TimesheetTableCell.newCellFactory(Pos.BASELINE_LEFT));
-    notesColumn.setCellValueFactory(
-        TimesheetTableCell.newCellValueFactory(TimesheetItem::activity));
+    clientColumn.setCellFactory(TimesheetTableCell.newCellFactory(Pos.BASELINE_LEFT));
+    clientColumn.setCellValueFactory(TimesheetTableCell.newCellValueFactory(TimesheetItem::client));
+    projectColumn.setCellFactory(TimesheetTableCell.newCellFactory(Pos.BASELINE_LEFT));
+    projectColumn.setCellValueFactory(
+        TimesheetTableCell.newCellValueFactory(TimesheetItem::project));
+    taskColumn.setCellFactory(TimesheetTableCell.newCellFactory(Pos.BASELINE_LEFT));
+    taskColumn.setCellValueFactory(TimesheetTableCell.newCellValueFactory(TimesheetItem::task));
     hoursColumn.setCellFactory(TimesheetTableCell.newCellFactory(Pos.BASELINE_CENTER));
-    hoursColumn.setCellValueFactory(
-        TimesheetTableCell.newCellValueFactory(TimesheetItem::duration));
+    hoursColumn.setCellValueFactory(TimesheetTableCell.newCellValueFactory(TimesheetItem::hours));
     total.textProperty().bind(viewModel.totalProperty());
   }
 

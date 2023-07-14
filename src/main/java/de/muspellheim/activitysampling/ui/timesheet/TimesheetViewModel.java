@@ -199,6 +199,8 @@ public class TimesheetViewModel {
       items.add(
           new TimesheetItem(
               dateFormatter.format(entry.date()),
+              entry.client(),
+              entry.project(),
               entry.task(),
               Durations.format(entry.hours(), FormatStyle.SHORT)));
     }

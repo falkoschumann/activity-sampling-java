@@ -87,7 +87,7 @@
                                     </Label>
                                     <TextField fx:id="task" onAction="#logActivity" />
                                     <Label text="Notes:" />
-                                    <TextField fx:id="notes1" onAction="#logActivity" />
+                                    <TextField fx:id="notes" onAction="#logActivity" />
                                     <Button fx:id="logButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#logActivity" text="Log">
                                        <VBox.margin>
                                           <Insets top="4.0" />

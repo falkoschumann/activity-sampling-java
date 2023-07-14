@@ -7,11 +7,12 @@ package de.muspellheim.activitysampling.ui.timesheet;
 
 import java.util.Objects;
 
-public record TimesheetItem(String date, String activity, String duration) {
-  // TODO replace activity with client, project and task
+public record TimesheetItem(String date, String client, String project, String task, String hours) {
   public TimesheetItem {
     Objects.requireNonNull(date, "The date must not be null.");
-    Objects.requireNonNull(activity, "The activity must not be null.");
-    Objects.requireNonNull(duration, "The duration must not be null.");
+    Objects.requireNonNull(client, "The client must not be null.");
+    Objects.requireNonNull(project, "The project must not be null.");
+    Objects.requireNonNull(task, "The task must not be null.");
+    Objects.requireNonNull(hours, "The hours must not be null.");
   }
 }

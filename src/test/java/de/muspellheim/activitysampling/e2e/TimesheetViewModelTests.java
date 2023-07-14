@@ -23,10 +23,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-@Disabled
 class TimesheetViewModelTests {
   private ActivitiesServiceStub activitiesService;
   private TimesheetViewModel sut;
@@ -62,7 +60,9 @@ class TimesheetViewModelTests {
 
     sut.load();
 
-    assertTimesheet(List.of(new TimesheetItem("14.04.2023", "Lorem ipsum", "00:20")), "00:20");
+    assertTimesheet(
+        List.of(new TimesheetItem("14.04.2023", "ACME Ltd.", "Foobar", "Lorem ipsum", "00:20")),
+        "00:20");
     assertNoError();
   }
 

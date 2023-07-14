@@ -17,6 +17,7 @@ import javafx.util.Callback;
 class ActivityListCell extends ListCell<ActivityItem> {
   private static final int DOUBLE_CLICK_COUNT = 2;
 
+  // TODO select activity with client, project, task and notes
   private final Consumer<String> onSelect;
 
   private ActivityListCell(Consumer<String> onSelect) {

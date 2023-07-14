@@ -19,11 +19,13 @@
          <root>
             <BorderPane>
                <center>
-                  <TableView fx:id="timesheetTable" prefHeight="600.0" prefWidth="800.0">
+                  <TableView fx:id="timesheetTable" prefHeight="600.0" prefWidth="1000.0">
                     <columns>
-                      <TableColumn fx:id="dateColumn" prefWidth="120.0" text="Date" />
-                        <TableColumn fx:id="notesColumn" prefWidth="550.0" text="Notes" />
-                      <TableColumn fx:id="hoursColumn" prefWidth="100.0" text="Hours" />
+                      <TableColumn fx:id="dateColumn" prefWidth="100.0" text="Date" />
+                        <TableColumn fx:id="clientColumn" prefWidth="200.0" text="Client" />
+                        <TableColumn fx:id="projectColumn" prefWidth="200.0" text="Project" />
+                        <TableColumn fx:id="taskColumn" prefWidth="400.0" text="Task" />
+                      <TableColumn fx:id="hoursColumn" prefWidth="70.0" text="Hours" />
                     </columns>
                   </TableView>
                </center>
@@ -64,7 +66,7 @@
                   </HBox>
                </top>
                <bottom>
-                  <HBox alignment="CENTER_LEFT" BorderPane.alignment="CENTER">
+                  <HBox alignment="CENTER_RIGHT" BorderPane.alignment="CENTER">
                      <children>
                         <Label styleClass="base" text="Total: " />
                         <Label fx:id="total" text="00:00" />
