@@ -77,7 +77,11 @@ jacocoTestReport {
 }
 
 checkstyle {
-  toolVersion = '10.11.0'
+  var archive = configurations.checkstyle.filter {
+    it.name.startsWith("checkstyle")
+  }
+  config = resources.text.fromArchiveEntry(archive, "google_checks.xml")
+  configProperties 'org.checkstyle.google.suppressionfilter.config': file('config/checkstyle-suppressions.xml')
   maxWarnings = 0
 }
 
