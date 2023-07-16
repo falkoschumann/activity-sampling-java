@@ -8,9 +8,12 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.2.0] - 2023-07-16
+
 ## Added
 
-- Create timesheet with date, notes and hours.
+- Save activity with client, project, task and notes.
+- Create timesheet for client, project and task.
 
 ### Changed
 
@@ -18,7 +21,7 @@ and this project adheres to
 
 ### Fixed
 
-- Duration was always logged with 20 minutes. 
+- Duration was always logged with 20 minutes.
 
 ## [1.1.0] - 2022-11-17
 
@@ -40,6 +43,7 @@ and this project adheres to
 - Ask at a fixed intervall like 15, 20 30 or 60 minutes.
 - Notify when interval expired.
 
-[Unreleased]: https://github.com/falkoschumann/activity-sampling-java/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/falkoschumann/activity-sampling-java/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/falkoschumann/activity-sampling-java/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/falkoschumann/activity-sampling-java/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/falkoschumann/activity-sampling-java/releases/tag/v1.0.0
