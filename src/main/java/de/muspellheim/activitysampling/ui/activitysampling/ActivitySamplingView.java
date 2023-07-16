@@ -7,8 +7,9 @@ package de.muspellheim.activitysampling.ui.activitysampling;
 
 import de.muspellheim.activitysampling.ui.shared.ErrorView;
 import de.muspellheim.activitysampling.ui.shared.Registry;
-import de.muspellheim.activitysampling.ui.timesheet.TimesheetView;
+import de.muspellheim.activitysampling.util.EventEmitter;
 import java.time.Duration;
+import java.util.function.Consumer;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
@@ -22,6 +23,8 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 public class ActivitySamplingView {
+  private final EventEmitter<Void> openTimesheet = new EventEmitter<>();
+
   @FXML private Stage stage;
   @FXML private MenuBar menuBar;
   @FXML private MenuItem stopMenuItem;
@@ -80,6 +83,18 @@ public class ActivitySamplingView {
     hoursYesterday.textProperty().bind(viewModel.hoursYesterdayTextProperty());
     hoursThisWeek.textProperty().bind(viewModel.hoursThisWeekTextProperty());
     hoursThisMonth.textProperty().bind(viewModel.hoursThisMonthTextProperty());
+  }
+
+  public Stage getStage() {
+    return stage;
+  }
+
+  public void addOpenTimesheetListener(Consumer<Void> listener) {
+    openTimesheet.addListener(listener);
+  }
+
+  public void removeOpenTimesheetListener(Consumer<Void> listener) {
+    openTimesheet.removeListener(listener);
   }
 
   public void run() {
@@ -144,8 +159,7 @@ public class ActivitySamplingView {
 
   @FXML
   private void openTimesheet() {
-    var timesheetView = TimesheetView.newInstance(stage);
-    timesheetView.run();
+    openTimesheet.emit(null);
   }
 
   @FXML
