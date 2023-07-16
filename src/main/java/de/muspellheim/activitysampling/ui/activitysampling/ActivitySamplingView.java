@@ -61,7 +61,7 @@ public class ActivitySamplingView {
   @FXML
   private void initialize() {
     menuBar.setUseSystemMenuBar(true);
-    recentActivities.setCellFactory(ActivityListCell.newCellFactory(viewModel::setNotesText));
+    recentActivities.setCellFactory(ActivityListCell.newCellFactory(viewModel::setActivity));
 
     systemClock.addOnTickListener(viewModel::progressCountdown);
     viewModel.addErrorOccurredListener(ErrorView::show);

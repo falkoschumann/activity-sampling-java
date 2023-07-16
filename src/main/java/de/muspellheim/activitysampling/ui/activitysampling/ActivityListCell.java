@@ -17,15 +17,14 @@ import javafx.util.Callback;
 class ActivityListCell extends ListCell<ActivityItem> {
   private static final int DOUBLE_CLICK_COUNT = 2;
 
-  // TODO select activity with client, project, task and notes
-  private final Consumer<String> onSelect;
+  private final Consumer<ActivityItem> onSelect;
 
-  private ActivityListCell(Consumer<String> onSelect) {
+  private ActivityListCell(Consumer<ActivityItem> onSelect) {
     this.onSelect = onSelect;
   }
 
   static Callback<ListView<ActivityItem>, ListCell<ActivityItem>> newCellFactory(
-      Consumer<String> onSelect) {
+      Consumer<ActivityItem> onSelect) {
     return view -> new ActivityListCell(onSelect);
   }
 
@@ -43,13 +42,15 @@ class ActivityListCell extends ListCell<ActivityItem> {
       setText(item.text());
       getStyleClass().removeAll("base");
 
-      if (item.isActivity()) {
-        // Activity
+      if (item.isHeader()) {
+        getStyleClass().add("base");
+        setOnMouseClicked(null);
+      } else {
         var copyMenuItem = new MenuItem("Copy");
         copyMenuItem.setOnAction(
             event -> {
               var content = new ClipboardContent();
-              content.putString(item.description());
+              content.putString(item.task());
               Clipboard.getSystemClipboard().setContent(content);
             });
         var menu = new ContextMenu(copyMenuItem);
@@ -61,12 +62,8 @@ class ActivityListCell extends ListCell<ActivityItem> {
                 return;
               }
 
-              onSelect.accept(item.description());
+              onSelect.accept(item);
             });
-      } else {
-        // Group header
-        getStyleClass().add("base");
-        setOnMouseClicked(null);
       }
     }
   }

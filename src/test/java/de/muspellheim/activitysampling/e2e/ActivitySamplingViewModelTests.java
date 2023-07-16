@@ -25,10 +25,16 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 class ActivitySamplingViewModelTests {
+
+  public static final Locale LOCALE = Locale.GERMANY;
+  private static final Clock CLOCK =
+      Clock.fixed(Instant.parse("2022-11-16T17:17:17Z"), ZoneId.of("Europe/Berlin"));
+
   private ActivitiesServiceStub activitiesService;
-  private Clock clock;
   private ActivitySamplingViewModel sut;
   private OutputTracker<LocalDateTime> countdownElapsed;
   private OutputTracker<Throwable> errorOccurred;
@@ -37,8 +43,7 @@ class ActivitySamplingViewModelTests {
   @BeforeEach
   void init() {
     activitiesService = new ActivitiesServiceStub();
-    clock = Clock.fixed(Instant.parse("2022-11-16T17:17:17Z"), ZoneId.of("Europe/Berlin"));
-    sut = new ActivitySamplingViewModel(activitiesService, Locale.GERMANY, clock);
+    sut = new ActivitySamplingViewModel(activitiesService, LOCALE, CLOCK);
     countdownElapsed = sut.trackCountdownElapsed();
     activityLogged = activitiesService.trackLoggedActivity();
     errorOccurred = sut.trackErrorOccurred();
@@ -47,7 +52,7 @@ class ActivitySamplingViewModelTests {
   @Test
   void new_InitializesState() {
     assertMenu(true);
-    assertForm(false, "", "", "", true);
+    assertForm(false, "", "", "", "", true);
     assertCountdown("00:20:00", 0.0, List.of());
     assertRecentActivities(List.of());
     assertTimeSummary("00:00", "00:00", "00:00", "00:00");
@@ -70,14 +75,14 @@ class ActivitySamplingViewModelTests {
     assertNoError();
     assertRecentActivities(
         List.of(
-            new ActivityItem("Mittwoch, 16. November 2022", null),
-            new ActivityItem("16:16 - Foobar (ACME Ltd.) Task #1", "Task #1"),
-            new ActivityItem("Dienstag, 15. November 2022", null),
-            new ActivityItem("15:15 - Foobar (ACME Ltd.) Task #1", "Task #1"),
-            new ActivityItem("Montag, 14. November 2022", null),
-            new ActivityItem("14:14 - Foobar (ACME Ltd.) Task #1", "Task #1"),
-            new ActivityItem("Montag, 7. November 2022", null),
-            new ActivityItem("07:07 - Foobar (ACME Ltd.) Task #1", "Task #1")));
+            newActivityHeader("Mittwoch, 16. November 2022"),
+            newActivityItem("16:16 - Foobar (ACME Ltd.) Task #1"),
+            newActivityHeader("Dienstag, 15. November 2022"),
+            newActivityItem("15:15 - Foobar (ACME Ltd.) Task #1"),
+            newActivityHeader("Montag, 14. November 2022"),
+            newActivityItem("14:14 - Foobar (ACME Ltd.) Task #1"),
+            newActivityHeader("Montag, 7. November 2022"),
+            newActivityItem("07:07 - Foobar (ACME Ltd.) Task #1")));
     assertTimeSummary("00:05", "00:10", "00:30", "00:50");
   }
 
@@ -93,103 +98,30 @@ class ActivitySamplingViewModelTests {
     assertError("Failed to load activities. Something went wrong.");
   }
 
-  @Test
-  void setClientText_NotBlank_EnablesLogButton() {
-    sut.load();
-    sut.setProjectText("not empty");
-    sut.setNotesText("not empty");
+  @ParameterizedTest
+  @CsvSource(
+      useHeadersInDisplayName = true,
+      textBlock =
+          """
+          # client , project  , task     , notes    , logButtonDisable
+          not empty, not empty, not empty, not empty, false
+          ''       , not empty, not empty, not empty, true
+          '  '     , not empty, not empty, not empty, true
+          not empty, ''       , not empty, not empty, true
+          not empty, '  '     , not empty, not empty, true
+          not empty, not empty, ''       , not empty, true
+          not empty, not empty, '  '     , not empty, true
+          not empty, not empty, not empty, ''       , false
+          not empty, not empty, not empty, '  '     , false
+        """)
+  void updateForm_UpdatesLogButtonDisable(
+      String client, String project, String task, String notes, boolean logButtonDisable) {
+    sut.setClientText(client);
+    sut.setProjectText(project);
+    sut.setTaskText(task);
+    sut.setNotesText(notes);
 
-    sut.setClientText("foobar");
-
-    assertForm(false, "foobar", "not empty", "not empty", false);
-  }
-
-  @Test
-  void setClientText_Empty_DisablesLogButton() {
-    sut.load();
-    sut.setProjectText("not empty");
-    sut.setNotesText("not empty");
-
-    sut.setClientText("");
-
-    assertForm(false, "", "not empty", "not empty", true);
-  }
-
-  @Test
-  void setClientText_Blank_DisablesLogButton() {
-    sut.load();
-    sut.setProjectText("not empty");
-    sut.setNotesText("not empty");
-
-    sut.setClientText("  ");
-
-    assertForm(false, "  ", "not empty", "not empty", true);
-  }
-
-  @Test
-  void setProjectText_NotBlank_EnablesLogButton() {
-    sut.load();
-    sut.setClientText("not empty");
-    sut.setNotesText("not empty");
-
-    sut.setProjectText("foobar");
-
-    assertForm(false, "not empty", "foobar", "not empty", false);
-  }
-
-  @Test
-  void setProjectText_Empty_DisablesLogButton() {
-    sut.load();
-    sut.setClientText("not empty");
-    sut.setNotesText("not empty");
-
-    sut.setProjectText("");
-
-    assertForm(false, "not empty", "", "not empty", true);
-  }
-
-  @Test
-  void setProjectText_Blank_DisablesLogButton() {
-    sut.load();
-    sut.setClientText("not empty");
-    sut.setNotesText("not empty");
-
-    sut.setProjectText("  ");
-
-    assertForm(false, "not empty", "  ", "not empty", true);
-  }
-
-  @Test
-  void setNotesText_NotBlank_EnablesLogButton() {
-    sut.load();
-    sut.setClientText("not empty");
-    sut.setProjectText("not empty");
-
-    sut.setNotesText("foobar");
-
-    assertForm(false, "not empty", "not empty", "foobar", false);
-  }
-
-  @Test
-  void setNotesText_Empty_DisablesLogButton() {
-    sut.load();
-    sut.setClientText("not empty");
-    sut.setProjectText("not empty");
-
-    sut.setNotesText("");
-
-    assertForm(false, "not empty", "not empty", "", true);
-  }
-
-  @Test
-  void setNotesText_Blank_DisablesLogButton() {
-    sut.load();
-    sut.setClientText("not empty");
-    sut.setProjectText("not empty");
-
-    sut.setNotesText("  ");
-
-    assertForm(false, "not empty", "not empty", "  ", true);
+    assertEquals(logButtonDisable, sut.isLogButtonDisable());
   }
 
   @Test
@@ -206,8 +138,8 @@ class ActivitySamplingViewModelTests {
     sut.logActivity();
 
     assertNoError();
-    assertLoggedActivities(List.of(newActivity(LocalDateTime.now(clock), Duration.ofMinutes(20))));
-    assertForm(false, "ACME Ltd.", "Foobar", "Lorem ipsum", false);
+    assertLoggedActivities(List.of(newActivity(LocalDateTime.now(CLOCK), Duration.ofMinutes(20))));
+    assertForm(false, "ACME Ltd.", "Foobar", "Task #1", "Lorem ipsum", false);
   }
 
   @Test
@@ -226,8 +158,8 @@ class ActivitySamplingViewModelTests {
     sut.logActivity();
 
     assertNoError();
-    assertLoggedActivities(List.of(newActivity(LocalDateTime.now(clock), Duration.ofMinutes(20))));
-    assertForm(true, "ACME Ltd.", "Foobar", "Lorem ipsum", false);
+    assertLoggedActivities(List.of(newActivity(LocalDateTime.now(CLOCK), Duration.ofMinutes(20))));
+    assertForm(true, "ACME Ltd.", "Foobar", "Task #1", "Lorem ipsum", false);
   }
 
   @Test
@@ -246,7 +178,7 @@ class ActivitySamplingViewModelTests {
     sut.logActivity();
 
     assertLoggedActivities(List.of());
-    assertForm(false, "ACME Ltd.", "Foobar", "Lorem ipsum", false);
+    assertForm(false, "ACME Ltd.", "Foobar", "Task #1", "Lorem ipsum", false);
     assertError("Failed to log activity. Something went wrong.");
   }
 
@@ -257,7 +189,7 @@ class ActivitySamplingViewModelTests {
     sut.startCountdown(Duration.ofMinutes(20));
 
     assertMenu(false);
-    assertForm(true, "", "", "", true);
+    assertForm(true, "", "", "", "", true);
     assertCountdown("00:20:00", 0.0, List.of());
   }
 
@@ -267,7 +199,7 @@ class ActivitySamplingViewModelTests {
     sut.startCountdown(Duration.ZERO);
 
     assertMenu(false);
-    assertForm(true, "", "", "", true);
+    assertForm(true, "", "", "", "", true);
     assertCountdown("00:00:00", 0.0, List.of());
   }
 
@@ -279,7 +211,7 @@ class ActivitySamplingViewModelTests {
     sut.progressCountdown(Duration.ofMinutes(5));
 
     assertMenu(false);
-    assertForm(true, "", "", "", true);
+    assertForm(true, "", "", "", "", true);
     assertCountdown("00:15:00", 0.25, List.of());
   }
 
@@ -291,8 +223,8 @@ class ActivitySamplingViewModelTests {
     sut.progressCountdown(Duration.ofMinutes(20));
 
     assertMenu(false);
-    assertForm(false, "", "", "", true);
-    assertCountdown("00:20:00", 0.0, List.of(LocalDateTime.now(clock)));
+    assertForm(false, "", "", "", "", true);
+    assertCountdown("00:20:00", 0.0, List.of(LocalDateTime.now(CLOCK)));
   }
 
   @Test
@@ -304,7 +236,7 @@ class ActivitySamplingViewModelTests {
     sut.progressCountdown(Duration.ofSeconds(10));
 
     assertMenu(true);
-    assertForm(false, "", "", "", true);
+    assertForm(false, "", "", "", "", true);
     assertCountdown("00:20:00", 0.0, List.of());
   }
 
@@ -317,8 +249,17 @@ class ActivitySamplingViewModelTests {
     sut.stopCountdown();
 
     assertMenu(true);
-    assertForm(false, "", "", "", true);
+    assertForm(false, "", "", "", "", true);
     assertCountdown("00:05:00", 0.75, List.of());
+  }
+
+  @Test
+  void setActivity_UpdatesForm() {
+    sut.load();
+
+    sut.setActivity(newActivityItem("N/A"));
+
+    assertForm(false, "ACME Ltd.", "Foobar", "Task #1", "Lorem ipsum", false);
   }
 
   private static Activity newActivity(LocalDateTime timestamp, Duration duration) {
@@ -332,6 +273,14 @@ class ActivitySamplingViewModelTests {
         .build();
   }
 
+  private static ActivityItem newActivityHeader(String header) {
+    return new ActivityItem(header, null, null, null, null);
+  }
+
+  private static ActivityItem newActivityItem(String text) {
+    return new ActivityItem(text, "ACME Ltd.", "Foobar", "Task #1", "Lorem ipsum");
+  }
+
   private void assertMenu(boolean stopMenuItemDisable) {
     assertEquals(stopMenuItemDisable, sut.isStopMenuItemDisable(), "Stop menu item disable");
   }
@@ -340,11 +289,13 @@ class ActivitySamplingViewModelTests {
       boolean formDisable,
       String clientText,
       String projectText,
+      String taskText,
       String notesText,
       boolean logButtonDisable) {
     assertEquals(formDisable, sut.isFormDisable(), "Form disable");
     assertEquals(clientText, sut.getClientText(), "Client text");
     assertEquals(projectText, sut.getProjectText(), "Project text");
+    assertEquals(taskText, sut.getTaskText(), "Task text");
     assertEquals(notesText, sut.getNotesText(), "Notes text");
     assertEquals(logButtonDisable, sut.isLogButtonDisable(), "Log button disable");
   }

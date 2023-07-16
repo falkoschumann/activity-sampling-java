@@ -166,7 +166,7 @@ public class ActivitySamplingViewModel {
     return taskText;
   }
 
-  public final String getRaskText() {
+  public final String getTaskText() {
     return taskText.get();
   }
 
@@ -195,7 +195,7 @@ public class ActivitySamplingViewModel {
   private final ObservableBooleanValue logButtonDisable =
       Bindings.createBooleanBinding(() -> clientText.get().isBlank(), clientText)
           .or(Bindings.createBooleanBinding(() -> projectText.get().isBlank(), projectText))
-          .or(Bindings.createBooleanBinding(() -> notesText.get().isBlank(), notesText));
+          .or(Bindings.createBooleanBinding(() -> taskText.get().isBlank(), taskText));
 
   public ObservableBooleanValue logButtonDisableProperty() {
     return logButtonDisable;
@@ -300,7 +300,7 @@ public class ActivitySamplingViewModel {
 
   /* *************************************************************************
    *                                                                         *
-   *  API                                                              *
+   *  API                                                                    *
    *                                                                         *
    **************************************************************************/
 
@@ -317,9 +317,9 @@ public class ActivitySamplingViewModel {
   private void updateActivityItems(RecentActivities recentActivities) {
     var items = new ArrayList<ActivityItem>();
     for (var day : recentActivities.workingDays()) {
-      items.add(ActivityItem.header(day, locale));
+      items.add(ActivityItem.newHeader(day, locale));
       for (var activity : day.activities()) {
-        items.add(ActivityItem.item(activity, locale));
+        items.add(ActivityItem.newItem(activity, locale));
       }
     }
     recentActivityItems.setAll(items);
@@ -334,6 +334,8 @@ public class ActivitySamplingViewModel {
   }
 
   public void logActivity() {
+    // TODO log the timestamp when the countdown elapsed
+    // TODO log the current timestamp when the countdown is not active
     try {
       activitiesService.logActivity(
           Activity.builder()
@@ -349,6 +351,13 @@ public class ActivitySamplingViewModel {
     } catch (Exception e) {
       errorOccurred.emit(new Exception("Failed to log activity.", e));
     }
+  }
+
+  public void setActivity(ActivityItem item) {
+    setClientText(item.client());
+    setProjectText(item.project());
+    setTaskText(item.task());
+    setNotesText(item.notes());
   }
 
   public void startCountdown(Duration interval) {

@@ -12,8 +12,6 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 
 public class ActivitySamplingApplication extends Application {
-  // TODO configure default duration, if log without timer
-  // TODO copy text from recent activities and timesheet
   // TODO create and link views in application
   private static final String ARG_LOG_FILE = "log-file";
 
