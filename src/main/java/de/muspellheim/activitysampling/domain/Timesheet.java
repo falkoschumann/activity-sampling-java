@@ -17,6 +17,7 @@ import java.util.Objects;
 import lombok.Builder;
 
 public record Timesheet(List<Entry> entries) {
+
   @Builder
   public record Entry(LocalDate date, String client, String project, String task, Duration hours)
       implements Comparable<Entry> {
@@ -48,30 +49,30 @@ public record Timesheet(List<Entry> entries) {
 
   public static Timesheet from(List<Activity> activities) {
     var entries = new ArrayList<Entry>();
-    for (var a : activities) {
-      var date = a.timestamp().toLocalDate();
+    for (var activity : activities) {
+      var date = activity.timestamp().toLocalDate();
       var index =
           Lists.indexOf(
               entries,
               e ->
                   e.date().equals(date)
-                      && e.client().equals(a.client())
-                      && e.project().equals(a.project())
-                      && e.task().equals(a.task()));
+                      && e.client().equals(activity.client())
+                      && e.project().equals(activity.project())
+                      && e.task().equals(activity.task()));
       if (index == -1) {
         var entry =
             Entry.builder()
                 .date(date)
-                .client(a.client())
-                .project(a.project())
-                .task(a.task())
-                .hours(a.duration())
+                .client(activity.client())
+                .project(activity.project())
+                .task(activity.task())
+                .hours(activity.duration())
                 .build();
         entries.add(entry);
         Collections.sort(entries);
       } else {
         var entry = entries.get(index);
-        var accumulatedHours = entry.hours().plus(a.duration());
+        var accumulatedHours = entry.hours().plus(activity.duration());
         entry =
             Entry.builder()
                 .date(entry.date())
@@ -83,7 +84,41 @@ public record Timesheet(List<Entry> entries) {
         entries.set(index, entry);
       }
     }
-    return new Timesheet(entries);
+    return new Timesheet(List.copyOf(entries));
+  }
+
+  public Timesheet groupByClient() {
+    var groups = new ArrayList<Entry>();
+    for (var entry : entries) {
+      var index =
+          Lists.indexOf(
+              groups, g -> g.date().equals(entry.date()) && g.client().equals(entry.client()));
+      if (index == -1) {
+        var group =
+            Entry.builder()
+                .date(entry.date)
+                .client(entry.client())
+                .project("N/A")
+                .task("N/A")
+                .hours(entry.hours())
+                .build();
+        groups.add(group);
+        Collections.sort(groups);
+      } else {
+        var group = groups.get(index);
+        var accumulatedHours = group.hours().plus(entry.hours());
+        group =
+            Entry.builder()
+                .date(group.date())
+                .client(group.client())
+                .project("N/A")
+                .task("N/A")
+                .hours(accumulatedHours)
+                .build();
+        groups.set(index, group);
+      }
+    }
+    return new Timesheet(List.copyOf(groups));
   }
 
   public Duration total() {
