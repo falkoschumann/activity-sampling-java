@@ -14,7 +14,7 @@ import java.util.List;
 class FakeActivities extends ArrayList<Activity> implements Activities {
 
   @Override
-  public List<Activity> findInPeriod(LocalDate from, LocalDate to) {
+  public List<Activity> findInPeriod(LocalDate from, LocalDate to) throws Exception {
     return stream().filter(a -> isBetween(a.timestamp().toLocalDate(), from, to)).toList();
   }
 
@@ -23,7 +23,7 @@ class FakeActivities extends ArrayList<Activity> implements Activities {
   }
 
   @Override
-  public void append(Activity activity) {
+  public void append(Activity activity) throws Exception {
     add(activity);
   }
 }

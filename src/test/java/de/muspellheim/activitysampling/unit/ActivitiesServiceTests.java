@@ -6,6 +6,7 @@
 package de.muspellheim.activitysampling.unit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import de.muspellheim.activitysampling.application.ActivitiesService;
 import de.muspellheim.activitysampling.application.ActivitiesServiceImpl;
@@ -15,6 +16,7 @@ import de.muspellheim.activitysampling.domain.TimeSummary;
 import de.muspellheim.activitysampling.domain.Timesheet;
 import de.muspellheim.activitysampling.domain.WorkingDay;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
@@ -22,6 +24,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class ActivitiesServiceTests {
+
   private FakeActivities activitiesRepository;
   private ActivitiesService sut;
 
@@ -38,6 +41,21 @@ class ActivitiesServiceTests {
     sut.logActivity(activity);
 
     assertEquals(List.of(activity), activitiesRepository);
+  }
+
+  @Test
+  void logActivity_Failed_ThrowsException() {
+    var activitiesRepository =
+        new FakeActivities() {
+          @Override
+          public void append(Activity activity) throws Exception {
+            throw new Exception();
+          }
+        };
+    var sut = new ActivitiesServiceImpl(activitiesRepository);
+    var activity = newActivity(LocalDateTime.now());
+
+    assertThrows(IllegalStateException.class, () -> sut.logActivity(activity));
   }
 
   @Test
@@ -65,6 +83,20 @@ class ActivitiesServiceTests {
   }
 
   @Test
+  void getRecentActivities_Failed_ThrowsException() {
+    var activitiesRepository =
+        new FakeActivities() {
+          @Override
+          public List<Activity> findInPeriod(LocalDate from, LocalDate to) throws Exception {
+            throw new Exception();
+          }
+        };
+    var sut = new ActivitiesServiceImpl(activitiesRepository);
+
+    assertThrows(IllegalStateException.class, sut::getRecentActivities);
+  }
+
+  @Test
   void getTimesheet() {
     var now = LocalDateTime.now();
     activitiesRepository.add(newActivity(now));
@@ -82,6 +114,21 @@ class ActivitiesServiceTests {
                     .hours(Duration.ofMinutes(30))
                     .build())),
         timesheet);
+  }
+
+  @Test
+  void getTimesheet_Failed_ThrowsException() {
+    var activitiesRepository =
+        new FakeActivities() {
+          @Override
+          public List<Activity> findInPeriod(LocalDate from, LocalDate to) throws Exception {
+            throw new Exception();
+          }
+        };
+    var sut = new ActivitiesServiceImpl(activitiesRepository);
+    var now = LocalDate.now();
+
+    assertThrows(IllegalStateException.class, () -> sut.getTimesheet(now, now));
   }
 
   private static Activity newActivity(LocalDateTime timestamp) {
