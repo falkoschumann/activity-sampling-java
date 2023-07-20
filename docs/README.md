@@ -22,10 +22,15 @@ Periodically ask the user about their current activity and log it for analysis.
 
 - As a user, I want to summarize my monthly hours worked on projects so that I
   can bill the client.
+
+### Select Report
+
 - As a user, I want to summarize my hours worked for clients so that I can see
   how much time I spent for every client.
 - As a user, I want to summarize my hours worked on projects so that I can see
   how much time I spent to every project.
+- As a user, I want to summarize my hours worked on tasks so that I can see
+  how much time I spent to every task.
 
 ### Change employee capacity
 
