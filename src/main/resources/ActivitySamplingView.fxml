@@ -47,10 +47,15 @@
                         </Menu>
                         <Menu mnemonicParsing="false" text="Report">
                           <items>
-                            <MenuItem mnemonicParsing="false" onAction="#openTimesheet" text="Timesheet">
+                            <MenuItem mnemonicParsing="false" onAction="#openTime" text="Time">
                                  <accelerator>
                                     <KeyCodeCombination alt="UP" code="T" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                                  </accelerator></MenuItem>
+                              <MenuItem mnemonicParsing="false" onAction="#openTimesheet" text="Timesheet">
+                                 <accelerator>
+                                    <KeyCodeCombination alt="UP" code="D" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                                 </accelerator>
+                              </MenuItem>
                           </items>
                         </Menu>
                         <Menu mnemonicParsing="false" text="View">

@@ -87,40 +87,6 @@ public record Timesheet(List<Entry> entries) {
     return new Timesheet(List.copyOf(entries));
   }
 
-  public Timesheet groupByClient() {
-    var groups = new ArrayList<Entry>();
-    for (var entry : entries) {
-      var index =
-          Lists.indexOf(
-              groups, g -> g.date().equals(entry.date()) && g.client().equals(entry.client()));
-      if (index == -1) {
-        var group =
-            Entry.builder()
-                .date(entry.date)
-                .client(entry.client())
-                .project("N/A")
-                .task("N/A")
-                .hours(entry.hours())
-                .build();
-        groups.add(group);
-        Collections.sort(groups);
-      } else {
-        var group = groups.get(index);
-        var accumulatedHours = group.hours().plus(entry.hours());
-        group =
-            Entry.builder()
-                .date(group.date())
-                .client(group.client())
-                .project("N/A")
-                .task("N/A")
-                .hours(accumulatedHours)
-                .build();
-        groups.set(index, group);
-      }
-    }
-    return new Timesheet(List.copyOf(groups));
-  }
-
   public Duration total() {
     var hours = entries.stream().map(Entry::hours).toList();
     var total = Duration.ZERO;

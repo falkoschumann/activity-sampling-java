@@ -23,6 +23,8 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 public class ActivitySamplingView {
+
+  private final EventEmitter<Void> openTime = new EventEmitter<>();
   private final EventEmitter<Void> openTimesheet = new EventEmitter<>();
 
   @FXML private Stage stage;
@@ -89,11 +91,19 @@ public class ActivitySamplingView {
     return stage;
   }
 
-  public void addOpenTimesheetListener(Consumer<Void> listener) {
+  public final void addOpenTimeListener(Consumer<Void> listener) {
+    openTime.addListener(listener);
+  }
+
+  public final void removeOpenTimeListener(Consumer<Void> listener) {
+    openTime.removeListener(listener);
+  }
+
+  public final void addOpenTimesheetListener(Consumer<Void> listener) {
     openTimesheet.addListener(listener);
   }
 
-  public void removeOpenTimesheetListener(Consumer<Void> listener) {
+  public final void removeOpenTimesheetListener(Consumer<Void> listener) {
     openTimesheet.removeListener(listener);
   }
 
@@ -160,6 +170,11 @@ public class ActivitySamplingView {
   @FXML
   private void openTimesheet() {
     openTimesheet.emit(null);
+  }
+
+  @FXML
+  private void openTime() {
+    openTime.emit(null);
   }
 
   @FXML

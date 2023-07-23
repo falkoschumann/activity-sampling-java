@@ -17,6 +17,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class TimesheetTests {
+
   @Test
   void from_NoActivities_CreatesEmptyTimesheet() {
     var timesheet = Timesheet.from(List.of());
@@ -90,82 +91,6 @@ class TimesheetTests {
                 newTimesheetEntry(today, "c2", "p2", "t2"))),
         timesheet);
     assertEquals(Duration.ofMinutes(150), timesheet.total());
-  }
-
-  @Test
-  void groupByClient_NoActivities_CreatesEmptyTimesheet() {
-    var timesheet = Timesheet.from(List.of());
-
-    timesheet = timesheet.groupByClient();
-
-    assertEquals(new Timesheet(List.of()), timesheet);
-    assertEquals(Duration.ZERO, timesheet.total());
-  }
-
-  @Test
-  void groupByClientFrom_OneActivity_CreatesTimesheetWithOneEntry() {
-    var today = LocalDate.now();
-    var a = newActivity(today, "c", "p", "t");
-    var timesheet = Timesheet.from(List.of(a));
-
-    timesheet = timesheet.groupByClient();
-
-    assertEquals(
-        new Timesheet(
-            List.of(
-                Timesheet.Entry.builder()
-                    .date(today)
-                    .client("c")
-                    .project("N/A")
-                    .task("N/A")
-                    .hours(Duration.ofMinutes(30))
-                    .build())),
-        timesheet);
-    assertEquals(Duration.ofMinutes(30), timesheet.total());
-  }
-
-  @Test
-  void groupByClientFrom_RepetitiveActivity_CreatesTimesheetWithOneSummarizedEntry() {
-    var today = LocalDate.now();
-    var a1 = newActivity(today, "c", "p1", "t1");
-    var a2 = newActivity(today, "c", "p2", "t2");
-    var timesheet = Timesheet.from(List.of(a1, a2));
-
-    timesheet = timesheet.groupByClient();
-
-    assertEquals(
-        new Timesheet(
-            List.of(
-                Timesheet.Entry.builder()
-                    .date(today)
-                    .client("c")
-                    .project("N/A")
-                    .task("N/A")
-                    .hours(Duration.ofMinutes(60))
-                    .build())),
-        timesheet);
-    assertEquals(Duration.ofMinutes(60), timesheet.total());
-  }
-
-  @Test
-  void groupByClientFrom_MultipleActivities_CreatesTimesheetWithEntriesOrderedByDateClient() {
-    var today = LocalDate.now();
-    var yesterday = today.minusDays(1);
-    var y1 = newActivity(yesterday, "c2", "p1", "t1");
-    var t1 = newActivity(today, "c2", "p2", "t2");
-    var t2 = newActivity(today, "c1", "p1", "t1");
-    var timesheet = Timesheet.from(List.of(y1, t1, t2));
-
-    timesheet = timesheet.groupByClient();
-
-    assertEquals(
-        new Timesheet(
-            List.of(
-                newTimesheetEntry(yesterday, "c2", "N/A", "N/A"),
-                newTimesheetEntry(today, "c1", "N/A", "N/A"),
-                newTimesheetEntry(today, "c2", "N/A", "N/A"))),
-        timesheet);
-    assertEquals(Duration.ofMinutes(90), timesheet.total());
   }
 
   private static Activity newActivity(LocalDate date, String client, String project, String task) {

@@ -8,11 +8,13 @@ package de.muspellheim.activitysampling.application;
 import de.muspellheim.activitysampling.domain.Activities;
 import de.muspellheim.activitysampling.domain.Activity;
 import de.muspellheim.activitysampling.domain.RecentActivities;
+import de.muspellheim.activitysampling.domain.TimeReport;
 import de.muspellheim.activitysampling.domain.Timesheet;
 import java.time.LocalDate;
 import java.time.Period;
 
 public class ActivitiesServiceImpl implements ActivitiesService {
+
   private final Activities activities;
 
   public ActivitiesServiceImpl(Activities activities) {
@@ -48,6 +50,16 @@ public class ActivitiesServiceImpl implements ActivitiesService {
     } catch (Exception e) {
       throw new IllegalStateException(
           "Failed to get timesheet from %s to %s.".formatted(from, to), e);
+    }
+  }
+
+  @Override
+  public TimeReport getTimeReport(LocalDate from, LocalDate to) {
+    try {
+      var activities = this.activities.findInPeriod(from, to);
+      return TimeReport.from(activities);
+    } catch (Exception e) {
+      throw new IllegalStateException("Failed to get report from %s to %s.".formatted(from, to), e);
     }
   }
 }

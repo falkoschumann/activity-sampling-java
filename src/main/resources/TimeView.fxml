@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Scene?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.stage.Stage?>
+
+<fx:root fx:id="stage" title="Reports" type="Stage" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.muspellheim.activitysampling.ui.time.TimeView">
+    <scene>
+        <Scene stylesheets="@style.css">
+         <BorderPane>
+            <center>
+               <TableView fx:id="timeTable" prefHeight="600.0" prefWidth="1000.0" BorderPane.alignment="CENTER">
+                 <columns>
+                   <TableColumn fx:id="clientColumn" prefWidth="200.0" text="Client" />
+                   <TableColumn fx:id="hoursColumn" prefWidth="70.0" text="Hours" />
+                 </columns>
+               </TableView>
+            </center>
+            <top>
+               <VBox BorderPane.alignment="CENTER">
+                  <children>
+                     <fx:include fx:id="periodView" maxWidth="1.7976931348623157E308" source="PeriodView.fxml" />
+                  </children>
+               </VBox>
+            </top>
+            <bottom>
+               <HBox alignment="CENTER_RIGHT" BorderPane.alignment="CENTER">
+                  <children>
+                     <Label styleClass="base" text="Total hours: " />
+                     <Label fx:id="totalLabel" text="00:00" />
+                  </children>
+                  <BorderPane.margin>
+                     <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+                  </BorderPane.margin>
+               </HBox>
+            </bottom>
+         </BorderPane>
+        </Scene>
+    </scene>
+</fx:root>

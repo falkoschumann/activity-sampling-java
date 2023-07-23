@@ -12,6 +12,7 @@ import de.muspellheim.activitysampling.application.ActivitiesService;
 import de.muspellheim.activitysampling.application.ActivitiesServiceImpl;
 import de.muspellheim.activitysampling.domain.Activity;
 import de.muspellheim.activitysampling.domain.RecentActivities;
+import de.muspellheim.activitysampling.domain.TimeReport;
 import de.muspellheim.activitysampling.domain.TimeSummary;
 import de.muspellheim.activitysampling.domain.Timesheet;
 import de.muspellheim.activitysampling.domain.WorkingDay;
@@ -129,6 +130,35 @@ class ActivitiesServiceTests {
     var now = LocalDate.now();
 
     assertThrows(IllegalStateException.class, () -> sut.getTimesheet(now, now));
+  }
+
+  @Test
+  void getReport() {
+    var now = LocalDateTime.now();
+    activitiesRepository.add(newActivity(now));
+
+    var report = sut.getTimeReport(now.toLocalDate(), now.toLocalDate());
+
+    Assertions.assertEquals(
+        new TimeReport(
+            List.of(
+                TimeReport.Entry.builder().client("client").hours(Duration.ofMinutes(30)).build())),
+        report);
+  }
+
+  @Test
+  void getReport_Failed_ThrowsException() {
+    var activitiesRepository =
+        new FakeActivities() {
+          @Override
+          public List<Activity> findInPeriod(LocalDate from, LocalDate to) throws Exception {
+            throw new Exception();
+          }
+        };
+    var sut = new ActivitiesServiceImpl(activitiesRepository);
+    var now = LocalDate.now();
+
+    assertThrows(IllegalStateException.class, () -> sut.getTimeReport(now, now));
   }
 
   private static Activity newActivity(LocalDateTime timestamp) {
