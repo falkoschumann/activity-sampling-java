@@ -6,29 +6,27 @@
 package de.muspellheim.activitysampling.ui.timesheet;
 
 import de.muspellheim.activitysampling.ui.shared.ErrorView;
+import de.muspellheim.activitysampling.ui.shared.PeriodView;
 import de.muspellheim.activitysampling.ui.shared.Registry;
-import java.time.temporal.ChronoUnit;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 
 public class TimesheetView {
+
   @FXML private Stage stage;
-  @FXML private Label title1;
-  @FXML private Label title2;
-  @FXML private ChoiceBox<ChronoUnit> period;
+  @FXML private PeriodView periodViewController;
   @FXML private TableView<TimesheetItem> timesheetTable;
   @FXML private TableColumn<TimesheetItem, String> dateColumn;
   @FXML private TableColumn<TimesheetItem, String> clientColumn;
   @FXML private TableColumn<TimesheetItem, String> projectColumn;
   @FXML private TableColumn<TimesheetItem, String> taskColumn;
   @FXML private TableColumn<TimesheetItem, String> hoursColumn;
-  @FXML private Label total;
+  @FXML private Label totalLabel;
 
   private final TimesheetViewModel viewModel =
       new TimesheetViewModel(Registry.getActivitiesService());
@@ -49,14 +47,7 @@ public class TimesheetView {
   }
 
   @FXML
-  void initialize() {
-    viewModel.addErrorOccurredListener(ErrorView::show);
-    period.setConverter(new ChronoUnitStringConverter());
-    period.getItems().addAll(ChronoUnit.DAYS, ChronoUnit.WEEKS, ChronoUnit.MONTHS);
-    period.valueProperty().bindBidirectional(viewModel.periodProperty());
-    title1.textProperty().bind(viewModel.title1Property());
-    title2.textProperty().bind(viewModel.title2Property());
-    timesheetTable.setItems(viewModel.getTimesheetItems());
+  private void initialize() {
     dateColumn.setCellFactory(TimesheetTableCell.newCellFactory(Pos.BASELINE_CENTER));
     dateColumn.setCellValueFactory(TimesheetTableCell.newCellValueFactory(TimesheetItem::date));
     clientColumn.setCellFactory(TimesheetTableCell.newCellFactory(Pos.BASELINE_LEFT));
@@ -68,21 +59,16 @@ public class TimesheetView {
     taskColumn.setCellValueFactory(TimesheetTableCell.newCellValueFactory(TimesheetItem::task));
     hoursColumn.setCellFactory(TimesheetTableCell.newCellFactory(Pos.BASELINE_CENTER));
     hoursColumn.setCellValueFactory(TimesheetTableCell.newCellValueFactory(TimesheetItem::hours));
-    total.textProperty().bind(viewModel.totalProperty());
+
+    periodViewController.addPeriodChangedListener(
+        e -> viewModel.load(periodViewController.getFrom(), periodViewController.getTo()));
+    viewModel.addErrorOccurredListener(ErrorView::show);
+    timesheetTable.setItems(viewModel.getTimesheetItems());
+    totalLabel.textProperty().bind(viewModel.totalLabelTextProperty());
   }
 
   public void run() {
     stage.show();
-    viewModel.load();
-  }
-
-  @FXML
-  void back() {
-    viewModel.back();
-  }
-
-  @FXML
-  void forward() {
-    viewModel.forward();
+    viewModel.load(periodViewController.getFrom(), periodViewController.getTo());
   }
 }

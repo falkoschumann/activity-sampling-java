@@ -10,30 +10,23 @@ import de.muspellheim.activitysampling.domain.Timesheet;
 import de.muspellheim.activitysampling.util.Durations;
 import de.muspellheim.activitysampling.util.EventEmitter;
 import de.muspellheim.activitysampling.util.OutputTracker;
-import java.time.Clock;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.time.temporal.ChronoField;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableStringValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class TimesheetViewModel {
-  private final ActivitiesService activitiesService;
-  private DateTimeFormatter dateFormatter;
 
-  // State
-  private final ObjectProperty<LocalDate> from = new SimpleObjectProperty<>();
-  private final ObjectProperty<LocalDate> to = new SimpleObjectProperty<>();
+  private final ActivitiesService activitiesService;
+  private final DateTimeFormatter dateFormatter;
 
   /* *************************************************************************
    *                                                                         *
@@ -42,22 +35,12 @@ public class TimesheetViewModel {
    **************************************************************************/
 
   TimesheetViewModel(ActivitiesService activitiesService) {
-    this(activitiesService, Locale.getDefault(), Clock.systemDefaultZone());
+    this(activitiesService, Locale.getDefault());
   }
 
-  public TimesheetViewModel(ActivitiesService activitiesService, Locale locale, Clock clock) {
+  public TimesheetViewModel(ActivitiesService activitiesService, Locale locale) {
     this.activitiesService = activitiesService;
     dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale);
-    initPeriodWithCurrentWeek(clock);
-  }
-
-  private void initPeriodWithCurrentWeek(Clock clock) {
-    var today = LocalDate.now(clock);
-    var weekday = today.getDayOfWeek().getValue();
-    var monday = today.minusDays(weekday - 1);
-    var sunday = today.plusDays(7 - weekday);
-    from.set(monday);
-    to.set(sunday);
   }
 
   /* *************************************************************************
@@ -86,77 +69,6 @@ public class TimesheetViewModel {
    *                                                                         *
    **************************************************************************/
 
-  // --- period
-
-  private final ObjectProperty<ChronoUnit> period =
-      new SimpleObjectProperty<>(ChronoUnit.WEEKS) {
-        @Override
-        protected void invalidated() {
-          switch (get()) {
-            case DAYS -> to.set(from.get());
-            case WEEKS -> {
-              var first = from.get().with(ChronoField.DAY_OF_WEEK, 1);
-              from.set(first);
-              to.set(from.get().plusWeeks(1).minusDays(1));
-            }
-            case MONTHS -> {
-              var first = from.get().withDayOfMonth(1);
-              from.set(first);
-              var last = first.plusMonths(1).minusDays(1);
-              to.set(last);
-            }
-            default -> throw new IllegalArgumentException(
-                "Unsupported period: %s.".formatted(get()));
-          }
-          load();
-        }
-      };
-
-  ObjectProperty<ChronoUnit> periodProperty() {
-    return period;
-  }
-
-  public ChronoUnit getPeriod() {
-    return period.get();
-  }
-
-  public void setPeriod(ChronoUnit value) {
-    periodProperty().set(value);
-  }
-
-  // --- title1
-
-  private final ObservableStringValue title1 =
-      Bindings.createStringBinding(
-          () -> "This " + new ChronoUnitStringConverter().toString(period.get()) + ": ", period);
-
-  ObservableStringValue title1Property() {
-    return title1;
-  }
-
-  public String getTitle1() {
-    return title1.get();
-  }
-
-  // --- title2
-
-  private final ObservableStringValue title2 =
-      Bindings.createStringBinding(
-          () ->
-              dateFormatter.format(from.get())
-                  + (period.get() == ChronoUnit.DAYS ? "" : " - " + dateFormatter.format(to.get())),
-          from,
-          to,
-          period);
-
-  ObservableStringValue title2Property() {
-    return title2;
-  }
-
-  public String getTitle2() {
-    return title2.get();
-  }
-
   // --- timesheetItems
 
   private final ObservableList<TimesheetItem> timesheetItems = FXCollections.observableArrayList();
@@ -165,16 +77,16 @@ public class TimesheetViewModel {
     return timesheetItems;
   }
 
-  // --- total
+  // --- totalLabelText
 
-  private final ReadOnlyStringWrapper total = new ReadOnlyStringWrapper("00:00");
+  private final ReadOnlyStringWrapper totalLabelText = new ReadOnlyStringWrapper("00:00");
 
-  ObservableStringValue totalProperty() {
-    return total.getReadOnlyProperty();
+  ObservableStringValue totalLabelTextProperty() {
+    return totalLabelText.getReadOnlyProperty();
   }
 
-  public String getTotal() {
-    return total.get();
+  public String getTotalLabelText() {
+    return totalLabelText.get();
   }
 
   /* *************************************************************************
@@ -183,19 +95,20 @@ public class TimesheetViewModel {
    *                                                                         *
    **************************************************************************/
 
-  public void load() {
+  public void load(LocalDate from, LocalDate to) {
     try {
-      var timesheet = activitiesService.getTimesheet(from.get(), to.get());
-      updateTimesheetItems(timesheet);
-      updateTotal(timesheet);
+      var timesheet = activitiesService.getTimesheet(from, to);
+      updateTimesheetItems(timesheet.entries());
+      updateTotal(timesheet.total());
     } catch (Exception e) {
+      e.printStackTrace();
       errorOccurred.emit(new Exception("Failed to load timesheet.", e));
     }
   }
 
-  private void updateTimesheetItems(Timesheet timesheet) {
+  private void updateTimesheetItems(List<Timesheet.Entry> entries) {
     var items = new ArrayList<TimesheetItem>();
-    for (var entry : timesheet.entries()) {
+    for (var entry : entries) {
       items.add(
           new TimesheetItem(
               dateFormatter.format(entry.date()),
@@ -207,53 +120,7 @@ public class TimesheetViewModel {
     timesheetItems.setAll(items);
   }
 
-  private void updateTotal(Timesheet timesheet) {
-    total.set(Durations.format(timesheet.total(), FormatStyle.SHORT));
-  }
-
-  public void back() {
-    switch (period.get()) {
-      case DAYS -> {
-        from.set(from.get().minusDays(1));
-        to.set(to.get().minusDays(1));
-      }
-      case WEEKS -> {
-        from.set(from.get().minusWeeks(1));
-        to.set(to.get().minusWeeks(1));
-      }
-      case MONTHS -> {
-        var first = from.get().minusMonths(1);
-        from.set(first);
-        var last = first.plusMonths(1).minusDays(1);
-        to.set(last);
-      }
-      default -> {
-        // do nothing
-      }
-    }
-    load();
-  }
-
-  public void forward() {
-    switch (period.get()) {
-      case DAYS -> {
-        from.set(from.get().plusDays(1));
-        to.set(to.get().plusDays(1));
-      }
-      case WEEKS -> {
-        from.set(from.get().plusWeeks(1));
-        to.set(to.get().plusWeeks(1));
-      }
-      case MONTHS -> {
-        var first = from.get().plusMonths(1);
-        from.set(first);
-        var last = first.plusMonths(1).minusDays(1);
-        to.set(last);
-      }
-      default -> {
-        // do nothing
-      }
-    }
-    load();
+  private void updateTotal(Duration total) {
+    totalLabelText.set(Durations.format(total, FormatStyle.SHORT));
   }
 }

@@ -13,4 +13,6 @@ module de.muspellheim.activitysampling {
       javafx.fxml;
   opens de.muspellheim.activitysampling.ui.timesheet to
       javafx.fxml;
+  opens de.muspellheim.activitysampling.ui.shared to
+      javafx.fxml;
 }

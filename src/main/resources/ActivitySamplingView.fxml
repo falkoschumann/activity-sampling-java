@@ -55,7 +55,10 @@
                         </Menu>
                         <Menu mnemonicParsing="false" text="View">
                            <items>
-                              <MenuItem mnemonicParsing="false" onAction="#refresh" text="Refresh" />
+                              <MenuItem mnemonicParsing="false" onAction="#refresh" text="Refresh">
+                                 <accelerator>
+                                    <KeyCodeCombination alt="UP" code="R" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                                 </accelerator></MenuItem>
                            </items>
                         </Menu>
                   </menus>

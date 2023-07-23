@@ -3,12 +3,12 @@
  * Copyright (c) 2022 Falko Schumann <falko.schumann@muspellheim.de>
  */
 
-package de.muspellheim.activitysampling.ui.timesheet;
+package de.muspellheim.activitysampling.ui.shared;
 
 import java.time.temporal.ChronoUnit;
 import javafx.util.StringConverter;
 
-class ChronoUnitStringConverter extends StringConverter<ChronoUnit> {
+public class ChronoUnitStringConverter extends StringConverter<ChronoUnit> {
   @Override
   public String toString(ChronoUnit object) {
     return switch (object) {

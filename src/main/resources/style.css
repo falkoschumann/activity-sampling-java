@@ -1,14 +1,14 @@
 /* Inspired by UWP Type Ramp
  *
- * | Title     | Weight     | Size | Line Height | Ratio |
- * |-----------|------------|------|-------------|-------|
- * | Header    | light      | 46px | 56px        | 3.286 |
- * | Subheader | light      | 34px | 40px        | 2.429 |
- * | Title     | semi-light | 24px | 28px        | 1.714 |
- * | Subtitle  | regular    | 20px | 24px        | 1.429 |
- * | Base      | semi-bold  | 14px | 20px        | 1.000 |
- * | Body      | regular    | 14px | 20px        | 1.000 |
- * | Caption   | regular    | 12px | 14px        | 0.857 |
+ * | Title     | Weight           | Size | Line Height | Ratio |
+ * |-----------|------------------|------|-------------|-------|
+ * | Header    | light (300)      | 46px | 56px        | 3.286 |
+ * | Subheader | light (300)      | 34px | 40px        | 2.429 |
+ * | Title     | semi-light (350) | 24px | 28px        | 1.714 |
+ * | Subtitle  | regular (400)    | 20px | 24px        | 1.429 |
+ * | Base      | semi-bold (600)  | 14px | 20px        | 1.000 |
+ * | Body      | regular (400)    | 14px | 20px        | 1.000 |
+ * | Caption   | regular (400)    | 12px | 14px        | 0.857 |
  */
 
 .root {
@@ -17,22 +17,27 @@
 
 .header {
   -fx-font-size: 3.0em;
+  -fx-font-weight: normal;
 }
 
 .subheader {
   -fx-font-size: 2.25em;
+  -fx-font-weight: normal;
 }
 
 .title {
   -fx-font-size: 1.5em;
+  -fx-font-weight: normal;
 }
 
 .subtitle {
   -fx-font-size: 1.25em;
+  -fx-font-weight: normal;
 }
 
 .body {
   -fx-font-size: 1.0em;
+  -fx-font-weight: normal;
 }
 
 .base {
@@ -42,4 +47,5 @@
 
 .caption {
   -fx-font-size: 0.875em;
+  -fx-font-weight: normal;
 }

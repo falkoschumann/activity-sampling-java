@@ -14,7 +14,7 @@ import de.muspellheim.activitysampling.util.EventEmitter;
 import de.muspellheim.activitysampling.util.OutputTracker;
 import java.time.LocalDate;
 
-public class ActivitiesServiceStub implements ActivitiesService {
+class ActivitiesServiceStub implements ActivitiesService {
   private final EventEmitter<Activity> onActivityLogged = new EventEmitter<>();
 
   private ConfigurableResponses<?> logActivityResponses = ConfigurableResponses.empty();
@@ -22,19 +22,19 @@ public class ActivitiesServiceStub implements ActivitiesService {
       ConfigurableResponses.empty();
   private ConfigurableResponses<Timesheet> timesheetResponses = ConfigurableResponses.empty();
 
-  public void initLogActivityResponses(ConfigurableResponses<?> responses) {
+  void initLogActivityResponses(ConfigurableResponses<?> responses) {
     this.logActivityResponses = responses;
   }
 
-  public void initRecentActivitiesResponses(ConfigurableResponses<RecentActivities> responses) {
+  void initRecentActivitiesResponses(ConfigurableResponses<RecentActivities> responses) {
     this.recentActivitiesResponses = responses;
   }
 
-  public void initTimesheetResponses(ConfigurableResponses<Timesheet> responses) {
+  void initTimesheetResponses(ConfigurableResponses<Timesheet> responses) {
     this.timesheetResponses = responses;
   }
 
-  public OutputTracker<Activity> trackLoggedActivity() {
+  OutputTracker<Activity> trackLoggedActivity() {
     return new OutputTracker<>(onActivityLogged);
   }
 
