@@ -9,7 +9,7 @@ plugins {
   id 'checkstyle'
   id 'jacoco'
   id 'java'
-  id 'com.diffplug.spotless' version '6.19.0'
+  id 'com.diffplug.spotless' version '6.20.0'
   id 'org.beryx.jlink' version '2.26.0'
   id 'org.openjfx.javafxplugin' version '0.0.14'
 }
