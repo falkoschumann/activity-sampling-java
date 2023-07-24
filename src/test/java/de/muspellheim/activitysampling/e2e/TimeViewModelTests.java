@@ -41,10 +41,13 @@ class TimeViewModelTests {
     var report = newReport();
     activitiesService.initReportResponses(ConfigurableResponses.always(report));
 
-    sut.load(null, null);
+    sut.load(null, null, null);
 
     assertReport(
-        List.of(new TimeItem("ACME Ltd.", "00:15"), new TimeItem("F.O.W.L.", "00:15")), "00:30");
+        List.of(
+            TimeItem.builder().client("ACME Ltd.").project("Foo").hours("00:15").build(),
+            TimeItem.builder().client("F.O.W.L.").project("Bar").hours("00:15").build()),
+        "00:30");
     assertNoError();
   }
 
@@ -53,7 +56,7 @@ class TimeViewModelTests {
     activitiesService.initReportResponses(
         ConfigurableResponses.sequence(new IllegalStateException("Something went wrong.")));
 
-    sut.load(null, null);
+    sut.load(null, null, null);
 
     assertReport(List.of(), "00:00");
     assertError("Failed to load report. Something went wrong.");
@@ -62,8 +65,16 @@ class TimeViewModelTests {
   private static TimeReport newReport() {
     return new TimeReport(
         List.of(
-            TimeReport.Entry.builder().client("ACME Ltd.").hours(Duration.ofMinutes(15)).build(),
-            TimeReport.Entry.builder().client("F.O.W.L.").hours(Duration.ofMinutes(15)).build()));
+            TimeReport.Entry.builder()
+                .client("ACME Ltd.")
+                .project("Foo")
+                .hours(Duration.ofMinutes(15))
+                .build(),
+            TimeReport.Entry.builder()
+                .client("F.O.W.L.")
+                .project("Bar")
+                .hours(Duration.ofMinutes(15))
+                .build()));
   }
 
   private void assertReport(List<TimeItem> items, String total) {

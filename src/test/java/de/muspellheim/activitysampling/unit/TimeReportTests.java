@@ -10,9 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import de.muspellheim.activitysampling.domain.Activity;
 import de.muspellheim.activitysampling.domain.TimeReport;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -28,54 +26,88 @@ class TimeReportTests {
 
   @Test
   void from_OneActivity_CreatesReportWithOneEntry() {
-    var today = LocalDate.now();
-    var a = newActivity(today, "c");
+    var a = newActivity("c", "p");
 
     var report = TimeReport.from(List.of(a));
 
-    assertEquals(new TimeReport(List.of(newReportEntry("c"))), report);
+    assertEquals(new TimeReport(List.of(newReportEntry("c", "p"))), report);
     assertEquals(Duration.ofMinutes(15), report.total());
   }
 
   @Test
   void from_RepetitiveActivity_CreatesReportWithOneSummarizedEntry() {
-    var today = LocalDate.now();
-    var a1 = newActivity(today, "c");
-    var a2 = newActivity(today, "c");
+    var a1 = newActivity("c", "p");
+    var a2 = newActivity("c", "p");
 
     var report = TimeReport.from(List.of(a1, a2));
 
     assertEquals(
         new TimeReport(
-            List.of(TimeReport.Entry.builder().client("c").hours(Duration.ofMinutes(30)).build())),
+            List.of(
+                TimeReport.Entry.builder()
+                    .client("c")
+                    .project("p")
+                    .hours(Duration.ofMinutes(30))
+                    .build())),
         report);
     assertEquals(Duration.ofMinutes(30), report.total());
   }
 
   @Test
-  void from_MultipleActivities_CreatesReportWithEntriesOrderedByClient() {
-    var today = LocalDate.now();
-    var yesterday = today.minusDays(1);
-    var y1 = newActivity(yesterday, "c2");
-    var t1 = newActivity(today, "c1");
+  void from_MultipleActivities_CreatesReportWithEntriesOrderedByClientAndProject() {
+    var a1 = newActivity("c2", "p2");
+    var a2 = newActivity("c1", "p2");
+    var a3 = newActivity("c1", "p1");
 
-    var report = TimeReport.from(List.of(y1, t1));
+    var report = TimeReport.from(List.of(a1, a2, a3));
 
-    assertEquals(new TimeReport(List.of(newReportEntry("c1"), newReportEntry("c2"))), report);
-    assertEquals(Duration.ofMinutes(30), report.total());
+    assertEquals(
+        new TimeReport(
+            List.of(
+                newReportEntry("c1", "p1"),
+                newReportEntry("c1", "p2"),
+                newReportEntry("c2", "p2"))),
+        report);
+    assertEquals(Duration.ofMinutes(45), report.total());
   }
 
-  private static Activity newActivity(LocalDate date, String client) {
+  @Test
+  void groupByClient() {
+    var a1 = newActivity("c2", "p2");
+    var a2 = newActivity("c1", "p2");
+    var a3 = newActivity("c1", "p1");
+    var timeReport = TimeReport.from(List.of(a1, a2, a3));
+
+    var report = timeReport.groupByClient();
+
+    assertEquals(
+        new TimeReport(
+            List.of(
+                newReportEntry("c1", Duration.ofMinutes(30)),
+                newReportEntry("c2", Duration.ofMinutes(15)))),
+        report);
+    assertEquals(Duration.ofMinutes(45), report.total());
+  }
+
+  private static Activity newActivity(String client, String project) {
     return Activity.builder()
-        .timestamp(LocalDateTime.of(date, LocalTime.of(16, 0)))
+        .timestamp(LocalDateTime.now())
         .duration(Duration.ofMinutes(15))
         .client(client)
-        .project("p")
+        .project(project)
         .task("t")
         .build();
   }
 
-  private static TimeReport.Entry newReportEntry(String client) {
-    return TimeReport.Entry.builder().client(client).hours(Duration.ofMinutes(15)).build();
+  private static TimeReport.Entry newReportEntry(String client, String project) {
+    return TimeReport.Entry.builder()
+        .client(client)
+        .project(project)
+        .hours(Duration.ofMinutes(15))
+        .build();
+  }
+
+  private static TimeReport.Entry newReportEntry(String client, Duration hours) {
+    return TimeReport.Entry.builder().client(client).project("N/A").hours(hours).build();
   }
 }

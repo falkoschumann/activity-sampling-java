@@ -23,6 +23,11 @@ import javafx.collections.ObservableList;
 
 public class TimeViewModel {
 
+  public enum Scope {
+    CLIENTS,
+    PROJECTS
+  }
+
   private final ActivitiesService activitiesService;
 
   /* *************************************************************************
@@ -87,9 +92,12 @@ public class TimeViewModel {
    *                                                                         *
    **************************************************************************/
 
-  public void load(LocalDate from, LocalDate to) {
+  public void load(LocalDate from, LocalDate to, Scope scope) {
     try {
       var report = activitiesService.getTimeReport(from, to);
+      if (scope == Scope.CLIENTS) {
+        report = report.groupByClient();
+      }
       updateReportItems(report.entries());
       updateTotal(report.total());
     } catch (Exception e) {
@@ -101,7 +109,12 @@ public class TimeViewModel {
   private void updateReportItems(List<TimeReport.Entry> entries) {
     var items = new ArrayList<TimeItem>();
     for (var entry : entries) {
-      items.add(new TimeItem(entry.client(), Durations.format(entry.hours(), FormatStyle.SHORT)));
+      items.add(
+          TimeItem.builder()
+              .client(entry.client())
+              .project(entry.project())
+              .hours(Durations.format(entry.hours(), FormatStyle.SHORT))
+              .build());
     }
     timeItems.setAll(items);
   }

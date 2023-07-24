@@ -142,7 +142,11 @@ class ActivitiesServiceTests {
     Assertions.assertEquals(
         new TimeReport(
             List.of(
-                TimeReport.Entry.builder().client("client").hours(Duration.ofMinutes(30)).build())),
+                TimeReport.Entry.builder()
+                    .client("client")
+                    .project("project")
+                    .hours(Duration.ofMinutes(30))
+                    .build())),
         report);
   }
 

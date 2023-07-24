@@ -5,6 +5,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -18,6 +20,7 @@
                <TableView fx:id="timeTable" prefHeight="600.0" prefWidth="1000.0" BorderPane.alignment="CENTER">
                  <columns>
                    <TableColumn fx:id="clientColumn" prefWidth="200.0" text="Client" />
+                     <TableColumn fx:id="projectColumn" prefWidth="200.0" text="Project" />
                    <TableColumn fx:id="hoursColumn" prefWidth="70.0" text="Hours" />
                  </columns>
                </TableView>
@@ -26,6 +29,19 @@
                <VBox BorderPane.alignment="CENTER">
                   <children>
                      <fx:include fx:id="periodView" maxWidth="1.7976931348623157E308" source="PeriodView.fxml" />
+                     <HBox>
+                        <children>
+                           <ToggleButton fx:id="clientsToggle" mnemonicParsing="false" onAction="#changeScope" selected="true" text="Clients">
+                              <toggleGroup>
+                                 <ToggleGroup fx:id="scopeToggleGroup" />
+                              </toggleGroup>
+                           </ToggleButton>
+                           <ToggleButton fx:id="projectsToggle" mnemonicParsing="false" onAction="#changeScope" text="Projects" toggleGroup="$scopeToggleGroup" />
+                        </children>
+                        <padding>
+                           <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+                        </padding>
+                     </HBox>
                   </children>
                </VBox>
             </top>

@@ -14,14 +14,18 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.ToggleButton;
 import javafx.stage.Stage;
 
 public class TimeView {
 
   @FXML private Stage stage;
   @FXML private PeriodView periodViewController;
+  @FXML private ToggleButton clientsToggle;
+  @FXML private ToggleButton projectsToggle;
   @FXML private TableView<TimeItem> timeTable;
   @FXML private TableColumn<TimeItem, String> clientColumn;
+  @FXML private TableColumn<TimeItem, String> projectColumn;
   @FXML private TableColumn<TimeItem, String> hoursColumn;
   @FXML private Label totalLabel;
 
@@ -46,11 +50,12 @@ public class TimeView {
   private void initialize() {
     clientColumn.setCellFactory(TimeTableCell.newCellFactory(Pos.BASELINE_LEFT));
     clientColumn.setCellValueFactory(TimeTableCell.newCellValueFactory(TimeItem::client));
+    projectColumn.setCellFactory(TimeTableCell.newCellFactory(Pos.BASELINE_LEFT));
+    projectColumn.setCellValueFactory(TimeTableCell.newCellValueFactory(TimeItem::project));
     hoursColumn.setCellFactory(TimeTableCell.newCellFactory(Pos.BASELINE_CENTER));
     hoursColumn.setCellValueFactory(TimeTableCell.newCellValueFactory(TimeItem::hours));
 
-    periodViewController.addPeriodChangedListener(
-        e -> viewModel.load(periodViewController.getFrom(), periodViewController.getTo()));
+    periodViewController.addPeriodChangedListener(e -> update());
     viewModel.addErrorOccurredListener(ErrorView::show);
     timeTable.setItems(viewModel.getTimeItems());
     totalLabel.textProperty().bind(viewModel.totalLabelTextProperty());
@@ -58,6 +63,22 @@ public class TimeView {
 
   public void run() {
     stage.show();
-    viewModel.load(periodViewController.getFrom(), periodViewController.getTo());
+    update();
+  }
+
+  @FXML
+  private void changeScope() {
+    update();
+  }
+
+  private void update() {
+    var scope = TimeViewModel.Scope.PROJECTS;
+    if (clientsToggle.isSelected()) {
+      scope = TimeViewModel.Scope.CLIENTS;
+      projectColumn.setVisible(false);
+    } else {
+      projectColumn.setVisible(true);
+    }
+    viewModel.load(periodViewController.getFrom(), periodViewController.getTo(), scope);
   }
 }

@@ -44,11 +44,7 @@ class TimesheetViewModelTests {
 
     sut.load(null, null);
 
-    assertTimesheet(
-        List.of(
-            new TimesheetItem("14.04.2023", "ACME Ltd.", "Foo", "Lorem ipsum", "00:20"),
-            new TimesheetItem("14.04.2023", "ACME Ltd.", "Bar", "Lorem ipsum", "00:20")),
-        "00:40");
+    assertTimesheet(List.of(newTimesheetItem("Foo"), newTimesheetItem("Bar")), "00:40");
     assertNoError();
   }
 
@@ -80,6 +76,16 @@ class TimesheetViewModelTests {
                 .task("Lorem ipsum")
                 .hours(Duration.ofMinutes(20))
                 .build()));
+  }
+
+  private static TimesheetItem newTimesheetItem(String project) {
+    return TimesheetItem.builder()
+        .date("14.04.2023")
+        .client("ACME Ltd.")
+        .project(project)
+        .task("Lorem ipsum")
+        .hours("00:20")
+        .build();
   }
 
   private void assertTimesheet(List<TimesheetItem> items, String total) {

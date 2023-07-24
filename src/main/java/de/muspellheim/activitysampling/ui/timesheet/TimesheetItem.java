@@ -6,7 +6,9 @@
 package de.muspellheim.activitysampling.ui.timesheet;
 
 import java.util.Objects;
+import lombok.Builder;
 
+@Builder
 public record TimesheetItem(String date, String client, String project, String task, String hours) {
   public TimesheetItem {
     Objects.requireNonNull(date, "The date must not be null.");

@@ -110,12 +110,13 @@ public class TimesheetViewModel {
     var items = new ArrayList<TimesheetItem>();
     for (var entry : entries) {
       items.add(
-          new TimesheetItem(
-              dateFormatter.format(entry.date()),
-              entry.client(),
-              entry.project(),
-              entry.task(),
-              Durations.format(entry.hours(), FormatStyle.SHORT)));
+          TimesheetItem.builder()
+              .date(dateFormatter.format(entry.date()))
+              .client(entry.client())
+              .project(entry.project())
+              .task(entry.task())
+              .hours(Durations.format(entry.hours(), FormatStyle.SHORT))
+              .build());
     }
     timesheetItems.setAll(items);
   }
