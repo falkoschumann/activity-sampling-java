@@ -3,7 +3,7 @@
  * Copyright (c) 2023 Falko Schumann <falko.schumann@muspellheim.de>
  */
 
-package de.muspellheim.activitysampling.e2e;
+package de.muspellheim.activitysampling.unit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
