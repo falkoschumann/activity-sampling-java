@@ -145,6 +145,7 @@ class ActivitiesServiceTests {
                 TimeReport.Entry.builder()
                     .client("client")
                     .project("project")
+                    .task("task")
                     .hours(Duration.ofMinutes(30))
                     .build())),
         report);

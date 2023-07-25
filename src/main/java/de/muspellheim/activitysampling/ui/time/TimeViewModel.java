@@ -25,7 +25,8 @@ public class TimeViewModel {
 
   public enum Scope {
     CLIENTS,
-    PROJECTS
+    PROJECTS,
+    TASKS,
   }
 
   private final ActivitiesService activitiesService;
@@ -97,6 +98,8 @@ public class TimeViewModel {
       var report = activitiesService.getTimeReport(from, to);
       if (scope == Scope.CLIENTS) {
         report = report.groupByClient();
+      } else if (scope == Scope.PROJECTS) {
+        report = report.groupByProject();
       }
       updateReportItems(report.entries());
       updateTotal(report.total());
@@ -113,6 +116,7 @@ public class TimeViewModel {
           TimeItem.builder()
               .client(entry.client())
               .project(entry.project())
+              .task(entry.task())
               .hours(Durations.format(entry.hours(), FormatStyle.SHORT))
               .build());
     }

@@ -23,9 +23,11 @@ public class TimeView {
   @FXML private PeriodView periodViewController;
   @FXML private ToggleButton clientsToggle;
   @FXML private ToggleButton projectsToggle;
+  @FXML private ToggleButton tasksToggle;
   @FXML private TableView<TimeItem> timeTable;
   @FXML private TableColumn<TimeItem, String> clientColumn;
   @FXML private TableColumn<TimeItem, String> projectColumn;
+  @FXML private TableColumn<TimeItem, String> taskColumn;
   @FXML private TableColumn<TimeItem, String> hoursColumn;
   @FXML private Label totalLabel;
 
@@ -52,6 +54,8 @@ public class TimeView {
     clientColumn.setCellValueFactory(TimeTableCell.newCellValueFactory(TimeItem::client));
     projectColumn.setCellFactory(TimeTableCell.newCellFactory(Pos.BASELINE_LEFT));
     projectColumn.setCellValueFactory(TimeTableCell.newCellValueFactory(TimeItem::project));
+    taskColumn.setCellFactory(TimeTableCell.newCellFactory(Pos.BASELINE_LEFT));
+    taskColumn.setCellValueFactory(TimeTableCell.newCellValueFactory(TimeItem::task));
     hoursColumn.setCellFactory(TimeTableCell.newCellFactory(Pos.BASELINE_CENTER));
     hoursColumn.setCellValueFactory(TimeTableCell.newCellValueFactory(TimeItem::hours));
 
@@ -72,12 +76,18 @@ public class TimeView {
   }
 
   private void update() {
-    var scope = TimeViewModel.Scope.PROJECTS;
+    var scope = TimeViewModel.Scope.TASKS;
     if (clientsToggle.isSelected()) {
       scope = TimeViewModel.Scope.CLIENTS;
       projectColumn.setVisible(false);
+      taskColumn.setVisible(false);
+    } else if (projectsToggle.isSelected()) {
+      scope = TimeViewModel.Scope.PROJECTS;
+      projectColumn.setVisible(true);
+      taskColumn.setVisible(false);
     } else {
       projectColumn.setVisible(true);
+      taskColumn.setVisible(true);
     }
     viewModel.load(periodViewController.getFrom(), periodViewController.getTo(), scope);
   }

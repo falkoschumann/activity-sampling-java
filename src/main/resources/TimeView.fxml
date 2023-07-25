@@ -21,6 +21,7 @@
                  <columns>
                    <TableColumn fx:id="clientColumn" prefWidth="200.0" text="Client" />
                      <TableColumn fx:id="projectColumn" prefWidth="200.0" text="Project" />
+                     <TableColumn fx:id="taskColumn" prefWidth="400.0" text="Task" />
                    <TableColumn fx:id="hoursColumn" prefWidth="70.0" text="Hours" />
                  </columns>
                </TableView>
@@ -31,12 +32,13 @@
                      <fx:include fx:id="periodView" maxWidth="1.7976931348623157E308" source="PeriodView.fxml" />
                      <HBox>
                         <children>
-                           <ToggleButton fx:id="clientsToggle" mnemonicParsing="false" onAction="#changeScope" selected="true" text="Clients">
+                           <ToggleButton fx:id="clientsToggle" mnemonicParsing="false" onAction="#changeScope" prefWidth="80.0" selected="true" text="Clients">
                               <toggleGroup>
                                  <ToggleGroup fx:id="scopeToggleGroup" />
                               </toggleGroup>
                            </ToggleButton>
-                           <ToggleButton fx:id="projectsToggle" mnemonicParsing="false" onAction="#changeScope" text="Projects" toggleGroup="$scopeToggleGroup" />
+                           <ToggleButton fx:id="projectsToggle" mnemonicParsing="false" onAction="#changeScope" prefWidth="80.0" text="Projects" toggleGroup="$scopeToggleGroup" />
+                           <ToggleButton fx:id="tasksToggle" mnemonicParsing="false" onAction="#changeScope" prefWidth="80.0" text="Tasks" toggleGroup="$scopeToggleGroup" />
                         </children>
                         <padding>
                            <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />

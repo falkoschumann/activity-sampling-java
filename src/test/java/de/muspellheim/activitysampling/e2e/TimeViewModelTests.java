@@ -45,8 +45,18 @@ class TimeViewModelTests {
 
     assertReport(
         List.of(
-            TimeItem.builder().client("ACME Ltd.").project("Foo").hours("00:15").build(),
-            TimeItem.builder().client("F.O.W.L.").project("Bar").hours("00:15").build()),
+            TimeItem.builder()
+                .client("ACME Ltd.")
+                .project("Foo")
+                .task("Lorem ipsum")
+                .hours("00:15")
+                .build(),
+            TimeItem.builder()
+                .client("F.O.W.L.")
+                .project("Bar")
+                .task("Lorem ipsum")
+                .hours("00:15")
+                .build()),
         "00:30");
     assertNoError();
   }
@@ -68,11 +78,13 @@ class TimeViewModelTests {
             TimeReport.Entry.builder()
                 .client("ACME Ltd.")
                 .project("Foo")
+                .task("Lorem ipsum")
                 .hours(Duration.ofMinutes(15))
                 .build(),
             TimeReport.Entry.builder()
                 .client("F.O.W.L.")
                 .project("Bar")
+                .task("Lorem ipsum")
                 .hours(Duration.ofMinutes(15))
                 .build()));
   }
