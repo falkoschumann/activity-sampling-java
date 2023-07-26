@@ -6,6 +6,8 @@ Periodically ask the user about their current activity and log it for analysis.
 
 ![Domain](domain.png)
 
+TODO compare stories / acceptance criteria with service tests
+
 ### Log Activity
 
 - As a user, I want to be asked periodical what I'm working on so that I can not
@@ -31,6 +33,11 @@ Periodically ask the user about their current activity and log it for analysis.
   how much time I spent to every project.
 - As a user, I want to summarize my hours worked on tasks so that I can see
   how much time I spent to every task.
+- As a user, I want my hours per day to be totaled.
+- As a user, I want my hours per week to be totaled.
+- As a user, I want my hours per month to be totaled.
+- As a user, I want my hours per year to be totaled.
+- As a user, I want my hours to be totaled.
 
 ### Change employee capacity
 

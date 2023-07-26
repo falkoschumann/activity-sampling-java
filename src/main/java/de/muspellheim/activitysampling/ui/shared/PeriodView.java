@@ -7,6 +7,7 @@ package de.muspellheim.activitysampling.ui.shared;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.function.Consumer;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
@@ -36,6 +37,14 @@ public class PeriodView {
 
   public final void removePeriodChangedListener(Consumer<Void> listener) {
     viewModel.removePeriodChangedListener(listener);
+  }
+
+  public void setPeriods(List<ChronoUnit> periods) {
+    periodOfChoice.getItems().setAll(periods);
+  }
+
+  public void setPeriod(ChronoUnit period) {
+    viewModel.setPeriodOfChoiceValue(period);
   }
 
   public final LocalDate getFrom() {

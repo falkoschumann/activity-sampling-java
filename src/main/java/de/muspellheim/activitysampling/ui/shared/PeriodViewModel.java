@@ -118,17 +118,28 @@ public class PeriodViewModel {
       new SimpleObjectProperty<>(ChronoUnit.WEEKS) {
         @Override
         protected void invalidated() {
+          if (get() == null) {
+            return;
+          }
+
           switch (get()) {
             case DAYS -> to.set(from.get());
             case WEEKS -> {
               var first = from.get().with(ChronoField.DAY_OF_WEEK, 1);
               from.set(first);
-              to.set(from.get().plusWeeks(1).minusDays(1));
+              var last = from.get().plusWeeks(1).minusDays(1);
+              to.set(last);
             }
             case MONTHS -> {
               var first = from.get().withDayOfMonth(1);
               from.set(first);
               var last = first.plusMonths(1).minusDays(1);
+              to.set(last);
+            }
+            case YEARS -> {
+              var first = from.get().withDayOfYear(1);
+              from.set(first);
+              var last = first.plusYears(1).minusDays(1);
               to.set(last);
             }
             default -> throw new IllegalArgumentException(

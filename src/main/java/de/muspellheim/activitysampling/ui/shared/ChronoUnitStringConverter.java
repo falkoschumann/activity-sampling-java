@@ -9,12 +9,18 @@ import java.time.temporal.ChronoUnit;
 import javafx.util.StringConverter;
 
 public class ChronoUnitStringConverter extends StringConverter<ChronoUnit> {
+
   @Override
   public String toString(ChronoUnit object) {
+    if (object == null) {
+      return "";
+    }
+
     return switch (object) {
       case DAYS -> "Day";
       case WEEKS -> "Week";
       case MONTHS -> "Month";
+      case YEARS -> "Year";
       default -> throw new IllegalArgumentException("Unsupported period: %s.".formatted(object));
     };
   }

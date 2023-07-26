@@ -8,6 +8,8 @@ package de.muspellheim.activitysampling.ui.time;
 import de.muspellheim.activitysampling.ui.shared.ErrorView;
 import de.muspellheim.activitysampling.ui.shared.PeriodView;
 import de.muspellheim.activitysampling.ui.shared.Registry;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -50,6 +52,9 @@ public class TimeView {
 
   @FXML
   private void initialize() {
+    periodViewController.setPeriods(
+        List.of(ChronoUnit.DAYS, ChronoUnit.WEEKS, ChronoUnit.MONTHS, ChronoUnit.YEARS));
+    periodViewController.setPeriod(ChronoUnit.MONTHS);
     clientColumn.setCellFactory(TimeTableCell.newCellFactory(Pos.BASELINE_LEFT));
     clientColumn.setCellValueFactory(TimeTableCell.newCellValueFactory(TimeItem::client));
     projectColumn.setCellFactory(TimeTableCell.newCellFactory(Pos.BASELINE_LEFT));

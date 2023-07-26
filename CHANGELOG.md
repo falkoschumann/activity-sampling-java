@@ -8,6 +8,11 @@ and this project adheres to
 
 ## [Unreleased]
 
+## Added
+
+- Create time report.
+- Group time report grouped by client, project or task.
+
 ## [1.2.0] - 2023-07-16
 
 ## Added
