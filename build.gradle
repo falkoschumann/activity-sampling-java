@@ -126,6 +126,7 @@ if (Os.isFamily(Os.FAMILY_MAC)) {
         '--mac-signing-key-user-name', 'Falko Schumann (QC6EN37P56)',
         '--resource-dir', "$projectDir/src/main/macos",
       ]
+      installerName = project.name + (Os.isArch("aarch64") ? "-m1" : "-intel")
       installerType = 'dmg'
     }
   }

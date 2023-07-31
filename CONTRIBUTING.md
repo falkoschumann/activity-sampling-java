@@ -21,5 +21,5 @@ xcrun notarytool submit \
   --apple-id $MAC_SIGNING_USERNAME \
   --password $MAC_SIGNING_PASSWORD \
   --wait \
-  activity-sampling-1.0.0-m1.dmg
+  activity-sampling-m1-1.0.0.dmg
 ```
