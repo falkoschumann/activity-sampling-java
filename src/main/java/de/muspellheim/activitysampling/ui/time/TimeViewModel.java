@@ -20,6 +20,7 @@ import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ObservableStringValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import lombok.Getter;
 
 public class TimeViewModel {
 
@@ -69,11 +70,7 @@ public class TimeViewModel {
 
   // --- timesheetItems
 
-  private final ObservableList<TimeItem> timeItems = FXCollections.observableArrayList();
-
-  public ObservableList<TimeItem> getTimeItems() {
-    return timeItems;
-  }
+  @Getter private final ObservableList<TimeItem> timeItems = FXCollections.observableArrayList();
 
   // --- totalLabelText
 
@@ -100,23 +97,32 @@ public class TimeViewModel {
         report = report.groupByClient();
       } else if (scope == Scope.PROJECTS) {
         report = report.groupByProject();
+      } else {
+        report = report.groupByTask();
       }
-      updateReportItems(report.entries());
+      updateReportItems(report.entries(), scope);
       updateTotal(report.total());
     } catch (Exception e) {
-      e.printStackTrace();
       errorOccurred.emit(new Exception("Failed to load report.", e));
     }
   }
 
-  private void updateReportItems(List<TimeReport.Entry> entries) {
+  private void updateReportItems(List<TimeReport.Entry> entries, Scope scope) {
     var items = new ArrayList<TimeItem>();
     for (var entry : entries) {
+      // WORKAROUND: for https://github.com/checkstyle/checkstyle/issues/12817
+      // CHECKSTYLE.OFF: Indentation
+      var name =
+          switch (scope) {
+            case CLIENTS -> entry.client();
+            case PROJECTS -> entry.project();
+            case TASKS -> entry.task();
+          };
+      // CHECKSTYLE.ON: Indentation
       items.add(
           TimeItem.builder()
+              .name(name)
               .client(entry.client())
-              .project(entry.project())
-              .task(entry.task())
               .hours(Durations.format(entry.hours(), FormatStyle.SHORT))
               .build());
     }

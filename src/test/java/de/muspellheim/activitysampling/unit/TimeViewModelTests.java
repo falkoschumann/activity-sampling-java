@@ -41,22 +41,12 @@ class TimeViewModelTests {
     var report = newReport();
     activitiesService.initReportResponses(ConfigurableResponses.always(report));
 
-    sut.load(null, null, null);
+    sut.load(null, null, TimeViewModel.Scope.PROJECTS);
 
     assertReport(
         List.of(
-            TimeItem.builder()
-                .client("ACME Ltd.")
-                .project("Foo")
-                .task("Lorem ipsum")
-                .hours("00:15")
-                .build(),
-            TimeItem.builder()
-                .client("F.O.W.L.")
-                .project("Bar")
-                .task("Lorem ipsum")
-                .hours("00:15")
-                .build()),
+            TimeItem.builder().name("Bar").client("F.O.W.L.").hours("00:15").build(),
+            TimeItem.builder().name("Foo").client("ACME Ltd.").hours("00:15").build()),
         "00:30");
     assertNoError();
   }

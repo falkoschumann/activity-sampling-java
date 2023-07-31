@@ -27,9 +27,8 @@ public class TimeView {
   @FXML private ToggleButton projectsToggle;
   @FXML private ToggleButton tasksToggle;
   @FXML private TableView<TimeItem> timeTable;
+  @FXML private TableColumn<TimeItem, String> nameColumn;
   @FXML private TableColumn<TimeItem, String> clientColumn;
-  @FXML private TableColumn<TimeItem, String> projectColumn;
-  @FXML private TableColumn<TimeItem, String> taskColumn;
   @FXML private TableColumn<TimeItem, String> hoursColumn;
   @FXML private Label totalLabel;
 
@@ -55,12 +54,10 @@ public class TimeView {
     periodViewController.setPeriods(
         List.of(ChronoUnit.DAYS, ChronoUnit.WEEKS, ChronoUnit.MONTHS, ChronoUnit.YEARS));
     periodViewController.setPeriod(ChronoUnit.MONTHS);
+    nameColumn.setCellFactory(TimeTableCell.newCellFactory(Pos.BASELINE_LEFT));
+    nameColumn.setCellValueFactory(TimeTableCell.newCellValueFactory(TimeItem::name));
     clientColumn.setCellFactory(TimeTableCell.newCellFactory(Pos.BASELINE_LEFT));
     clientColumn.setCellValueFactory(TimeTableCell.newCellValueFactory(TimeItem::client));
-    projectColumn.setCellFactory(TimeTableCell.newCellFactory(Pos.BASELINE_LEFT));
-    projectColumn.setCellValueFactory(TimeTableCell.newCellValueFactory(TimeItem::project));
-    taskColumn.setCellFactory(TimeTableCell.newCellFactory(Pos.BASELINE_LEFT));
-    taskColumn.setCellValueFactory(TimeTableCell.newCellValueFactory(TimeItem::task));
     hoursColumn.setCellFactory(TimeTableCell.newCellFactory(Pos.BASELINE_CENTER));
     hoursColumn.setCellValueFactory(TimeTableCell.newCellValueFactory(TimeItem::hours));
 
@@ -81,19 +78,25 @@ public class TimeView {
   }
 
   private void update() {
-    var scope = TimeViewModel.Scope.TASKS;
     if (clientsToggle.isSelected()) {
-      scope = TimeViewModel.Scope.CLIENTS;
-      projectColumn.setVisible(false);
-      taskColumn.setVisible(false);
+      nameColumn.setPrefWidth(300);
+      clientColumn.setVisible(false);
+      viewModel.load(
+          periodViewController.getFrom(),
+          periodViewController.getTo(),
+          TimeViewModel.Scope.CLIENTS);
     } else if (projectsToggle.isSelected()) {
-      scope = TimeViewModel.Scope.PROJECTS;
-      projectColumn.setVisible(true);
-      taskColumn.setVisible(false);
-    } else {
-      projectColumn.setVisible(true);
-      taskColumn.setVisible(true);
+      nameColumn.setPrefWidth(300);
+      clientColumn.setVisible(true);
+      viewModel.load(
+          periodViewController.getFrom(),
+          periodViewController.getTo(),
+          TimeViewModel.Scope.PROJECTS);
+    } else if (tasksToggle.isSelected()) {
+      nameColumn.setPrefWidth(600);
+      clientColumn.setVisible(false);
+      viewModel.load(
+          periodViewController.getFrom(), periodViewController.getTo(), TimeViewModel.Scope.TASKS);
     }
-    viewModel.load(periodViewController.getFrom(), periodViewController.getTo(), scope);
   }
 }

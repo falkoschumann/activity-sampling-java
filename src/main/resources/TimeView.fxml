@@ -17,11 +17,10 @@
         <Scene stylesheets="@style.css">
          <BorderPane>
             <center>
-               <TableView fx:id="timeTable" prefHeight="600.0" prefWidth="1000.0" BorderPane.alignment="CENTER">
+               <TableView fx:id="timeTable" prefHeight="600.0" prefWidth="900.0" BorderPane.alignment="CENTER">
                  <columns>
-                   <TableColumn fx:id="clientColumn" prefWidth="200.0" text="Client" />
-                     <TableColumn fx:id="projectColumn" prefWidth="200.0" text="Project" />
-                     <TableColumn fx:id="taskColumn" prefWidth="400.0" text="Task" />
+                   <TableColumn fx:id="nameColumn" prefWidth="300.0" text="Name" />
+                     <TableColumn fx:id="clientColumn" prefWidth="500.0" text="Client" />
                    <TableColumn fx:id="hoursColumn" prefWidth="70.0" text="Hours" />
                  </columns>
                </TableView>

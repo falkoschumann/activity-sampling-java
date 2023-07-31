@@ -18,8 +18,7 @@ import lombok.Builder;
 public record TimeReport(List<Entry> entries) {
 
   @Builder
-  public record Entry(String client, String project, String task, Duration hours)
-      implements Comparable<Entry> {
+  public record Entry(String client, String project, String task, Duration hours) {
 
     public Entry {
       Objects.requireNonNull(client, "The client cannot be null.");
@@ -29,14 +28,6 @@ public record TimeReport(List<Entry> entries) {
       Objects.requireNonNull(task, "The task cannot be null.");
       Strings.requireNonBlank(task, "The task cannot be blank.");
       Objects.requireNonNull(hours, "The hours cannot be null.");
-    }
-
-    @Override
-    public int compareTo(Entry other) {
-      return Comparator.comparing(Entry::client)
-          .thenComparing(Entry::project)
-          .thenComparing(Entry::task)
-          .compare(this, other);
     }
   }
 
@@ -59,7 +50,10 @@ public record TimeReport(List<Entry> entries) {
                 .hours(entry.duration())
                 .build();
         groups.add(group);
-        Collections.sort(groups);
+        groups.sort(
+            Comparator.comparing(Entry::client)
+                .thenComparing(Entry::project)
+                .thenComparing(Entry::task));
       } else {
         var group = groups.get(index);
         var accumulatedHours = group.hours().plus(entry.duration());
@@ -76,35 +70,26 @@ public record TimeReport(List<Entry> entries) {
     return new TimeReport(List.copyOf(groups));
   }
 
-  public Duration total() {
-    var hours = entries().stream().map(Entry::hours).toList();
-    var total = Duration.ZERO;
-    for (var e : hours) {
-      total = total.plus(e);
-    }
-    return total;
-  }
-
   public TimeReport groupByClient() {
     var groups = new ArrayList<Entry>();
-    for (var entry : entries()) {
-      var index = Lists.indexOf(groups, g -> g.client().equals(entry.client()));
+    for (var activity : entries()) {
+      var index = Lists.indexOf(groups, g -> g.client().equals(activity.client()));
       if (index == -1) {
         var group =
             Entry.builder()
-                .client(entry.client())
+                .client(activity.client())
                 .project("N/A")
                 .task("N/A")
-                .hours(entry.hours())
+                .hours(activity.hours())
                 .build();
         groups.add(group);
-        Collections.sort(groups);
+        groups.sort(Comparator.comparing(Entry::client));
       } else {
         var group = groups.get(index);
-        var accumulatedHours = group.hours().plus(entry.hours());
+        var accumulatedHours = group.hours().plus(activity.hours());
         group =
             Entry.builder()
-                .client(entry.client())
+                .client(activity.client())
                 .project("N/A")
                 .task("N/A")
                 .hours(accumulatedHours)
@@ -117,28 +102,30 @@ public record TimeReport(List<Entry> entries) {
 
   public TimeReport groupByProject() {
     var groups = new ArrayList<Entry>();
-    for (var entry : entries()) {
-      var index =
-          Lists.indexOf(
-              groups,
-              g -> g.client().equals(entry.client()) && g.project().equals(entry.project()));
+    for (var activity : entries()) {
+      var index = Lists.indexOf(groups, g -> g.project().equals(activity.project()));
       if (index == -1) {
         var group =
             Entry.builder()
-                .client(entry.client())
-                .project(entry.project())
+                .client(activity.client())
+                .project(activity.project())
                 .task("N/A")
-                .hours(entry.hours())
+                .hours(activity.hours())
                 .build();
         groups.add(group);
-        Collections.sort(groups);
+        groups.sort(Comparator.comparing(Entry::project).thenComparing(Entry::client));
       } else {
         var group = groups.get(index);
-        var accumulatedHours = group.hours().plus(entry.hours());
+        var clients = new ArrayList<>(List.of(group.client().split(", ")));
+        if (!clients.contains(activity.client())) {
+          clients.add(activity.client());
+          Collections.sort(clients);
+        }
+        var accumulatedHours = group.hours().plus(activity.hours());
         group =
             Entry.builder()
-                .client(entry.client())
-                .project(entry.project())
+                .client(String.join(", ", clients))
+                .project(activity.project())
                 .task("N/A")
                 .hours(accumulatedHours)
                 .build();
@@ -146,5 +133,44 @@ public record TimeReport(List<Entry> entries) {
       }
     }
     return new TimeReport(List.copyOf(groups));
+  }
+
+  public TimeReport groupByTask() {
+    var groups = new ArrayList<Entry>();
+    for (var entry : entries()) {
+      var index = Lists.indexOf(groups, g -> g.task().equals(entry.task()));
+      if (index == -1) {
+        var group =
+            Entry.builder()
+                .client("N/A")
+                .project("N/A")
+                .task(entry.task())
+                .hours(entry.hours())
+                .build();
+        groups.add(group);
+        groups.sort(Comparator.comparing(Entry::task));
+      } else {
+        var group = groups.get(index);
+        var accumulatedHours = group.hours().plus(entry.hours());
+        group =
+            Entry.builder()
+                .client("N/A")
+                .project("N/A")
+                .task(group.task())
+                .hours(accumulatedHours)
+                .build();
+        groups.set(index, group);
+      }
+    }
+    return new TimeReport(List.copyOf(groups));
+  }
+
+  public Duration total() {
+    var hours = entries().stream().map(Entry::hours).toList();
+    var total = Duration.ZERO;
+    for (var e : hours) {
+      total = total.plus(e);
+    }
+    return total;
   }
 }
