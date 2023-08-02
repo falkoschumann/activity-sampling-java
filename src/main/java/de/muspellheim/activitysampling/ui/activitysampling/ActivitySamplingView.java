@@ -26,6 +26,7 @@ public class ActivitySamplingView {
 
   private final EventEmitter<Void> openTime = new EventEmitter<>();
   private final EventEmitter<Void> openTimesheet = new EventEmitter<>();
+  private final EventEmitter<Void> openAbout = new EventEmitter<>();
 
   @FXML private Stage stage;
   @FXML private MenuBar menuBar;
@@ -107,6 +108,14 @@ public class ActivitySamplingView {
     openTimesheet.removeListener(listener);
   }
 
+  public final void addOpenAboutListener(Consumer<Void> listener) {
+    openAbout.addListener(listener);
+  }
+
+  public final void removeOpenAboutListener(Consumer<Void> listener) {
+    openAbout.removeListener(listener);
+  }
+
   public void run() {
     stage.show();
     viewModel.load();
@@ -175,6 +184,11 @@ public class ActivitySamplingView {
   @FXML
   private void openTime() {
     openTime.emit(null);
+  }
+
+  @FXML
+  private void openAbout() {
+    openAbout.emit(null);
   }
 
   @FXML

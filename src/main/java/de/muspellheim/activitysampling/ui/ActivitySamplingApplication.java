@@ -5,6 +5,7 @@
 
 package de.muspellheim.activitysampling.ui;
 
+import de.muspellheim.activitysampling.ui.about.AboutView;
 import de.muspellheim.activitysampling.ui.activitysampling.ActivitySamplingView;
 import de.muspellheim.activitysampling.ui.shared.Configuration;
 import de.muspellheim.activitysampling.ui.time.TimeView;
@@ -32,19 +33,23 @@ public class ActivitySamplingApplication extends Application {
     activitySamplingView.addOpenTimeListener(e -> openTimeView(activitySamplingView.getStage()));
     activitySamplingView.addOpenTimesheetListener(
         e -> openTimesheetView(activitySamplingView.getStage()));
+    activitySamplingView.addOpenAboutListener(e -> openAbout(activitySamplingView.getStage()));
 
     activitySamplingView.run();
   }
 
   private static void openTimeView(Stage owner) {
-    var timeView = TimeView.newInstance(owner);
-
-    timeView.run();
+    var view = TimeView.newInstance(owner);
+    view.run();
   }
 
   private static void openTimesheetView(Stage owner) {
-    var timesheetView = TimesheetView.newInstance(owner);
+    var view = TimesheetView.newInstance(owner);
+    view.run();
+  }
 
-    timesheetView.run();
+  private static void openAbout(Stage owner) {
+    var view = AboutView.newInstance(owner);
+    view.run();
   }
 }

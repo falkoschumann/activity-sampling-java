@@ -9,6 +9,8 @@ module de.muspellheim.activitysampling {
 
   opens de.muspellheim.activitysampling.ui to
       javafx.graphics;
+  opens de.muspellheim.activitysampling.ui.about to
+      javafx.fxml;
   opens de.muspellheim.activitysampling.ui.activitysampling to
       javafx.fxml;
   opens de.muspellheim.activitysampling.ui.timesheet to

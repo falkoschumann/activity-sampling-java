@@ -66,6 +66,11 @@
                                  </accelerator></MenuItem>
                            </items>
                         </Menu>
+                        <Menu mnemonicParsing="false" text="Help">
+                          <items>
+                            <MenuItem mnemonicParsing="false" onAction="#openAbout" text="About" />
+                          </items>
+                        </Menu>
                   </menus>
                 </MenuBar>
                   <BorderPane VBox.vgrow="ALWAYS">
