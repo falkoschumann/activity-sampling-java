@@ -18,12 +18,12 @@ public class EventEmitter<T> {
   }
 
   public void addListener(Consumer<T> listener) {
-    Objects.requireNonNull(listener, "listener");
+    Objects.requireNonNull(listener, "The listener cannot be null.");
     listeners.add(listener);
   }
 
   public void removeListener(Consumer<T> listener) {
-    Objects.requireNonNull(listener, "listener");
+    Objects.requireNonNull(listener, "The listener cannot be null.");
     listeners.remove(listener);
   }
 
