@@ -142,8 +142,8 @@ public class PeriodViewModel {
               var last = first.plusYears(1).minusDays(1);
               to.set(last);
             }
-            default -> throw new IllegalArgumentException(
-                "Unsupported period: %s.".formatted(get()));
+            default ->
+                throw new IllegalArgumentException("Unsupported period: %s.".formatted(get()));
           }
           periodChanged.emit(null);
         }
