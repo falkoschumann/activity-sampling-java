@@ -27,7 +27,7 @@ repositories {
 
 dependencies {
   implementation "com.h2database:h2:2.3.232"
-  implementation 'org.apache.commons:commons-csv:1.11.0'
+  implementation 'org.apache.commons:commons-csv:1.12.0'
   compileOnly 'org.projectlombok:lombok:1.18.34'
   annotationProcessor 'org.projectlombok:lombok:1.18.34'
   testImplementation 'org.junit.jupiter:junit-jupiter:5.11.0'
