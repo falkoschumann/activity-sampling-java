@@ -30,7 +30,7 @@ dependencies {
   implementation 'org.apache.commons:commons-csv:1.11.0'
   compileOnly 'org.projectlombok:lombok:1.18.34'
   annotationProcessor 'org.projectlombok:lombok:1.18.34'
-  testImplementation 'org.junit.jupiter:junit-jupiter:5.11.0'
+  testImplementation 'org.junit.jupiter:junit-jupiter:5.11.1'
   testCompileOnly 'org.projectlombok:lombok:1.18.34'
   testAnnotationProcessor 'org.projectlombok:lombok:1.18.34'
 }
