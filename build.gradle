@@ -28,11 +28,11 @@ repositories {
 dependencies {
   implementation "com.h2database:h2:2.3.232"
   implementation 'org.apache.commons:commons-csv:1.12.0'
-  compileOnly 'org.projectlombok:lombok:1.18.34'
-  annotationProcessor 'org.projectlombok:lombok:1.18.34'
+  compileOnly 'org.projectlombok:lombok:1.18.36'
+  annotationProcessor 'org.projectlombok:lombok:1.18.36'
   testImplementation 'org.junit.jupiter:junit-jupiter:5.11.3'
-  testCompileOnly 'org.projectlombok:lombok:1.18.34'
-  testAnnotationProcessor 'org.projectlombok:lombok:1.18.34'
+  testCompileOnly 'org.projectlombok:lombok:1.18.36'
+  testAnnotationProcessor 'org.projectlombok:lombok:1.18.36'
 }
 
 application {
